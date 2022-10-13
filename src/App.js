@@ -3,8 +3,8 @@ import './App.css';
 import Axios from "axios";
 
 function App() {
-  const [Username, setUsername] = useState("");
-  const [Password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [userList, setUserList] = useState([]);
 
   useEffect(() => {
@@ -15,8 +15,8 @@ function App() {
 
   const loginAction = () => {
     Axios.post('http://localhost:3001/api/insert', {
-      user: Username, 
-      pass: Password
+      user: username, 
+      pass: password
     }).then(() => {
       alert("successful insert");
     });
@@ -40,7 +40,7 @@ function App() {
         <button onClick = {loginAction}> Register </button>
 
         {userList.map((val) => {
-          return <h1>username: {val.Username} | password: {val.Password}</h1>
+          return <h1>username: {val.username} | password: {val.password}</h1>
         })}
       </div>
 

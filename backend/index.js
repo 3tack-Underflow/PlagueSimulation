@@ -6,10 +6,10 @@ const mysql = require('mysql2');
 
 // information of the database
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'da316123D!',
-    database: 'CS348Database'
+    host: '23.91.84.211',
+    user: 'cs',
+    password: 'cs348',
+    database: 'user_schema'
 });
 
 app.use(cors());
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // req is request, res is response
 app.get('/api/get', (req, res) => {
     // send to the front end
-    const sqlInsert = "SELECT * FROM Users;";
+    const sqlInsert = "SELECT * FROM user;";
     db.query(sqlInsert, (err, result) => {
         res.send(result);
     });
@@ -31,7 +31,7 @@ app.post('/api/insert', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
     // send to the front end
-    const sqlInsert = "INSERT INTO Users (Username, Password) VALUES (?,?);";
+    const sqlInsert = "INSERT INTO user (username, password) VALUES (?,?);";
     db.query(sqlInsert, [username, password], (err, result) => {
         console.log(result);
     });
