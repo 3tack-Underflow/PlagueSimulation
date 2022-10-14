@@ -24,7 +24,7 @@ function Login() {
     });
   }
 
-  let navagate = useNavigate();
+  let navigate = useNavigate();
 
   return (
     <div className = "Login">
@@ -40,13 +40,12 @@ function Login() {
           setPassword(e.target.value);
         }}/>
 
-        <button onClick = {() => {navagate.push("/mainpage")}}> Login </button>
+        <button onClick = {() => {navigate("/Mainpage")}}> Login </button>
         <button onClick = {loginAction}> Register </button>
         {userList.map((val) => {
           return <h1>username: {val.username} | password: {val.password}</h1>
         })}
       </div>
-
     </div>
   );
 }
