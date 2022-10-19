@@ -23,6 +23,7 @@ INSERT INTO `user_schema`.`simulationparticipation`(`username`,`id`,`isOwner`) V
 INSERT INTO `user_schema`.`simulationparticipation`(`username`,`id`,`isOwner`) VALUES ('nathan', 1, 0);
 INSERT INTO `user_schema`.`simulationparticipation`(`username`,`id`,`isOwner`) VALUES ('april', 1, 0);
 INSERT INTO `user_schema`.`simulationparticipation`(`username`,`id`,`isOwner`) VALUES ('jeff', 2, 1);
+INSERT INTO `user_schema`.`simulationparticipation`(`username`,`id`,`isOwner`) VALUES ('robert', 2, 0);
 
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
 VALUES (1, 1, 0, 27, 150.0);

@@ -1,4 +1,4 @@
-DROP TABLE `user_schema`.`showingSymptoms`;
+DROP TABLE `showingSymptoms`;
 DROP TABLE `user_schema`.`simulationhumans`;
 DROP TABLE `user_schema`.`simulationparticipation`;
 DROP TABLE `user_schema`.`symptom`;
