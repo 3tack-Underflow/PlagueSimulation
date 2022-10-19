@@ -29,7 +29,6 @@ function Login() {
   return (
     <div className = "Login">
       <h1>Plague Simulation</h1>
-
       <div className = "Login">
         <label>Username</label>
         <input type = "text" name = "Username" onChange = {(e) => {
