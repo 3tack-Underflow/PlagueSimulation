@@ -31,23 +31,23 @@ VALUES (2, 1, 0, 30, 160.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
 VALUES (3, 1, 1, 15, 125.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (4, 2, 1, 15, 125.5);
+VALUES (1, 2, 1, 15, 125.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (5, 2, 1, 29, 145.0);
+VALUES (2, 2, 1, 29, 145.0);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (6, 2, 1, 10, 110.5);
+VALUES (3, 2, 1, 10, 110.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (7, 2, 1, 17, 130.5);
+VALUES (4, 2, 1, 17, 130.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (8, 3, 1, 80, 137.7);
+VALUES (1, 3, 1, 80, 137.7);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (9, 3, 1, 90, 155.5);
+VALUES (2, 3, 1, 90, 155.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (10, 3, 1, 87, 112.5);
+VALUES (3, 3, 1, 87, 112.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (11, 3, 1, 70, 145.5);
+VALUES (4, 3, 1, 70, 145.5);
 INSERT INTO `user_schema`.`simulationhumans`(`num`, `id`, `isInfected`, `age`, `weight`)
-VALUES (12, 3, 1, 67, 128.0);
+VALUES (5, 3, 1, 67, 128.0);
 
 INSERT INTO `user_schema`.`symptom`(`name`) VALUES ('runny nose');
 INSERT INTO `user_schema`.`symptom`(`name`) VALUES ('sore throat');
