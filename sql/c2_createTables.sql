@@ -42,13 +42,13 @@ CREATE TABLE `simulationparticipation` (
    UNIQUE KEY `name_UNIQUE` (`name`)
  );
 
-CREATE TABLE `showingSymptoms` (
+CREATE TABLE `showingsymptoms` (
    `num` int NOT NULL,
    `id` int NOT NULL,
    `name` varchar(45) NOT NULL,
-   PRIMARY KEY (`num`, `id`, `name`),
+   PRIMARY KEY (`num`,`id`),
    KEY `name_idx` (`name`),
+   KEY `id_idx` (`id`),
    CONSTRAINT `name` FOREIGN KEY (`name`) REFERENCES `symptom` (`name`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT `num` FOREIGN KEY (`num`) REFERENCES `simulationhumans` (`num`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT `id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
- );
+   CONSTRAINT `num, id` FOREIGN KEY (`num`, `id`) REFERENCES `simulationhumans` (`num`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT
+ )
