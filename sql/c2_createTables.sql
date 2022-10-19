@@ -15,7 +15,7 @@ CREATE TABLE `simulation` (
    UNIQUE KEY `id_UNIQUE` (`id`)
  );
  
- CREATE TABLE `simulationhumans` (
+ CREATE TABLE `simulation_humans` (
    `num` int NOT NULL,
    `id` int NOT NULL,
    `isInfected` tinyint NOT NULL DEFAULT '0',
@@ -26,7 +26,7 @@ CREATE TABLE `simulation` (
    CONSTRAINT `id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
  );
 
-CREATE TABLE `simulationparticipation` (
+CREATE TABLE `simulation_participation` (
    `username` varchar(20) NOT NULL,
    `id` int NOT NULL,
    `isOwner` tinyint NOT NULL DEFAULT '0',
@@ -42,13 +42,13 @@ CREATE TABLE `simulationparticipation` (
    UNIQUE KEY `name_UNIQUE` (`name`)
  );
 
-CREATE TABLE `showingsymptoms` (
+CREATE TABLE `showing_symptoms` (
    `num` int NOT NULL,
    `id` int NOT NULL,
    `name` varchar(45) NOT NULL,
-   PRIMARY KEY (`num`,`id`),
+   PRIMARY KEY (`num`,`id`, `name`),
    KEY `name_idx` (`name`),
    KEY `id_idx` (`id`),
    CONSTRAINT `name` FOREIGN KEY (`name`) REFERENCES `symptom` (`name`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT `num, id` FOREIGN KEY (`num`, `id`) REFERENCES `simulationhumans` (`num`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT
+   CONSTRAINT `num, id` FOREIGN KEY (`num`, `id`) REFERENCES `simulation_humans` (`num`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT
  )
