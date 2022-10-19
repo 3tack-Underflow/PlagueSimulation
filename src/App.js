@@ -1,4 +1,6 @@
 import './App.css';
+import './CreateSimPage.css';
+import './Mainpage.css';
 
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Mainpage from "./Mainpage.js";
