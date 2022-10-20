@@ -5,8 +5,8 @@ const SimulationButton = (props) =>{
                 <label style={{
                     fontSize: '25px', padding: '10px', 
                     fontWeight: 'bold',textAlign: 'center'}}>
-                        The Black Death part 2</label>
-                <button onClick={() => {props.command()}}>select</button>
+                        {props.title}</label>
+                {<button onClick={() => {}}>select</button>}
             </div>
         </div>
     );

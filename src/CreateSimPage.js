@@ -5,12 +5,12 @@ import AssistantEntry from "./AssistantEntry.js";
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
-        'The Ruthless Infestation', 'The Crazed Pandemic', 'The Neglected Scourge',
+        'The Ruthless Infestation', 'Crazed Pandemic', 'The Neglected Scourge',
         'The Onyx Death', 'The Inferior Plague', 'Lingering Death', 
         'le Fléau d\'nsanité', 'l\'Éclosion de Chaos',
         'The Second Affliction', 'The White Plague', 'The Dawn Affliction',
-        'The Radical Pandemic', 'The Phantom Rage', 'Mad Epidemic',
-        'The Curtains Outbreak', 'Zombie Outbreak', 'The Fury Pandemic',
+        'The Radical Pandemic', 'Phantom Rage', 'Mad Epidemic',
+        'The Curtains Outbreak', 'Zombie Outbreak', 'Fury Pandemic',
         'The Apex Contagion', 'Saltwater Scourage', 'The Unseen Contagion',
         'The Great Contagion', 'COVID part II', 'COVID part III',
         'The Dusk Outbreak', 'The Radical Death', 'Vampire Plague',
@@ -64,11 +64,11 @@ function CreatePage() {
     let navigate = useNavigate();
     return (
     <div className = "CreateSim">
-        <label style={{fontWeight: 'bold'}}>Disease Acronym</label>
+        <label style={{fontWeight: 'bold'}}>Disease Name</label>
         <div className="horizontal">
             <input value = {bacteriumName} 
                 type = "text" 
-                name = "Disease Acronym" 
+                name = "Disease Name" 
                 onChange = {(e) => {
                     setBacteriumName(e.target.value);
                 }}/>

@@ -1,40 +1,32 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import Axios from "axios";
 
 import SimulationButton from "./SimulationButton.js";
 import { useNavigate } from "react-router-dom";
 
 function Mainpage() {
+    const [simList, setSimList] = useState([]);
+
     let navigate = useNavigate();
 
-    const printToConsole = () =>{
-        console.log("123");
-    }
-
-    const [scrollObject, setScrollObject] = useState(
-        [{key: "box 1", title: "box 1", function: printToConsole}, 
-         {key: "box 2", title: "box 2", function: printToConsole},
-         {key: "box 3", title: "box 3", function: printToConsole},
-         {key: "box 4", title: "box 4", function: printToConsole}]);
-
-    const addObject = () =>{
-        setScrollObject(john => [
-            ...john,
-            {key : 5, title: "box 5", function: printToConsole("5")}
-        ])
-    }
+    useEffect(() => {
+        Axios.get('http://localhost:3001/api/get-sims').then((response) => {
+            setSimList(response.data);
+        });
+    }, []);
 
     return (
     <div className = "Mainpage">
-        <label>Archive</label>
+        <label>Simulation Archive</label>
         <button onClick = {() => {navigate("/Create")}}> Host Simulation </button>
         {/* {<button onClick = {addObject}>  Simulation </button> } */}
         <div className = "scroll-pane">
-            {scrollObject.map(datapoint => 
+            {simList.map(datapoint => 
             <SimulationButton 
-                key={datapoint.key}
-                title={datapoint.title} 
-                command={datapoint.function}>
-            </SimulationButton>)}
+                key={datapoint.id}
+                title={datapoint.disease_name}>
+            </SimulationButton>
+            )}
         </div>
     </div>)
 }
