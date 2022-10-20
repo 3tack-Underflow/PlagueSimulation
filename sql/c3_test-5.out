@@ -1,0 +1,15 @@
+-- testing if human 1 from simulation 1 is infected --
+
+1
+
+-- testing human 2 from simulation 1 --
+
+0
+
+-- testing human 1 from simulation 2 --
+
+1
+
+-- testing human 4 from simulation 1 (this human doesn't exist) --
+
+0

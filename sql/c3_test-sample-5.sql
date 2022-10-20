@@ -1,4 +1,4 @@
--- TEST FOR FEATURE 4, CHECK IF HUMAN IS INFECTED --
+-- TEST FOR FEATURE 5, CHECK IF HUMAN IS INFECTED --
 
 -- suppose we are testing if human 1 from simulation 1 is infected --
 -- a human who isn't already marked as infected is infected if he/she has the most common symptom

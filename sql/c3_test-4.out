@@ -1,15 +1,37 @@
--- testing if human 1 from simulation 1 is infected --
+-- result of initial select all --
+username	id	isOwner
+april		1	0
+grace		1	1
+jeff		2	1
+nathan		1	0
+robert		1	0
+robert		2	0
+robert		3	1
+robert		4	1
+troy		1	0
 
-1
+-- result of select all after query 1 - april was added to simulation 2 --
+username	id	isOwner
+april		1	0
+april		2	0
+grace		1	1
+jeff		2	1
+nathan		1	0
+robert		1	0
+robert		2	0
+robert		3	1
+robert		4	1
+troy		1	0
 
--- testing human 2 from simulation 1 --
-
-0
-
--- testing human 1 from simulation 2 --
-
-1
-
--- testing human 4 from simulation 1 (this human doesn't exist) --
-
-0
+-- result of select all after query 2 - no change as simulation 1 was full --
+username	id	isOwner
+april		1	0
+april		2	0
+grace		1	1
+jeff		2	1
+nathan		1	0
+robert		1	0
+robert		2	0
+robert		3	1
+robert		4	1
+troy		1	0
