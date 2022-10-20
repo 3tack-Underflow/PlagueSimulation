@@ -1,9 +1,9 @@
-INSERT INTO `user`(`username`,`password`) VALUES ('grace','JTECKk');
-INSERT INTO `user`(`username`,`password`) VALUES ('troy','jfnm84');
-INSERT INTO `user`(`username`,`password`) VALUES ('robert','VVx5eX');
-INSERT INTO `user`(`username`,`password`) VALUES ('nathan','8AaY3r');
-INSERT INTO `user`(`username`,`password`) VALUES ('april','eYatdX');
-INSERT INTO `user`(`username`,`password`) VALUES ('jeff','dkltR1');
+INSERT INTO `user`(`username`,`password`) VALUES ('grace','JTECKk1!');
+INSERT INTO `user`(`username`,`password`) VALUES ('troy','jfnm84?');
+INSERT INTO `user`(`username`,`password`) VALUES ('robert','VVx5eX!');
+INSERT INTO `user`(`username`,`password`) VALUES ('nathan','8AaY3r?');
+INSERT INTO `user`(`username`,`password`) VALUES ('april','eYa5tdX!');
+INSERT INTO `user`(`username`,`password`) VALUES ('jeff','dkltR1?');
 
 INSERT INTO `simulation`
 (`disease_name`, `settings_severity`, `settings_max_rules`, `environment_total_population`, `environment_isolation_capacity`, `disease_spread_rate`, `disease_spread_radius`, `disease_mutation_time`, `funds`)

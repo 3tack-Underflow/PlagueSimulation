@@ -1,28 +1,22 @@
--- TEST FOR FEATURE 1, LOGIN/REGISTER --
+-- TEST FOR FEATURE 1, LOGIN --
 
 -- initial select all --
-SELECT * FROM user_schema.user;
+SELECT * FROM user;
 
--- 2) attempt login with correct password --
-SELECT EXISTS(
-SELECT *
-FROM user_schema.user
-WHERE username = "april" AND password = "eYatdX"
-);
+-- 1) Register a new account, for example username = mark and password = iLAk5L? --
+INSERT INTO `user`(`username`,`password`) VALUES ('mark', 'iLAk5L?');
 
--- 3) attempt login with incorrect password --
-SELECT EXISTS(
-SELECT *
-FROM user_schema.user
-WHERE username = "april" AND password = "thewrongpassword"
-);
+-- select all after query 1 --
+SELECT * FROM user;
 
--- 4) Register user with a unique username
-INSERT INTO `user_schema`.`user`(`username`, `password`)
-SELECT 'Lebron', 'Lebron321'
-WHERE (SELECT COUNT(username) FROM user_schema.user WHERE username = 'Lebron') = 0;
+-- 2) Register a new account where the username is taken, for example username = grace and password = dimaL8! --
+INSERT INTO `user`(`username`,`password`) VALUES ('grace', 'dimaL8!');
 
--- 5) Register user with an existing username (don't register)
-INSERT INTO `user_schema`.`user`(`username`, `password`)
-SELECT 'april', 'Lebron321'
-WHERE (SELECT COUNT(username) FROM user_schema.user WHERE username = 'april') = 0;
+-- select all after query 2 --
+SELECT * FROM user;
+
+-- 3) Login to account - return true if username and password match, for example username = grace and password = JTECKk1! --
+SELECT IF(EXISTS (SELECT * FROM user WHERE username = 'grace' AND password = 'JTECKk1!'), true, false);
+
+-- 4) Login to account with wrong username and/or password, should return false, for example username = grace and password = ijk --
+SELECT IF(EXISTS (SELECT * FROM user WHERE username = 'grace' AND password = 'ijk'), true, false);
