@@ -1,0 +1,19 @@
+-- result of LAST_INSERT_ID() --
+8
+
+-- result of SELECT * FROM simulation_humans WHERE id = 8 --
+
+num	id	is_infected	age	weight
+1	8	0		72	136.2
+2	8	0		3	30
+3	8	0		51	125.5
+4	8	1		51	135.5
+5	8	0		92	121.8
+6	8	1		1	10.9
+
+-- result of SELECT * FROM showing_symptoms WHERE id = 8 --
+
+num	id	name		start_time
+4	8	fever		0
+4	8	runny nose	0
+6	8	nausea		0
