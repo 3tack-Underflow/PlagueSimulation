@@ -1,16 +1,21 @@
 CREATE TABLE `user` (
-   `username` varchar(20) NOT NULL,
-   `password` varchar(45) NOT NULL,
+   `username` varchar(30) NOT NULL,
+   `password` varchar(30) NOT NULL,
    PRIMARY KEY (`username`),
    UNIQUE KEY `username_UNIQUE` (`username`)
  );
 
 CREATE TABLE `simulation` (
    `id` int NOT NULL AUTO_INCREMENT,
-   `settings_difficulty` int NOT NULL,
-   `environment_startingPop` int NOT NULL,
-   `environment_virusSpreadRate` int NOT NULL,
-   `environment_virusSpreadTemp` float NOT NULL,
+   `disease_name` varchar(30) NOT NULL,
+   `settings_severity` int NOT NULL,
+   `settings_max_rules` int NOT NULL,
+   `environment_total_population` int NOT NULL,
+   `environment_isolation_capacity` int NOT NULL,
+   `disease_spread_rate` int NOT NULL,
+   `disease_spread_radius` int NOT NULL,
+   `disease_mutation_time` int NOT NULL,
+   `funds` int NOT NULL,
    PRIMARY KEY (`id`),
    UNIQUE KEY `id_UNIQUE` (`id`)
  );
@@ -18,18 +23,18 @@ CREATE TABLE `simulation` (
  CREATE TABLE `simulation_humans` (
    `num` int NOT NULL,
    `id` int NOT NULL,
-   `isInfected` tinyint NOT NULL DEFAULT '0',
+   `is_infected` tinyint NOT NULL DEFAULT '0',
    `age` int NOT NULL,
    `weight` float NOT NULL,
    PRIMARY KEY (`num`,`id`),
    KEY `id_idx` (`id`),
-   CONSTRAINT `id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+   CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
  );
 
 CREATE TABLE `simulation_participation` (
-   `username` varchar(20) NOT NULL,
+   `username` varchar(30) NOT NULL,
    `id` int NOT NULL,
-   `isOwner` tinyint NOT NULL DEFAULT '0',
+   `is_owner` tinyint NOT NULL DEFAULT '0',
    PRIMARY KEY (`username`,`id`),
    KEY `f_id_idx` (`id`),
    CONSTRAINT `f_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`),
@@ -46,6 +51,7 @@ CREATE TABLE `showing_symptoms` (
    `num` int NOT NULL,
    `id` int NOT NULL,
    `name` varchar(45) NOT NULL,
+   `start_time` int NOT NULL,
    PRIMARY KEY (`num`,`id`, `name`),
    KEY `name_idx` (`name`),
    KEY `id_idx` (`id`),
