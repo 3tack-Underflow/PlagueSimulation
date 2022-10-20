@@ -14,6 +14,9 @@ VALUES('COVID-19', 2, 5, 4, 10, 3, 7, 5, 200);
 INSERT INTO `simulation`
 (`disease_name`, `settings_severity`, `settings_max_rules`, `environment_total_population`, `environment_isolation_capacity`, `disease_spread_rate`, `disease_spread_radius`, `disease_mutation_time`, `funds`)
 VALUES('Bloinky', 3, 10, 5, 6, 5, 10, 15, 300);
+INSERT INTO `simulation`
+(`disease_name`, `settings_severity`, `settings_max_rules`, `environment_total_population`, `environment_isolation_capacity`, `disease_spread_rate`, `disease_spread_radius`, `disease_mutation_time`, `funds`)
+VALUES('Alan', 1, 3, 1, 6, 5, 3, 15, 400);
 
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('grace', 1, 1);
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('troy', 1, 0);
@@ -22,6 +25,8 @@ INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('nath
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('april', 1, 0);
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('jeff', 2, 1);
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robert', 2, 0);
+INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robert', 3, 1);
+INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robert', 4, 1);
 
 INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
 VALUES (1, 1, 0, 27, 150.0);
@@ -47,6 +52,8 @@ INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
 VALUES (4, 3, 1, 70, 145.5);
 INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
 VALUES (5, 3, 1, 67, 128.0);
+INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+VALUES (1, 4, 0, 4, 30.0);
 
 INSERT INTO `symptom`(`name`) VALUES ('runny nose');
 INSERT INTO `symptom`(`name`) VALUES ('sore throat');
