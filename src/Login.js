@@ -60,7 +60,7 @@ function Login() {
           setUsername(e.target.value);
         }}/>
         <label>Password</label>
-        <input type = "text" name = "Password" onChange = {(e) => {
+        <input type = "password" name = "Password" onChange = {(e) => {
           setPassword(e.target.value);
         }}/>
         <LoginButton onClick = {() => {checkInfo()}}> Login </LoginButton>
