@@ -2,6 +2,11 @@
 
 1) Run sql/c2_createTables.sql and sql/c2_populateTables.sql using MySQL to create and load the sample database. 
 2) Run sql/deleteTables.sql to delete the tables.
+3) We used the CreatePool function inside Express to connect to database with following settings: \
+    host: '23.91.84.211'\
+    user: 'cs'\
+    pass: 'cs348'\
+    database: 'user_schema'
 
 # How to Run Working Database-Driven Application
 
@@ -14,7 +19,8 @@
 1) User registration.
 2) User login and authentication with username and password checking.
 3) Creating a simulation with a range of customization through simulation variables.
-4) The user can view all simulations that they are part of.
+4) Inviting users to a simulation.
+5) The user can view all simulations that they are part of.
 
 -----------------------------------------------------------------------------------------
 
