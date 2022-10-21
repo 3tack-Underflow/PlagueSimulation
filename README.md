@@ -4,11 +4,17 @@ Run sql/c2_createTables.sql and sql/c2_populateTables.sql using MySQL to create 
 
 # How to Run Working Database-Driven Application
 
-PLEASE DO THIS
+1) Run "npm run devStart" in the backend directory.
+2) Run "npm start" in the PlagueSimulation directory.
+3) App will be hosted on local host, inside web browser.
 
 # Currently Supported Features
 
-PLEASE DO THIS
+1) User registration
+2) User login and authentication with username and password checking
+3) Creating a simulation with a range of customization through simulation variables
+4) Inviting users to a simulation
+5) The user can view all simulations that they are part of
 
 -----------------------------------------------------------------------------------------
 
