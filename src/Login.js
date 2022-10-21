@@ -1,28 +1,7 @@
 import React, {useEffect, useState} from "react";
-import './App.css';
 import Axios from "axios";
 
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components'; 
-
-const LoginButton = styled.button`
-  background-color: #7600b5;
-  color: white;
-  font-size: 20px;
-  padding: 10px 60px;
-  border-radius: 5px;
-  margin: 10px 0px;
-  cursor: pointer;
-`;
-
-const RegisterButton = styled.button`
-  background-color: #20a81b;
-  color: white;
-  font-size: 16px;
-  border-radius: 2px;
-  cursor: pointer;
-`;
-
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -32,7 +11,7 @@ function Login() {
   function checkInfo() {
     var len = userList.length;
     for (var i = 0; i < len; i++) {
-      if (userList[i].username == username  && userList[i].password == password) {
+      if (userList[i].username === username  && userList[i].password === password) {
         navigate("/Mainpage");
         return;
       }
@@ -42,7 +21,7 @@ function Login() {
   }
 
   useEffect(() => {
-    Axios.get('http://localhost:3001/api/get').then((response) => {
+    Axios.get('http://localhost:3001/api/get-login').then((response) => {
       setUserList(response.data);
     });
   }, []);
@@ -52,20 +31,23 @@ function Login() {
 
   return (
     <div className = "Login">
-      <h1>Plague Simulation</h1>
-
-      <div className = "Login">
-        <label>Username</label>
+      <h1>Plague Simulation Login</h1>
+      <label>Username</label>
+      <div className="horizontal">
         <input type = "text" name = "Username" onChange = {(e) => {
           setUsername(e.target.value);
         }}/>
-        <label>Password</label>
+      </div>
+      
+      <label>Password</label>
+      <div className = "horizontal">
         <input type = "password" name = "Password" onChange = {(e) => {
           setPassword(e.target.value);
         }}/>
-        <LoginButton onClick = {() => {checkInfo()}}> Login </LoginButton>
-        <RegisterButton onClick = {() => {navigate("/Register")}}> Register </RegisterButton>
-      
+      </div>
+      <div className = "horizontal">
+        <button style = {{margin: '20px 10px 10px 0px'}} onClick = {() => {checkInfo()}}> Login </button>
+        <button style = {{margin: '20px 0px 10px 10px'}} onClick = {() => {navigate("/Register")}}> Register </button>
       </div>
     </div>
   );
