@@ -19,8 +19,7 @@
 1) User registration.
 2) User login and authentication with username and password checking.
 3) Creating a simulation with a range of customization through simulation variables.
-4) Inviting users to a simulation.
-5) The user can view all simulations that they are part of.
+4) The user can view all simulations that they are part of.
 
 -----------------------------------------------------------------------------------------
 
