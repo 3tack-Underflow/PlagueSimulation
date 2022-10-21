@@ -1,3 +1,17 @@
+# How to Create and Load Sample Database
+
+Run sql/c2_createTables.sql and sql/c2_populateTables.sql using MySQL to create and load the sample database. Run sql/deleteTables.sql to delete the tables.
+
+# How to Run Working Database-Driven Application
+
+PLEASE DO THIS
+
+# Currently Supported Features
+
+PLEASE DO THIS
+
+-----------------------------------------------------------------------------------------
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
