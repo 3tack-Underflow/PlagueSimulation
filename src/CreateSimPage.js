@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 
@@ -30,7 +30,11 @@ function CreatePage() {
     const [assistants, setAssistants] = useState([]);
     const [nextAssistant, setNextAssistant] = useState(0);
 
-    // add spread time, and rename max_rules to starting_rules, rename spread_rate to spread chance, spread_radius will be a range and a rule, spread_cooldown, mutation_chance
+    const [simID, setSimID] = useState(0);
+
+    const isFirstRun = useRef(true);
+
+    // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, spread_radius will be a range and a rule, spread_cooldown, mutation_chance
     // creation time, cured status [ongoing, fail, success], completion time, 
     const InsertSim = () => {
         var severity_rating, origin_rating, max_rules, total_population, spread_rate, spread_radius, mutation_time;
@@ -63,7 +67,7 @@ function CreatePage() {
             spread_rate = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             spread_radius = 10 + Math.floor(Math.random() * 5); // km
             mutation_time = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
-        } 
+        }
         if (origin_rating === 1) {
             total_population = 45 + Math.floor(Math.random() * 31);
         } else if (origin_rating === 2) {
@@ -71,7 +75,7 @@ function CreatePage() {
         } else {
             total_population = 250 + Math.floor(Math.random() * 101);
         }
-        console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + total_population + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
+        // console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + total_population + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
             settings_severity: severity_rating, 
@@ -82,9 +86,31 @@ function CreatePage() {
             disease_spread_radius: spread_radius, 
             disease_mutation_time: mutation_time, 
             fund: 1000
-        }).then(() => {
-            alert("successful insert");
+        }).then((response) => {
+            setSimID(response.data[1][0]['LAST_INSERT_ID()']);
         })
+    }
+
+    useEffect(() => { 
+        if (simID == 0) return;
+        console.log(simID);
+        InsertParticipation();
+        navigate("/Mainpage");
+    }, [simID]);
+
+    const InsertParticipation = () => {
+        Axios.post('http://localhost:3001/api/insert-sim-participation', {
+            simulation_ID: simID,
+            owner: 1,
+            assistant_username: 'robert'
+        })
+        for (var i = 0; i < assistants.length; ++i) {
+            Axios.post('http://localhost:3001/api/insert-sim-participation', {
+                simulation_ID: simID,
+                owner: 0,
+                assistant_username: assistants[i].title
+            })
+        }
     }
     
     const removeAssistant = (name) => {
@@ -191,7 +217,7 @@ function CreatePage() {
                     command={datapoint.function}>
                 </AssistantEntry>)}
             <div className = "horizontal" style={{margin: '15px 0px 0px 0px'}}>
-                <button onClick={() => {InsertSim(); navigate("/Mainpage")}}>Create</button>
+                <button onClick={() => {InsertSim()}}>Create</button>
                 <button onClick={() => {navigate("/Mainpage")}} >Delete</button>
             </div>
         </div>
