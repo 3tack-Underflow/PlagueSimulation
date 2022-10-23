@@ -1,3 +1,28 @@
+# How to Create and Load Sample Database
+
+1) Run sql/c2_createTables.sql and sql/c2_populateTables.sql using MySQL to create and load the sample database. 
+2) Run sql/deleteTables.sql to delete the tables.
+3) We used the CreatePool function inside Express to connect to database with following settings: \
+    host: '23.91.84.211'\
+    user: 'cs'\
+    pass: 'cs348'\
+    database: 'user_schema'
+
+# How to Run Working Database-Driven Application
+
+1) Run "npm run devStart" in the backend directory.
+2) Run "npm start" in the PlagueSimulation directory.
+3) App will be hosted on local host, inside web browser.
+
+# Currently Supported Features
+
+1) User registration.
+2) User login and authentication with username and password checking.
+3) Creating a simulation with a range of customization through simulation variables.
+4) The user can view all simulations that they are part of.
+
+-----------------------------------------------------------------------------------------
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,5 +1,5 @@
 -- result of initial select all --
-username	id	isOwner
+username	id	is_owner
 april		1	0
 grace		1	1
 jeff		2	1
@@ -11,7 +11,7 @@ robert		4	1
 troy		1	0
 
 -- result of select all after query 1 - april was added to simulation 2 --
-username	id	isOwner
+username	id	is_owner
 april		1	0
 april		2	0
 grace		1	1
@@ -24,7 +24,7 @@ robert		4	1
 troy		1	0
 
 -- result of select all after query 2 - no change as simulation 1 was full --
-username	id	isOwner
+username	id	is_owner
 april		1	0
 april		2	0
 grace		1	1
