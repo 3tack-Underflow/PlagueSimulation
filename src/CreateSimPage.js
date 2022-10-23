@@ -34,7 +34,7 @@ function CreatePage() {
 
     const isFirstRun = useRef(true);
 
-    // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, spread_radius will be a range and a rule, spread_cooldown, mutation_chance
+    // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, git pus will be a range and a rule, spread_cooldown, mutation_chance
     // creation time, cured status [ongoing, fail, success], completion time, 
     const InsertSim = () => {
         var severity_rating, origin_rating, max_rules, total_population, spread_rate, spread_radius, mutation_time;
