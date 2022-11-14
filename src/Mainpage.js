@@ -24,7 +24,7 @@ function Mainpage() {
             {simList.map(datapoint => 
             <SimulationButton 
                 key={datapoint.id}
-                title={datapoint.disease_name}>
+                title={datapoint.sim_name}>
             </SimulationButton>
             )}
         </div>

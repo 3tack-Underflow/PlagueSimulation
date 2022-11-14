@@ -1,0 +1,1 @@
+DROP TRIGGER simulation_occupation;
