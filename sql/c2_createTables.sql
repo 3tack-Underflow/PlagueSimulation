@@ -19,7 +19,8 @@ CREATE TABLE `simulation` (
    `funds` int NOT NULL,
    PRIMARY KEY (`id`),
    UNIQUE KEY `id_UNIQUE` (`id`),
-   CONSTRAINT CHECK ((status = 'ongoing' AND completion_time IS NULL) OR (status IN ('success', 'fail') AND completion_time IS NOT NULL))
+   CONSTRAINT CHECK ((status = 'ongoing' AND completion_time IS NULL) OR (status IN ('success', 'fail') AND completion_time IS NOT NULL)),
+   CONSTRAINT CHECK (funds >= 0 AND environment_isolation_capacity >= 0)
  );
  
  CREATE TABLE `plague` (
@@ -61,7 +62,7 @@ CREATE TABLE `simulation` (
    `range_upper` int,
    PRIMARY KEY(`num`, `id`),
    CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT CHECK (range_lower < range_upper)
+   CONSTRAINT CHECK (range_lower <= range_upper)
  );
  
  CREATE TABLE `simulation_humans` (
@@ -78,14 +79,15 @@ CREATE TABLE `simulation` (
    `x` int NOT NULL,
    `y` int NOT NULL,
    `tax` int NOT NULL,
+   `mark` int,
    `name` varchar(30) NOT NULL,
    `gender` varchar(1) NOT NULL,
    PRIMARY KEY (`num`,`id`),
    KEY `id_idx` (`id`),
    CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead')),
-   CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0),
-   CONSTRAINT CHECK (gender = 'M' OR gender = 'F')
+   CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead', 'deadAndIsolated')),
+   CONSTRAINT CHECK (mark BETWEEN 1 AND 4),
+   CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0)
  );
  
  CREATE TABLE `infection` (
@@ -93,6 +95,7 @@ CREATE TABLE `simulation` (
    `human_id` int NOT NULL,
    `plague` int NOT NULL,
    `plague_id` int NOT NULL,
+   `known` tinyint NOT NULL default 0,
    PRIMARY KEY(`human`, `human_id`, `plague`),
    CONSTRAINT `h` FOREIGN KEY (`human`, `human_id`) REFERENCES `simulation_humans` (`num`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT `p` FOREIGN KEY (`plague`, `plague_id`) REFERENCES `plague` (`variant`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT,
