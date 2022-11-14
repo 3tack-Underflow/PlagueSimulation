@@ -1,0 +1,25 @@
+.Simulation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 95vw;
+    overflow: hidden;
+}
+
+.locationMap {
+    display: flex;
+    width: 75vw;
+    height: 90vh;
+    border: 2px solid black;
+    overflow: hidden;
+}
+
+.infoPane {
+    display: flex;
+    width: 25vw;
+    height: 90vh;
+    border: 2px solid black;
+    margin: 0px 10px 0px 20px;
+    overflow: hidden;
+}
