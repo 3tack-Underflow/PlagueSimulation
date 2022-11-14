@@ -23,7 +23,7 @@ SELECT * FROM user;
 
 -- Create a new simulation --
 
-INSERT INTO `simulation` (`disease_name`, `settings_severity`, `settings_max_rules`, `environment_total_population`, `environment_isolation_capacity`, `disease_spread_rate`, `disease_spread_radius`, `disease_mutation_time`, `funds`) 
+INSERT INTO `simulation` (`sim_name`, `creation_time`, `completion_time`, `environment_starting_population`, `environment_isolation_capacity`, `status`, `num_deceased`, `seed`, `funds`) 
 VALUES ("Goose Disease", 1, 7, 6, 2, 3, 5, 5, 100);
 
 -- record the id of the most recently created simulation
@@ -36,17 +36,17 @@ INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('jeff
 
 -- create the humans --
 
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (1, 8, 0, 72, 136.2);
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (2, 8, 0, 3, 30);
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (3, 8, 0, 51, 125.5);
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (4, 8, 1, 51, 135.5);
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (5, 8, 0, 92, 121.8);
-INSERT INTO `simulation_humans`(`num`, `id`, `is_infected`, `age`, `weight`)
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
 VALUES (6, 8, 1, 1, 10.9);
 
 -- give the infected ones symptoms --
