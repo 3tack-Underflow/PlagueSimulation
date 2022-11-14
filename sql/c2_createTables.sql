@@ -62,7 +62,7 @@ CREATE TABLE `simulation` (
    `range_upper` int,
    PRIMARY KEY(`num`, `id`),
    CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT CHECK (range_lower < range_upper)
+   CONSTRAINT CHECK (range_lower <= range_upper)
  );
  
  CREATE TABLE `simulation_humans` (
@@ -85,7 +85,8 @@ CREATE TABLE `simulation` (
    PRIMARY KEY (`num`,`id`),
    KEY `id_idx` (`id`),
    CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead')),
+   CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead', 'deadAndIsolated')),
+   CONSTRAINT CHECK (mark BETWEEN 1 AND 4),
    CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0)
  );
  
