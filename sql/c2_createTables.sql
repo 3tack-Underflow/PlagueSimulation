@@ -49,7 +49,7 @@ CREATE TABLE `simulation` (
     `miss_value` int,
     PRIMARY KEY(`num`, `variant`, `id`),
     CONSTRAINT FOREIGN KEY (`variant`, `id`) REFERENCES `plague` (`variant`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT CHECK (range_lower < range_upper),
+    CONSTRAINT CHECK (range_lower <= range_upper),
     CONSTRAINT CHECK (category IN ('x', 'y', 'age', 'weight', 'height', 'blood_sugar', 'blood_pressure', 'cholesterol', 'radiation'))
  );
 
@@ -78,11 +78,14 @@ CREATE TABLE `simulation` (
    `x` int NOT NULL,
    `y` int NOT NULL,
    `tax` int NOT NULL,
+   `name` varchar(30) NOT NULL,
+   `gender` varchar(1) NOT NULL,
    PRIMARY KEY (`num`,`id`),
    KEY `id_idx` (`id`),
    CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead')),
-   CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0)
+   CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0),
+   CONSTRAINT CHECK (gender = 'M' OR gender = 'F')
  );
  
  CREATE TABLE `infection` (

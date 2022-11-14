@@ -28,32 +28,32 @@ INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robe
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robert', 3, 1);
 INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('robert', 4, 1);
 
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (1, 1, 27, 150, 120, 100, 100, 50, 2, 150, 160, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (2, 1, 30, 160, 150, 100, 100, 50, 2, 125, 0, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (3, 1, 15, 125, 120, 100, 100, 50, 2, 40, 80, 5);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (1, 2, 'dead', 15, 125, 105, 100, 125, 50, 2, 65, 24, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (2, 2, 'isolated', 29, 145, 111, 100, 100, 50, 2, 37, 38, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (3, 2, 10, 110, 132, 95, 95, 20, 0, 20, 25, 5);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (4, 2, 17, 130, 105, 97, 100, 75, 0, -20, -50, 5);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (1, 3, 'dead', 80, 137, 111, 100, 100, 50, 2, 100, -150, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (2, 3, 'dead', 90, 155, 111, 125, 90, 50, 2, 37, 38, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (3, 3, 'dead', 87, 112, 200, 40, 100, 50, 2, 39, 38, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (4, 3, 'dead', 70, 145, 111, 100, 70, 50, 2, 30, 32, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (5, 3, 'dead', 67, 128, 111, 100, 80, 50, 100, 25, 42, 10);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (1, 4, 4, 30, 50, 100, 100, 50, 2, 39, 38, 10);
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (1, 1, 27, 150, 120, 100, 100, 50, 2, 150, 160, 10, 'Jason', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (2, 1, 30, 160, 150, 100, 100, 50, 2, 125, 0, 10, 'Junya', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (3, 1, 15, 125, 120, 100, 100, 50, 2, 40, 80, 5, 'Alan', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (1, 2, 'dead', 15, 125, 105, 100, 125, 50, 2, 65, 24, 10, 'David', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (2, 2, 'isolated', 29, 145, 111, 100, 100, 50, 2, 37, 38, 10, 'Henry', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (3, 2, 10, 110, 132, 95, 95, 20, 0, 20, 25, 5, 'Tyler', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (4, 2, 17, 130, 105, 97, 100, 75, 0, -20, -50, 5, 'Shehab', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (1, 3, 'dead', 80, 137, 111, 100, 100, 50, 2, 100, -150, 10, 'Guansong', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (2, 3, 'dead', 90, 155, 111, 125, 90, 50, 2, 37, 38, 10, 'Kevin', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (3, 3, 'dead', 87, 112, 200, 40, 100, 50, 2, 39, 38, 10, 'Emma', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (4, 3, 'dead', 70, 145, 111, 100, 70, 50, 2, 30, 32, 10, 'Viktor', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (5, 3, 'dead', 67, 128, 111, 100, 80, 50, 100, 25, 42, 10, 'Vi', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (1, 4, 4, 30, 50, 100, 100, 50, 2, 39, 38, 10, 'Jinx', 'F');
 
 INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
 VALUES (1, 1, 50, 20, 25, 40, 30, 50, 20, 1, 100);
@@ -66,18 +66,18 @@ VALUES (3, 3, 40, 20, 30, 15, 17, 18, 18, 100, 5);
 INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
 VALUES (4, 1, 17, 14, 19, 30, 35, 19, 42, 37, 38);
 
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (1, 1, 1, 'age', null, 20, 30, 30);
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (2, 1, 1, 'age', 30, null, 40, 40);
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (1, 2, 1, 'weight', 100, 120, 30, 40);
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (2, 2, 1, 'weight', 100, 150, 30, 40);
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (1, 3, 1, 'height', 100, 100, 30, 40);
-INSERT INTO `plague_rules` (`num`, `variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (1, 4, 1, 'height', 50, 50, 30, 10);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (1, 1, 'age', null, 20, 30, 30);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (1, 1, 'age', 30, null, 40, 40);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (1, 2, 'weight', 100, 120, 30, 40);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (2, 2, 'weight', 100, 150, 30, 40);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (3, 3, 'height', 100, 100, 30, 40);
+INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
+VALUES (4, 1, 'height', 50, 50, 30, 10);
 
 INSERT INTO `infection` (`human`, `human_id`, `plague`, `plague_id`)
 VALUES (1, 1, 1, 1);
