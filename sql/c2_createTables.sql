@@ -102,7 +102,7 @@ CREATE TABLE `simulation_participation` (
    `is_owner` tinyint NOT NULL DEFAULT '0',
    PRIMARY KEY (`username`,`id`),
    KEY `f_id_idx` (`id`),
-   CONSTRAINT `f_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`),
+   CONSTRAINT `f_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT `f_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE RESTRICT
  );
  

@@ -40,14 +40,6 @@
     justify-content: center;
 }
 
-.horizontal2 {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
 .verticle {
     display: flex;
     flex-direction: column;

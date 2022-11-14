@@ -8,13 +8,12 @@ function Mainpage() {
     const [simList, setSimList] = useState([]);
 
     let navigate = useNavigate();
-
     useEffect(() => {
-        Axios.get('http://localhost:3001/api/get-sims').then((response) => {
+        Axios.post('http://localhost:3001/api/get-sims', 
+        {username: 'robert'}).then((response) => {
             setSimList(response.data);
         });
     }, []);
-
     return (
     <div className = "Mainpage">
         <label>Simulation Archive</label>
