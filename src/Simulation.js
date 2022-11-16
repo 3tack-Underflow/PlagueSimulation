@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import Axios from "axios";
+import Konva from "konva"
 
 function Simulation() {
     const mapRef = useRef(0);
@@ -39,6 +40,20 @@ function Simulation() {
         window.addEventListener('resize', checkSize);
         return () => window.removeEventListener('resize', checkSize);
     }, []);
+
+    const getHealthyMale = () => {
+        var imageObj = Image();
+        imageObj.onload = function() {
+            var image = new Konva.Image({
+                x: 0,
+                y: 0,
+                image: imageObj,
+                width: 100,
+                height: 100
+            });
+        };
+        imageObj.src = '/healthy_male.png'
+    };
 
     return (
         <div className = "Simulation">
@@ -263,8 +278,12 @@ function Simulation() {
                     <Layer>
                         {simHumans.map(datapoint => 
                             <Image
-                                key = {datapoint.num}>
-                                
+                                key = {datapoint.num}
+                                image = {getHealthyMale()}
+                                x = {datapoint.x}
+                                y = {datapoint.y}
+                                width = {30}
+                                height = {30}>
                             </Image>
                         )}
                         <Circle
