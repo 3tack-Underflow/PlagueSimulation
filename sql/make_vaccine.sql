@@ -11,7 +11,7 @@ INSERT INTO vaccine
 (`id`)
 VALUES(simulation id);
 
-SELECT @vac = LAST_INSERT_ID();
+SELECT @vac:=LAST_INSERT_ID();
 
 -- add rule
 

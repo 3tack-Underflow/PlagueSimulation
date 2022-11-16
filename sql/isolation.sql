@@ -2,21 +2,21 @@
 
 START TRANSACTION;
 
-UPDATE 'simulation'
+UPDATE simulation
 SET funds = funds - (isolation cost),
     environment_isolation_capacity = environment_isolation_capacity - 1
-WHERE id = (simulation id);
+WHERE id = (sim id);
 
-SELECT @human = num
+SELECT @human:=num
 FROM simulation_humans
-WHERE num = (human num) AND id = (simulation id) AND
+WHERE num = (human num) AND id = (sim id) AND
 isolated = 0 AND status = 'alive';
 
 CALL `user_schema`.`checkRollback`(@human);
 
 UPDATE simulation_humans
 SET isolated = 1
-AND num = (human num) AND id = (simulation id);
+WHERE num = (human num) AND id = (sim id);
 
 COMMIT;
 
@@ -28,7 +28,7 @@ UPDATE 'simulation'
 SET environment_isolation_capacity = environment_isolation_capacity + 1
 WHERE id = (simulation id);
 
-SELECT @human = num
+SELECT @human:=num
 FROM simulation_humans
 WHERE num = (human num) AND id = (simulation id) AND
 isolated = 1 AND status = 'alive';
@@ -37,6 +37,6 @@ CALL `user_schema`.`checkRollback`(@human);
 
 UPDATE simulation_humans
 SET isolated = 0
-AND num = (human num) AND id = (simulation id);
+WHERE num = (human num) AND id = (simulation id);
 
 COMMIT;
