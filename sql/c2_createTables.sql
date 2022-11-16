@@ -69,6 +69,7 @@ CREATE TABLE `simulation` (
    `num` int NOT NULL,
    `id` int NOT NULL,
    `status` varchar(30) NOT NULL default 'alive',
+   `isolated` tinyint NOT NULL default 0,
    `age` int NOT NULL,
    `weight` int NOT NULL,
    `height` int NOT NULL,
@@ -85,7 +86,7 @@ CREATE TABLE `simulation` (
    PRIMARY KEY (`num`,`id`),
    KEY `id_idx` (`id`),
    CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-   CONSTRAINT CHECK (status IN ('alive', 'isolated', 'dead', 'deadAndIsolated')),
+   CONSTRAINT CHECK (status IN ('alive', 'dead')),
    CONSTRAINT CHECK (mark BETWEEN 1 AND 4),
    CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0)
  );

@@ -1,0 +1,12 @@
+DELIMITER $$
+CREATE PROCEDURE checkRollback(
+	IN val int
+)
+BEGIN
+
+IF val IS NULL THEN
+	ROLLBACK;
+END IF;
+
+END$$
+DELIMITER ;
