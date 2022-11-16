@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [keepLogged, setKeepLogged] = useState("");
   const [userList, setUserList] = useState([]);
 
   function checkInfo() {
@@ -45,6 +46,14 @@ function Login() {
           setPassword(e.target.value);
         }}/>
       </div>
+      
+      <div className = "horizontal">
+        <input type = "checkbox" name = "keepLogged" style={{width: "20px", margin: "5px"}} onChange = {(e) => {
+          setKeepLogged(e.target.value)
+        }}/>
+        <label>Keep me logged in</label>
+      </div>
+
       <div className = "horizontal">
         <button style = {{margin: '20px 10px 10px 0px'}} onClick = {() => {checkInfo()}}> Login </button>
         <button style = {{margin: '20px 0px 10px 10px'}} onClick = {() => {navigate("/Register")}}> Register </button>
