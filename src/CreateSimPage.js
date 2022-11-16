@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
+import { useCookies } from 'react-cookie';
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -31,6 +32,7 @@ function CreatePage() {
     const [nextAssistant, setNextAssistant] = useState(0);
 
     const [simID, setSimID] = useState(0);
+    const [cookies, setCookie] = useCookies(['name']);
 
     // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, git pus will be a range and a rule, spread_cooldown, mutation_chance
     // creation time, cured status [ongoing, fail, success], completion time, 
@@ -97,10 +99,22 @@ function CreatePage() {
     }, [simID]);
 
     const InsertParticipation = () => {
+        // check if cookie exists
+        var username = null
+        if (cookies.name != null)
+        {
+            username = cookies.name
+        }
+        else
+        {
+            // redirect to login
+            navigate("/Login");
+        }
+
         Axios.post('http://localhost:3001/api/insert-sim-participation', {
             simulation_ID: simID,
             owner: 1,
-            assistant_username: 'robert'
+            assistant_username: username
         })
         for (var i = 0; i < assistants.length; ++i) {
             Axios.post('http://localhost:3001/api/insert-sim-participation', {
