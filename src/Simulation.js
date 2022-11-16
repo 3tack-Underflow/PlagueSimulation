@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import Axios from "axios";
-import Konva from "konva"
 import { useCookies } from 'react-cookie';
 
 function Simulation() {
@@ -19,6 +18,14 @@ function Simulation() {
     const [cookies, setCookie] = useCookies(['name']);
     var stageWidth = 3200;
     var stageHeight = 2400;
+
+    const Isolate = () => {
+        Axios.post('http://localhost:3001/api/isolate', {
+            isolationCost: 10, 
+            simID: 1,
+            humanID: selected.num
+        })
+    }
     
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {simID: 1}).then((response) => {
@@ -43,19 +50,12 @@ function Simulation() {
         return () => window.removeEventListener('resize', checkSize);
     }, []);
 
-    const getHealthyMale = () => {
-        var imageObj = Image();
-        imageObj.onload = function() {
-            var image = new Konva.Image({
-                x: 0,
-                y: 0,
-                image: imageObj,
-                width: 100,
-                height: 100
-            });
-        };
-        imageObj.src = '/healthy_male.png'
-    };
+    let healthyMale = new window.Image();
+    healthyMale.src = "res/healthy_male.png"; 
+    let healthyFemale = new window.Image();
+    healthyFemale.src = "res/healthy_female.png"; 
+    let cage = new window.Image();
+    cage.src = "res/cage.png"; 
 
     return (
         <div className = "Simulation">
@@ -281,18 +281,32 @@ function Simulation() {
                         {simHumans.map(datapoint => 
                             <Image
                                 key = {datapoint.num}
-                                image = {getHealthyMale()}
-                                x = {datapoint.x}
-                                y = {datapoint.y}
-                                width = {30}
-                                height = {30}>
+                                image = {datapoint.gender === "M" ? healthyMale : healthyFemale}
+                                x = {datapoint.x - 25}
+                                y = {datapoint.y - 25}
+                                width = {50}
+                                height = {50}
+                                onClick={
+                                    () => {
+                                        setSelected(datapoint)
+                                    }
+                                }>
                             </Image>
                         )}
+                        <Image
+                            x = {selected === null ? 0 : selected.x - 35}
+                            y = {selected === null ? 0 : selected.y - 35}
+                            width = {70}
+                            height = {70}
+                            visible = {selected !== null && selected.isolated === 1}
+                            image = {cage}
+                            >
+                        </Image>
                         <Circle
                             x = {selected === null ? 0 : selected.x}
                             y = {selected === null ? 0 : selected.y}
-                            radius = {15}
-                            strokeWidth = {selected === null ? 0 : 2}
+                            radius = {30}
+                            strokeWidth = {selected === null ? 0 : 4}
                             stroke = "black">
                         </Circle>
                     </Layer>
@@ -390,7 +404,7 @@ function Simulation() {
                             <button>
                                 Vaccinate
                             </button>
-                            <button>
+                            <button onClick = {() => {Isolate();}}>
                                 Isolate
                             </button>
                             <button>
@@ -405,17 +419,3 @@ function Simulation() {
 }
 
 export default Simulation;
-/*
-<Circle
-    key = {datapoint.num}
-    x = {datapoint.x}
-    y = {datapoint.y}
-    radius = {10}
-    fill = "#000000"
-    onClick={
-        () => {
-            setSelected(datapoint)
-        }
-    }>
-</Circle>
-*/
