@@ -1,3 +1,5 @@
+import React from 'react';
+
 const SimulationButton = (props) =>{
     return (
         <div className="scroll-pane-object">

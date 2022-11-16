@@ -22,7 +22,7 @@ function Register() {
 
     function is_valid_password() {
       var len = password.length;
-      const symbols = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+      const symbols = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/
       const lowerletters = /[a-z]/
       const upperletters = /[A-Z]/
       const nums = /[0-9]/

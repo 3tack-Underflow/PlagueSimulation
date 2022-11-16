@@ -1,0 +1,115 @@
+.Simulation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 95vw;
+    overflow: hidden;
+}
+
+.locationMap {
+    display: flex;
+    width: 75vw;
+    height: 90vh;
+    border: 2px solid black;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.infoPane {
+    display: flex;
+    flex-direction: column;
+    width: 25vw;
+    height: 90vh;
+    margin: 0px 10px 0px 20px;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.infoPane button {
+    display: flex;
+    font-size: 18px;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: black 2px solid;
+    margin: 5px;
+}
+
+.globalInfo {
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0px 0px 20px 0px;
+    border: 2px solid black;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
+
+.localInfo {
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    align-items: center;
+    justify-content: flex-start;
+    border: 2px solid black;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
+
+.selectedInfo {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.globalInfo label {
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0px 0px 10px 0px;
+    text-align: center;
+}
+
+.localInfo label {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px 0px 10px 0px;
+    text-align: center;
+}
+
+.selectedInfo label {
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0px 0px 10px 0px;
+    text-align: center;
+}
+
+.title {
+    margin: 10px 0px 10px 0px;
+    text-align: center;
+}
+
+.title label {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0px 0px 10px 0px;
+}
+
+.radio-group input[type = radio]{
+    scale: 1.5;
+    margin: 0px 15px 0px 0px;
+}

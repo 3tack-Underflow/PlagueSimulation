@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 
@@ -31,8 +31,6 @@ function CreatePage() {
     const [nextAssistant, setNextAssistant] = useState(0);
 
     const [simID, setSimID] = useState(0);
-
-    const isFirstRun = useRef(true);
 
     // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, git pus will be a range and a rule, spread_cooldown, mutation_chance
     // creation time, cured status [ongoing, fail, success], completion time, 
@@ -92,7 +90,7 @@ function CreatePage() {
     }
 
     useEffect(() => { 
-        if (simID == 0) return;
+        if (simID === 0) return;
         console.log(simID);
         InsertParticipation();
         navigate("/Mainpage");
@@ -161,7 +159,7 @@ function CreatePage() {
             <div className="horizontal" onChange = {(e) => {setSeverity(e.target.value)}}>
                 <div className = "verticle">
                     <label>Average</label>
-                    <input style={{accentColor: 'black'}} type="radio" value="Average" name="severity" />  
+                    <input style={{accentColor: 'black'}} type="radio" value="Average" name="severity"/>  
                 </div>
                 <div className = "verticle">
                     <label>Strong</label>

@@ -17,11 +17,18 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// req is request, res is response
-app.get('/api/get', (req, res) => {
-    // send to the front end
-    const sqlInsert = "SELECT * FROM user;";
-    db.query(sqlInsert, (err, result) => {
+app.post('/api/get-simulation_humans', (req, res) => {
+    const simID = req.body.simID;
+    const sqlInsert = "SELECT * FROM simulation_humans WHERE id = ?;";
+    db.query(sqlInsert, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-current_simulation', (req, res) => {
+    const simID = req.body.simID;
+    const sqlInsert = "SELECT * FROM simulation WHERE id = ?;";
+    db.query(sqlInsert, [simID], (err, result) => {
         res.send(result);
     });
 });

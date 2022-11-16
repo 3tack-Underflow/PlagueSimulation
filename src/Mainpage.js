@@ -14,6 +14,7 @@ function Mainpage() {
             setSimList(response.data);
         });
     }, []);
+    
     return (
     <div className = "Mainpage">
         <label>Simulation Archive</label>

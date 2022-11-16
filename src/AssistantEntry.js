@@ -1,3 +1,5 @@
+import React from 'react';
+
 const AssistantEntry = (props) =>{
     return (
         <div className = "assistant-entry">
