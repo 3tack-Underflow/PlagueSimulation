@@ -18,29 +18,21 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/api/get-simulation_humans', (req, res) => {
-    const simID = req.body.simID;
-    const sqlInsert = "SELECT * FROM simulation_humans WHERE id = ?;";
-    db.query(sqlInsert, [simID], (err, result) => {
-        res.send(result);
-    });
-});
+////////////////////////////////////////////////////////
+// Login Queries
+////////////////////////////////////////////////////////
 
-app.post('/api/get-current_simulation', (req, res) => {
-    const simID = req.body.simID;
-    const sqlInsert = "SELECT * FROM simulation WHERE id = ?;";
-    db.query(sqlInsert, [simID], (err, result) => {
-        res.send(result);
-    });
-});
+////////////////////////////////////////////////////////
+// Register Queries
+////////////////////////////////////////////////////////
 
 // req is request, res is response
 app.post('/api/insert', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
     // send to the front end
-    const sqlInsert = "INSERT INTO user (username, password) VALUES (?,?);";
-    db.query(sqlInsert, [username, password], (err, result) => {
+    const sql = "INSERT INTO user (username, password) VALUES (?,?);";
+    db.query(sql, [username, password], (err, result) => {
         console.log(result);
     });
 });
@@ -49,69 +41,128 @@ app.post('/api/insert', (req, res) => {
 // Archive Queries
 ////////////////////////////////////////////////////////
 
-app.post('/api/insert', (req, res) => {
-    const username = req.body.user; 
-    const password = req.body.pass;
-    
-    const sqlInsert = "INSERT INTO user (username, password) VALUES (?,?);";
-    db.query(sqlInsert, [username, password], (err, result) => {
-        console.log(result);
+app.post('/api/get-sims', (req, res) => {
+    const username = req.body.user;
+    const sql = "SELECT * FROM simulation as T1, " +
+        "(SELECT id FROM simulation_participation WHERE username = ?) as T2 WHERE T1.id = T2.id;";
+    db.query(sql, [username], (err, result) => {
+        res.send(result);
+    });
+});
+
+////////////////////////////////////////////////////////
+// Simulation Creation Queries
+////////////////////////////////////////////////////////
+
+app.post('/api/insert-sim', (req, res) => {
+    const disease_name = req.body.disease_name;
+    const creation_time = req.body.creation_time;
+    const completion_time = req.body.completion_time;
+    const last_modified_time = req.body.last_modified_time;
+    const starting_population = req.body.starting_population;
+    const isolation_capacity = req.body.isolation_capacity;
+    const sim_status = req.body.sim_status;
+    const num_deceased = req.body.num_deceased;
+    const seed = req.body.seed;
+    const funds = req.body.funds;
+    const sql = "INSERT INTO simulation " + 
+        "(sim_name, creation_time, completion_time, last_modified_time, " + 
+        "environment_starting_population, environment_isolation_capacity, " + 
+        "status, num_deceased, seed, funds) VALUES (?,?,?,?,?,?,?,?,?,?); " + 
+        "SELECT LAST_INSERT_ID();";
+    db.query(sql, 
+        [disease_name, creation_time, completion_time, 
+            last_modified_time, starting_population, isolation_capacity, 
+            sim_status, num_deceased, seed, funds], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/insert-sim-participation', (req, res) => {
+    const username = req.body.username;
+    const id = req.body.id;
+    const owner = req.body.owner;
+    const sql = "INSERT INTO simulation_participation " + 
+        "(username, id, is_owner) VALUES (?,?,?); " + 
+        "SELECT LAST_INSERT_ID();";
+    db.query(sql, [username, id, owner], (err, result) => {
+        res.send(result);
     });
 });
 
 ////////////////////////////////////////////////////////
 // Simulation Queries
 ////////////////////////////////////////////////////////
+
+app.post('/api/get-simulation_humans', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT * FROM simulation_humans WHERE id = ?;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-current_simulation', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT * FROM simulation WHERE id = ?;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
 app.post('/api/isolate', (req, res) => {
     const isolationCost = req.body.cost; 
     const simID = req.body.simID; 
     const humanID = req.body.humanID; 
 
-    const sqlInsert = 
-    "START TRANSACTION;" + 
+    const sql = 
+    "START TRANSACTION; " + 
 
-    "UPDATE 'simulation'" + 
-    "SET funds = funds - " + isolationCost + ", environment_isolation_capacity = environment_isolation_capacity - 1" +
-    "WHERE id = " + simID + ";" + 
+    "UPDATE simulation " + 
+    "SET funds = funds - " + isolationCost + 
+    ", environment_isolation_capacity = environment_isolation_capacity - 1 " +
+    "WHERE id = " + simID + "; " + 
     
-    "SELECT @human = num" +
-    "FROM simulation_humans" + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND" + 
-    "isolated = 0 AND status = 'alive';" + 
+    "SELECT @human:=num " +
+    "FROM simulation_humans " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 0 AND status = 'alive'; " + 
     
-    "CALL `user_schema`.`checkRollback`(@human);" + 
+    "CALL `user_schema`.`checkRollback`(@human); " + 
     
-    "UPDATE simulation_humans" +
-    "SET isolated = 1" + 
-    "AND num = " + humanID + " AND id = " + simID + ";" + 
+    "UPDATE simulation_humans " +
+    "SET isolated = 1 " + 
+    "WHERE num = " + humanID + " AND id = " + simID + "; " + 
     
-    "COMMIT";
-    db.query(sqlInsert, (err, result) => {
-        console.log(result);
-    });
+    "COMMIT;";
+    db.query(sql);
 });
 
-/*
-START TRANSACTION;
+app.post('/api/unisolate', (req, res) => {
+    const simID = req.body.simID; 
+    const humanID = req.body.humanID; 
 
-UPDATE 'simulation'
-SET funds = funds - (isolation cost),
-    environment_isolation_capacity = environment_isolation_capacity - 1
-WHERE id = (simulation id);
+    const sql = 
+    "START TRANSACTION; " + 
 
-SELECT @human = num
-FROM simulation_humans
-WHERE num = (human num) AND id = (simulation id) AND
-isolated = 0 AND status = 'alive';
-
-CALL `user_schema`.`checkRollback`(@human);
-
-UPDATE simulation_humans
-SET isolated = 1
-AND num = (human num) AND id = (simulation id);
-
-COMMIT;
-*/
+    "UPDATE simulation " + 
+    "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
+    "WHERE id = " + simID + "; " + 
+    
+    "SELECT @human:=num " +
+    "FROM simulation_humans " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 1 AND status = 'alive'; " + 
+    
+    "CALL `user_schema`.`checkRollback`(@human); " + 
+    
+    "UPDATE simulation_humans " +
+    "SET isolated = 0 " + 
+    "WHERE num = " + humanID + " AND id = " + simID + "; " + 
+    
+    "COMMIT;";
+    db.query(sql);
+});
 
 app.listen(3001, () => {
     console.log("running on port 3001");

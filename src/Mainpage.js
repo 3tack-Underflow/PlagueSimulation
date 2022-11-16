@@ -12,20 +12,25 @@ function Mainpage() {
     let navigate = useNavigate();
     useEffect(() => {
         // check if cookie exists
-        var username = null
-        if (cookies.name != null)
-        {
-            username = cookies.name
-        }
-        else
-        {
-            // redirect to login
-            navigate("/Login");
-        }
+        // var username = null
+        // if (cookies.name != null)
+        // {
+        //     username = cookies.name
+        // }
+        // else
+        // {
+        //     // redirect to login
+        //     navigate("/Login");
+        // }
         
-        console.log(username)
+        // console.log(username)
+        // Axios.post('http://localhost:3001/api/get-sims', 
+        // {username: username}).then((response) => {
+        //     setSimList(response.data);
+        // });
+
         Axios.post('http://localhost:3001/api/get-sims', 
-        {username: username}).then((response) => {
+        {user: 'robert'}).then((response) => {
             setSimList(response.data);
         });
     }, []);

@@ -21,12 +21,25 @@ function Simulation() {
 
     const Isolate = () => {
         Axios.post('http://localhost:3001/api/isolate', {
-            isolationCost: 10, 
+            cost: 10, 
+            simID: 1,
+            humanID: selected.num
+        })
+    }
+
+    const Unisolate = () => {
+        Axios.post('http://localhost:3001/api/unisolate', {
             simID: 1,
             humanID: selected.num
         })
     }
     
+    const LoadSimHimans = () => {
+        Axios.post('http://localhost:3001/api/get-simulation_humans', {simID: 1}).then((response) => {
+            setSimHumans(response.data);
+        });
+    }
+
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {simID: 1}).then((response) => {
             setSimulation(response.data[0]);
@@ -34,9 +47,7 @@ function Simulation() {
     }, []);
 
     useEffect(() => {
-        Axios.post('http://localhost:3001/api/get-simulation_humans', {simID: 1}).then((response) => {
-            setSimHumans(response.data);
-        });
+        LoadSimHimans();
     }, []);
 
     useEffect(() => {
@@ -293,15 +304,22 @@ function Simulation() {
                                 }>
                             </Image>
                         )}
-                        <Image
-                            x = {selected === null ? 0 : selected.x - 35}
-                            y = {selected === null ? 0 : selected.y - 35}
-                            width = {70}
-                            height = {70}
-                            visible = {selected !== null && selected.isolated === 1}
-                            image = {cage}
-                            >
-                        </Image>
+                        {simHumans.map(datapoint => 
+                            <Image
+                                key = {datapoint.num}
+                                x = {datapoint.x - 35}
+                                y = {datapoint.y - 35}
+                                width = {70}
+                                height = {70}
+                                visible = {datapoint.isolated === 1 ? 1 : 0}
+                                image = {cage}
+                                onClick={
+                                    () => {
+                                        setSelected(datapoint)
+                                    }
+                                }>
+                            </Image>
+                        )}
                         <Circle
                             x = {selected === null ? 0 : selected.x}
                             y = {selected === null ? 0 : selected.y}
@@ -404,7 +422,7 @@ function Simulation() {
                             <button>
                                 Vaccinate
                             </button>
-                            <button onClick = {() => {Isolate();}}>
+                            <button onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
                                 Isolate
                             </button>
                             <button>
