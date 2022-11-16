@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Axios from "axios";
+import { useCookies } from 'react-cookie';
 
 import { useNavigate } from "react-router-dom";
 
@@ -8,11 +9,22 @@ function Login() {
   const [password, setPassword] = useState("");
   const [keepLogged, setKeepLogged] = useState("");
   const [userList, setUserList] = useState([]);
+  const [cookies, setCookie] = useCookies(['name']);
 
   function checkInfo() {
+    // temporary cookie testing place
+
+    //console.log(cookies.name)
+
+    setCookie('name', username, { path: '/' }); // temporarily here while I figure out this login thing
+
     var len = userList.length;
+    console.log(userList)
     for (var i = 0; i < len; i++) {
       if (userList[i].username === username  && userList[i].password === password) {
+        // add a cookie onto the browser
+        setCookie('name', username, { path: '/' });
+
         navigate("/Mainpage");
         return;
       }
