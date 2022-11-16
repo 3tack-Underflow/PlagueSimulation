@@ -36,8 +36,8 @@ INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_s
 VALUES (3, 1, 15, 125, 120, 100, 100, 50, 2, 40, 80, 5, 'Alan', 'M');
 INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
 VALUES (1, 2, 'dead', 15, 125, 105, 100, 125, 50, 2, 65, 24, 10, 'David', 'M');
-INSERT INTO `simulation_humans`(`num`, `id`, `status`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
-VALUES (2, 2, 'isolated', 29, 145, 111, 100, 100, 50, 2, 37, 38, 10, 'Henry', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `status`, `isolated`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (2, 2, 'dead', 1, 29, 145, 111, 100, 100, 50, 2, 37, 38, 10, 'Henry', 'M');
 INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
 VALUES (3, 2, 10, 110, 132, 95, 95, 20, 0, 20, 25, 5, 'Tyler', 'M');
 INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
