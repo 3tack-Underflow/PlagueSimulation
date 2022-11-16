@@ -38,6 +38,13 @@ CREATE TABLE `simulation` (
    PRIMARY KEY(`variant`, `id`),
    CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
  );
+
+ CREATE TABLE `vaccine` (
+     `num` int NOT NULL AUTO_INCREMENT,
+     `id` int NOT NULL,
+     PRIMARY KEY (`num`, `id`),
+     CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+ );
  
  CREATE TABLE `plague_rules` (
     `num` int NOT NULL AUTO_INCREMENT,
@@ -56,11 +63,12 @@ CREATE TABLE `simulation` (
 
  CREATE TABLE `vaccine_rules` (
    `num` int NOT NULL AUTO_INCREMENT,
+   `vaccine` int NOT NULL,
    `id` int NOT NULL,
    `category` varchar(30) NOT NULL,
    `range_lower` int,
    `range_upper` int,
-   PRIMARY KEY(`num`, `id`),
+   PRIMARY KEY(`num`, `vaccine`, `id`),
    CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT CHECK (range_lower <= range_upper)
  );
