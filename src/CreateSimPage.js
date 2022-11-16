@@ -159,7 +159,7 @@ function CreatePage() {
             <div className="horizontal" onChange = {(e) => {setSeverity(e.target.value)}}>
                 <div className = "verticle">
                     <label>Average</label>
-                    <input style={{accentColor: 'black'}} type="radio" value="Average" name="severity" />  
+                    <input style={{accentColor: 'black'}} type="radio" value="Average" name="severity"/>  
                 </div>
                 <div className = "verticle">
                     <label>Strong</label>
