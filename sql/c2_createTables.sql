@@ -95,7 +95,8 @@ CREATE TABLE `simulation` (
    KEY `id_idx` (`id`),
    CONSTRAINT `sh_id` FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT CHECK (status IN ('alive', 'dead')),
-   CONSTRAINT CHECK (mark BETWEEN 1 AND 4),
+   CONSTRAINT CHECK (mark BETWEEN 1 AND 4 OR mark IS NULL),
+   CONSTRAINT CHECK (gender IN ('M', 'F')),
    CONSTRAINT CHECK (tax >= 0 AND age >= 0 AND weight >= 0 AND height >= 0 AND blood_pressure >= 0 AND blood_sugar >= 0 AND cholesterol >= 0 AND radiation >= 0)
  );
  

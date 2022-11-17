@@ -23,43 +23,44 @@ SELECT * FROM user;
 
 -- Create a new simulation --
 
-INSERT INTO `simulation` (`sim_name`, `creation_time`, `completion_time`, `environment_starting_population`, `environment_isolation_capacity`, `status`, `num_deceased`, `seed`, `funds`) 
-VALUES ("Goose Disease", 1, 7, 6, 2, 3, 5, 5, 100);
+INSERT INTO `simulation`
+(`sim_name`, `creation_time`, `completion_time`, `last_modified_time`, `environment_starting_population`, `environment_isolation_capacity`, `status`, `num_deceased`, `seed`, `funds`)
+VALUES('Goose Disease', '2022-11-13 04:41:55', NULL, '2022-11-13 04:42:33', 3, 10, 'ongoing', 0, 'seed', 1000);
 
 -- record the id of the most recently created simulation
 
-SELECT LAST_INSERT_ID(); -- assume this is 8
+SELECT @simId:=LAST_INSERT_ID();
 
 -- Make a user an owner
 
-INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('jeff', 8, 1);
+INSERT INTO `simulation_participation`(`username`,`id`,`is_owner`) VALUES ('jeff', @simId, 1);
 
 -- create the humans --
 
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (1, 8, 0, 72, 136.2);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (2, 8, 0, 3, 30);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (3, 8, 0, 51, 125.5);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (4, 8, 1, 51, 135.5);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (5, 8, 0, 92, 121.8);
-INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`)
-VALUES (6, 8, 1, 1, 10.9);
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (1, @simId, 72, 136, 100, 120, 150, 20, 3, 5, 10, 10, 'Blorky', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (2, @simId, 3, 30, 160, 170, 30, 40, 5, 100, 10, 10, 'Dolanda', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (3, @simId, 51, 125, 100, 125, 10, 36, 47, 10, 17, 50, 'Dolce', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (4, @simId, 51, 135, 180, 170, 35, 10, 10, 80, 190, 0, 'Leon', 'M');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (5, @simId, 92, 121, 90, 100, 28, 35, 80, 10, 45, 0, 'Amber', 'F');
+INSERT INTO `simulation_humans`(`num`, `id`, `age`, `weight`, `height`, `blood_sugar`, `blood_pressure`, `cholesterol`, `radiation`, `x`, `y`, `tax`, `name`, `gender`)
+VALUES (6, @simId, 1, 10, 130, 70, 89, 2, 50, 10, 82, 1, 'Dylas','M');
 
 -- give the infected ones symptoms --
 
-INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (4, 8, "fever", 0);
-INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (4, 8, "runny nose", 0);
-INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (6, 8, "nausea", 0);
+INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (4, @simId, "fever", 0);
+INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (4, @simId, "runny nose", 0);
+INSERT INTO `showing_symptoms`(`num`, `id`, `name`, `start_time`) VALUES (6, @simId, "nausea", 0);
 
 -- check that our simulation has humans
 
-SELECT * FROM simulation_humans WHERE id = 8;
+SELECT * FROM simulation_humans WHERE id = @simId;
 
 -- check that our infected humans have symptoms
 
-SELECT * FROM showing_symptoms WHERE id = 8
+SELECT * FROM showing_symptoms WHERE id = @simId;
 

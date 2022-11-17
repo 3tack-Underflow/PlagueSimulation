@@ -12,13 +12,12 @@ FROM simulation_humans
 WHERE num = (human num) AND id = (sim id) AND
 isolated = 0 AND status = 'alive';
 
-CALL `user_schema`.`checkRollback`(@human);
-
 UPDATE simulation_humans
 SET isolated = 1
-WHERE num = (human num) AND id = (sim id);
+WHERE num = (human num) AND id = (sim id) AND
+isolated = 0 AND status = 'alive';
 
-COMMIT;
+CALL `user_schema`.`checkRollback`(@human);
 
 -- un-isolate human
 
@@ -33,10 +32,9 @@ FROM simulation_humans
 WHERE num = (human num) AND id = (simulation id) AND
 isolated = 1 AND status = 'alive';
 
-CALL `user_schema`.`checkRollback`(@human);
-
 UPDATE simulation_humans
 SET isolated = 0
-WHERE num = (human num) AND id = (simulation id);
+WHERE num = (human num) AND id = (simulation id) AND
+isolated = 0 AND status = 'alive';
 
-COMMIT;
+CALL `user_schema`.`checkRollback`(@human);

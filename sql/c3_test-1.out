@@ -35,22 +35,19 @@ troy		jfnm84?
 
 -- CREATING SIMULATION HUMANS -- 
 
--- result of LAST_INSERT_ID() --
-8
+-- result of SELECT * FROM simulation_humans WHERE id = LAST_INSERT_ID --
 
--- result of SELECT * FROM simulation_humans WHERE id = 8 --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+1	5	alive	0	        72	    136	    100	       120	            150	            20	            3	        5	    10	    10		null    Blorky	    F
+2	5	alive	0	        3	    30	    160	       170	            30	            40	            5	        100	    10	    10		null    Dolanda	    F
+3	5	alive	0	        51	    125	    100	       125	            10	            36	            47	        10	    17	    50		null    Dolce	    F
+4	5	alive	0	        51	    135	    180	       170	            35	            10	            10	        80	    190	    0		null    Leon	    M
+5	5	alive	0	        92	    121	    90	       100	            28	            35	            80	        10	    45	    0		null    Amber	    F
+6	5	alive	0	        1	    10	    130	       70	            89	            2	            50	        10	    82	    1		null    Dylas	    M
 
-num	id	is_infected	age	weight
-1	8	0		72	136.2
-2	8	0		3	30
-3	8	0		51	125.5
-4	8	1		51	135.5
-5	8	0		92	121.8
-6	8	1		1	10.9
-
--- result of SELECT * FROM showing_symptoms WHERE id = 8 --
+-- result of SELECT * FROM showing_symptoms WHERE id = LAST_INSERT_ID --
 
 num	id	name		start_time
-4	8	fever		0
-4	8	runny nose	0
-6	8	nausea		0
+4	5	fever		0
+4	5	runny nose	0
+6	5	nausea		0
