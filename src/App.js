@@ -2,6 +2,7 @@ import './App.css';
 import './CreateSimPage.css';
 import './Mainpage.css';
 import './Login.css';
+import './SimInfo.css';
 import './Simulation.css';
 
 import React from 'react';
