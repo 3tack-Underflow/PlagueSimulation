@@ -22,10 +22,15 @@ function Login() {
         setCookie('name', username, { path: '/' }); 
         if (isValid)
         {
+          console.log(keepLogged)
           if (keepLogged)
           {
             setCookie('pass', password, { path: '/' })
             setCookie('remember', true, { path: '/' })
+          }
+          else
+          {
+            setCookie('remember', false, { path: '/' })
           }
           navigate("/Mainpage");
         }
@@ -35,6 +40,13 @@ function Login() {
   }
 
   useEffect(() => {
+    //check if cookie exists
+    console.log(cookies)
+    if (cookies.remember === 'true')
+    {
+      setUsername(cookies.name);
+      setPassword(cookies.pass);
+    }
   }, []);
 
 
@@ -45,14 +57,14 @@ function Login() {
       <h1>Plague Simulation Login</h1>
       <label>Username</label>
       <div className="horizontal">
-        <input type = "text" name = "Username" onChange = {(e) => {
+        <input value={username} type = "text" name = "Username" onChange = {(e) => {
           setUsername(e.target.value);
         }}/>
       </div>
       
       <label>Password</label>
       <div className = "horizontal">
-        <input type = "password" name = "Password" onChange = {(e) => {
+        <input value={password} type = "password" name = "Password" onChange = {(e) => {
           setPassword(e.target.value);
         }}/>
       </div>
@@ -61,7 +73,7 @@ function Login() {
         <input type = "checkbox" name = "keepLogged" style={{width: "20px", margin: "5px"}} onChange = {(e) => {
           setKeepLogged(e.target.checked)
         }}/>
-        <label>Keep me logged in</label>
+        <label>Remember Me</label>
       </div>
 
       <div className = "horizontal">
