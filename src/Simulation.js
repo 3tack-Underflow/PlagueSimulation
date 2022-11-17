@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
+import { stageWidth, stageHeight } from "./Constants.js"
 
 function Simulation() {
     const mapRef = useRef(0);
@@ -16,9 +17,7 @@ function Simulation() {
     const [simHumans, setSimHumans] = useState([]);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
-    var stageWidth = 3200;
-    var stageHeight = 2400;
-    var testSimId = 47;
+    var testSimId = 19;
 
     const Isolate = () => {
         Axios.post('http://localhost:3001/api/isolate', {

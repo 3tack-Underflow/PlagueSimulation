@@ -4,7 +4,7 @@ import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
-import { names } from "./Constants.js"
+import { names, stageWidth, stageHeight } from "./Constants.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -131,10 +131,20 @@ function CreatePage() {
     }
 
     const InsertSimulationHumans = async () => {
-        var stageWidth = 3000;
-        var stageHeight = 2200;
+        const gridGap = 60;
+        var stageW = stageWidth - gridGap * 2; 
+        var stageH = stageHeight - gridGap * 2;
         var donationRate = randomNumberInRange(20, 50);
         var values = [];
+        
+        var positions = [];
+        for (var i = 0; i < stageW / gridGap; ++i) {
+            for (var j = 0; j < stageH / gridGap; ++j) {
+                positions.push([i, j]);
+            }
+        }
+        positions.sort(() => 0.5 - Math.random());
+        console.log(positions.length);
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
             var curGender = "M";
@@ -158,8 +168,8 @@ function CreatePage() {
                     randomNumberInRange(60, 160),
                     randomNumberInRange(20, 100),
                     randomNumberInRange(40, 3000),
-                    -stageWidth/2 + randomNumberInRange(0, stageWidth),
-                    -stageHeight/2 + randomNumberInRange(0, stageHeight),
+                    gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16),
+                    gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16),
                     randomNumberInRange(0, donationRate * 2),
                     null,
                     curName,
