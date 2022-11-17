@@ -18,7 +18,7 @@ function Simulation() {
     const [cookies, setCookie] = useCookies(['name']);
     var stageWidth = 3200;
     var stageHeight = 2400;
-    var testSimId = 14;
+    var testSimId = 16;
 
     const Isolate = () => {
         Axios.post('http://localhost:3001/api/isolate', {

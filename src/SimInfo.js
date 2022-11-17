@@ -1,18 +1,23 @@
 import React, {useEffect, useState} from "react";
 import './App.css';
 import Axios from "axios";
+import { useParams } from 'react-router-dom'
 
 import { useNavigate } from "react-router-dom";
 
 function SimInfo(){
     const [simId, setSimId] = useState("");
     const [dataList, setDataList] = useState({});
+    const windowUrl = window.location.search;
+    const params = new URLSearchParams(windowUrl);
+
+    const id = params.get('id')
 
     let navigate = useNavigate();
 
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-sim', {
-            id: 5
+            id: id
         }).then((response) => {
           setDataList(response.data[0]);
           console.log(dataList);
