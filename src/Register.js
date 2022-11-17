@@ -81,13 +81,13 @@ function Register() {
         </div>
         <label>Password</label>
         <div className="horizontal">
-          <input type = "text" name = "Password" onChange = {(e) => {
+          <input type = "password" name = "Password" onChange = {(e) => {
             setPassword(e.target.value);
           }}/>
         </div>
         <label>Re-enter your Password</label>
         <div className="horizontal">
-          <input type = "text" name = "Password" onChange = {(e) => {
+          <input type = "password" name = "Password" onChange = {(e) => {
             pass2 = e.target.value;
           }}/>
         </div>

@@ -21,6 +21,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 ////////////////////////////////////////////////////////
 // Login Queries
 ////////////////////////////////////////////////////////
+app.get('/api/get-login', (req, res) => {
+    // send to the front end
+    const sqlInsert = "SELECT * FROM user;";
+    db.query(sqlInsert, (err, result) => {
+        res.send(result);
+    });
+});
 
 app.post('/api/login', (req, res) => {
     const username = req.body.user; 
@@ -36,9 +43,9 @@ app.post('/api/login', (req, res) => {
 ////////////////////////////////////////////////////////
 // Register Queries
 ////////////////////////////////////////////////////////
-
 // req is request, res is response
-app.post('/api/insert', (req, res) => {
+
+app.post('/api/insert-user', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
     // send to the front end
@@ -203,6 +210,17 @@ app.post('/api/unisolate', (req, res) => {
     
     "COMMIT;";
     db.query(sql);
+});
+
+// req is request, res is response
+app.post('/api/getSim', (req, res) => {
+    const id = req.body.id;
+    // send to the front end
+    const sqlInsert = "SELECT * FROM simulation WHERE id = (?);";
+    db.query(sqlInsert, [id], (err, result) => {
+        res.send(result);
+        console.log(result);
+    });
 });
 
 app.listen(3001, () => {
