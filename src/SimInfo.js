@@ -12,7 +12,7 @@ function SimInfo(){
 
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-sim', {
-            id: 47
+            id: 5
         }).then((response) => {
           setDataList(response.data[0]);
           console.log(dataList);

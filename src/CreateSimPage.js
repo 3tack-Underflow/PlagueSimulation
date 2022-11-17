@@ -131,10 +131,20 @@ function CreatePage() {
     }
 
     const InsertSimulationHumans = async () => {
-        var stageWidth = 3000;
-        var stageHeight = 2200;
+        var stageWidth = 3060; 
+        var stageHeight = 2280;
         var donationRate = randomNumberInRange(20, 50);
         var values = [];
+
+        const gridGap = 60;
+        var positions = [];
+        for (var i = 0; i < stageWidth / gridGap; ++i) {
+            for (var j = 0; j < stageHeight / gridGap; ++j) {
+                positions.push([i, j]);
+            }
+        }
+        positions.sort(() => 0.5 - Math.random());
+        console.log(positions.length);
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
             var curGender = "M";
@@ -158,8 +168,8 @@ function CreatePage() {
                     randomNumberInRange(60, 160),
                     randomNumberInRange(20, 100),
                     randomNumberInRange(40, 3000),
-                    -stageWidth/2 + randomNumberInRange(0, stageWidth),
-                    -stageHeight/2 + randomNumberInRange(0, stageHeight),
+                    -stageWidth/2 + positions[i][0] * gridGap - 20 + randomNumberInRange(0, 40),
+                    -stageHeight/2 + positions[i][1] * gridGap - 20 + randomNumberInRange(0, 40),
                     randomNumberInRange(0, donationRate * 2),
                     null,
                     curName,
