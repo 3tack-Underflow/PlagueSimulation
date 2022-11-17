@@ -104,16 +104,16 @@ function CreatePage() {
 
     const InsertParticipation = () => {
         // check if cookie exists
-        // var username = null
-        // if (cookies.name != null)
-        // {
-        //     username = cookies.name
-        // }
-        // else
-        // {
-        //     // redirect to login
-        //     navigate("/Login");
-        // }
+        var username = null
+        if (cookies.name != null)
+        {
+            username = cookies.name
+        }
+        else
+        {
+            // redirect to login
+            navigate("/Login");
+        }
 
         Axios.post('http://localhost:3001/api/insert-sim-participation', {
             id: simID,

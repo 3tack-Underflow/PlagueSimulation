@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.post('/api/login', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
-    // send to the front end
+    // send to the front endgit 
     const sql = "SELECT IF(EXISTS (SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'), true, false);";
     db.query(sql, [username, password], (err, result) => {
         console.log(result);
@@ -53,10 +53,11 @@ app.post('/api/insert', (req, res) => {
 ////////////////////////////////////////////////////////
 
 app.post('/api/get-sims', (req, res) => {
-    const username = req.body.user;
+    const user = req.body.user;
     const sql = "SELECT * FROM simulation as T1, " +
-        "(SELECT id FROM simulation_participation WHERE username = ?) as T2 WHERE T1.id = T2.id;";
-    db.query(sql, [username], (err, result) => {
+        "(SELECT id FROM simulation_participation WHERE username = ?) " + 
+        "as T2 WHERE T1.id = T2.id;";
+    db.query(sql, [user], (err, result) => {
         res.send(result);
     });
 });
@@ -111,7 +112,7 @@ app.post('/api/insert-sim-human', (req, res) => {
     const arg7 = req.body.height;
     const arg8 = req.body.blood_sugar;
     const arg9 = req.body.blood_pressure;
-    const arg10 = req.body.cholestermol;
+    const arg10 = req.body.cholesterol;
     const arg11 = req.body.radiation;
     const arg12 = req.body.x;
     const arg13 = req.body.y;
