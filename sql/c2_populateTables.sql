@@ -58,6 +58,8 @@ VALUES (1, 4, 4, 30, 50, 100, 100, 50, 2, 39, 38, 10, 'Jinx', 'F');
 INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
 VALUES (1, 1, 50, 20, 25, 40, 30, 50, 20, 1, 100);
 INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
+VALUES (2, 1, 50, 20, 25, 40, 30, 50, 20, 1, 100);
+INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
 VALUES (1, 2, 40, 20, 30, 15, 17, 18, 18, 5, 25);
 INSERT INTO `plague` (`variant`, `id`, `strength`, `spread_chance`, `spread_radius`, `spread_cooldown`, `mutation_chance`, `curing_threshhold`, `fatality_threshhold`, `death_rate`, `death_cooldown`)
 VALUES (2, 2, 40, 20, 30, 15, 17, 18, 18, 10, 10);
@@ -69,7 +71,7 @@ VALUES (4, 1, 17, 14, 19, 30, 35, 19, 42, 37, 38);
 INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
 VALUES (1, 1, 'age', null, 20, 30, 30);
 INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
-VALUES (1, 1, 'age', 30, null, 40, 40);
+VALUES (2, 1, 'age', 30, null, 40, 40);
 INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
 VALUES (1, 2, 'weight', 100, 120, 30, 40);
 INSERT INTO `plague_rules` (`variant`, `id`, `category`, `range_lower`, `range_upper`, `match_value`, `miss_value`)
@@ -82,7 +84,11 @@ VALUES (4, 1, 'height', 50, 50, 30, 10);
 INSERT INTO `infection` (`human`, `human_id`, `plague`, `plague_id`)
 VALUES (1, 1, 1, 1);
 INSERT INTO `infection` (`human`, `human_id`, `plague`, `plague_id`)
+VALUES (1, 1, 2, 1);
+INSERT INTO `infection` (`human`, `human_id`, `plague`, `plague_id`)
 VALUES (2, 1, 1, 1);
+INSERT INTO `infection` (`human`, `human_id`, `plague`, `plague_id`)
+VALUES (1, 2, 1, 1);
 
 INSERT INTO `symptom`(`name`) VALUES ('runny nose');
 INSERT INTO `symptom`(`name`) VALUES ('sore throat');

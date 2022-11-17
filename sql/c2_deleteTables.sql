@@ -6,5 +6,6 @@ DROP TABLE `plague_rules`;
 DROP TABLE `vaccine_rules`;
 DROP TABLE `plague`;
 DROP TABLE `symptom`;
+DROP TABLE `vaccine`;
 DROP TABLE `user`;
 DROP TABLE `simulation`;

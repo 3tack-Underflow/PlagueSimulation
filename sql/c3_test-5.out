@@ -1,15 +1,19 @@
--- testing if human 1 from simulation 1 is infected --
+-- select all infections from simulation 1 --
+human   human_id    plague  plague_id   known
+1	    1	        1	    1	        0
+1	    1	        2	    1	        0
+2	    1	        1	    1	        0
 
+-- select the most common plague from simulation 1. This one will mutate --
+plague
 1
 
--- testing human 2 from simulation 1 --
+-- select all infections from simulation 1 after deletion --
+human   human_id    plague  plague_id   known
+1	    1	        2	    1	        0
+2	    1	        1	    1	        0
 
-0
-
--- testing human 1 from simulation 2 --
-
+-- select the most common plague(s) from simulation 1. These will mutate --
+plague
 1
-
--- testing human 4 from simulation 1 (this human doesn't exist) --
-
-0
+2

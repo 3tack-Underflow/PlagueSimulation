@@ -125,7 +125,6 @@ CREATE TABLE `simulation_participation` (
   CREATE TABLE `symptom` (
    `name` varchar(45) NOT NULL,
    PRIMARY KEY (`name`),
-   UNIQUE KEY `name_UNIQUE` (`name`)
  );
 
 CREATE TABLE `showing_symptoms` (
