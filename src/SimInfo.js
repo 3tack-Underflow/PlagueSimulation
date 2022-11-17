@@ -3,17 +3,6 @@ import './App.css';
 import Axios from "axios";
 
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components'; 
-
-const MainButton = styled.button`
-  background-color: #7600b5;
-  color: white;
-  font-size: 20px;
-  padding: 10px 60px;
-  border-radius: 5px;
-  margin: 10px 0px;
-  cursor: pointer;
-`;
 
 function SimInfo(){
     const [simId, setSimId] = useState("");
@@ -22,8 +11,8 @@ function SimInfo(){
     let navigate = useNavigate();
 
     useEffect(() => {
-        Axios.post('http://localhost:3001/api/getSim', {
-            id: 1  
+        Axios.post('http://localhost:3001/api/get-sim', {
+            id: 25
         }).then((response) => {
           setDataList(response.data[0]);
           console.log(dataList);
@@ -44,7 +33,7 @@ function SimInfo(){
           <label>Current status: {dataList.status}</label>
           <label>Seed: {dataList.seed}</label>
           <label>Funds: {dataList.funds}</label>
-          <MainButton onClick = {() => {navigate("/Login")}}> Back to main page</MainButton>
+          <button onClick = {() => {navigate("/Login")}}> Back to main page</button>
         </div>
       </div>
     );
