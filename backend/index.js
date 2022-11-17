@@ -69,6 +69,20 @@ app.post('/api/get-sims', (req, res) => {
     });
 });
 
+
+////////////////////////////////////////////////////////
+// Simulation Info Queries
+////////////////////////////////////////////////////////
+
+app.post('/api/get-sim', (req, res) => {
+    const id = req.body.id;
+    const sqlInsert = "SELECT * FROM simulation WHERE id = ?;";
+    db.query(sqlInsert, [id], (err, result) => {
+        res.send(result);
+        console.log(result);
+    });
+});
+
 ////////////////////////////////////////////////////////
 // Simulation Creation Queries
 ////////////////////////////////////////////////////////
@@ -193,17 +207,6 @@ app.post('/api/unisolate', (req, res) => {
     
     "COMMIT;";
     db.query(sql);
-});
-
-// req is request, res is response
-app.post('/api/getSim', (req, res) => {
-    const id = req.body.id;
-    // send to the front end
-    const sqlInsert = "SELECT * FROM simulation WHERE id = (?);";
-    db.query(sqlInsert, [id], (err, result) => {
-        res.send(result);
-        console.log(result);
-    });
 });
 
 app.listen(3001, () => {

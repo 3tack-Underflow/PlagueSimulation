@@ -25,21 +25,22 @@ function SimInfo(){
     }, []);
     return(
         <div className = "SimInfo">
-        <h1>Simulation information</h1>
-  
-        <div className = "SimInfo">
-          <label>Simulation Name: {dataList.sim_name}</label>
-          <label>Creation Time: {dataList.creation_time}</label>
-          <label>Completed Time: {dataList.completion_time}</label>
-          <label>Last Modified: {dataList.last_modified_time}</label>
-          <label>Starting Population: {dataList.environment_starting_population}</label>
-          <label>Isolation Capacity: {dataList.environment_isolation_capacity}</label>
-          <label>Deceased Population: {dataList.num_deceased}</label>
-          <label>Current status: {dataList.status}</label>
-          <label>Seed: {dataList.seed}</label>
-          <label>Funds: {dataList.funds}</label>
-          <button onClick = {() => {navigate("/Mainpage")}}> Back to main page</button>
-        </div>
+          <label>{dataList.sim_name}</label>
+          <div className = "Info">
+            <label>Creation Time: {dataList.creation_time}</label>
+            <label>Completed Time: {dataList.completion_time}</label>
+            <label>Last Modified: {dataList.last_modified_time}</label>
+            <label>Starting Population: {dataList.environment_starting_population}</label>
+            <label>Isolation Capacity: {dataList.environment_isolation_capacity}</label>
+            <label>Deceased Population: {dataList.num_deceased}</label>
+            <label>Current status: {dataList.status}</label>
+            <label>Funds: {dataList.funds}</label>
+            <div className = "horizontal">
+              <button onClick = {() => {navigate("/Simulation")}}> Enter</button>
+              <button onClick = {() => {}}> Delete</button>
+              <button onClick = {() => {navigate("/Mainpage")}}> Back</button>
+            </div>
+          </div>
       </div>
     );
 }
