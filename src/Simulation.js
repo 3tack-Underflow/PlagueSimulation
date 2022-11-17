@@ -18,30 +18,35 @@ function Simulation() {
     const [cookies, setCookie] = useCookies(['name']);
     var stageWidth = 3200;
     var stageHeight = 2400;
+    var testSimId = 24;
 
     const Isolate = () => {
         Axios.post('http://localhost:3001/api/isolate', {
             cost: 10, 
-            simID: 1,
+            simID: testSimId,
             humanID: selected.num
         })
     }
 
     const Unisolate = () => {
         Axios.post('http://localhost:3001/api/unisolate', {
-            simID: 1,
+            simID: testSimId,
             humanID: selected.num
         })
     }
     
     const LoadSimHimans = () => {
-        Axios.post('http://localhost:3001/api/get-simulation_humans', {simID: 1}).then((response) => {
+        Axios.post('http://localhost:3001/api/get-simulation_humans', {
+            simID: testSimId
+        }).then((response) => {
             setSimHumans(response.data);
         });
     }
 
     useEffect(() => {
-        Axios.post('http://localhost:3001/api/get-current_simulation', {simID: 1}).then((response) => {
+        Axios.post('http://localhost:3001/api/get-current_simulation', {
+            simID: testSimId
+        }).then((response) => {
             setSimulation(response.data[0]);
         });
     }, []);
@@ -311,7 +316,7 @@ function Simulation() {
                                 y = {datapoint.y - 35}
                                 width = {70}
                                 height = {70}
-                                visible = {datapoint.isolated === 1 ? 1 : 0}
+                                visible = {datapoint.isolated === 1 ? true : false}
                                 image = {cage}
                                 onClick={
                                     () => {
@@ -391,7 +396,7 @@ function Simulation() {
                         <div className = "selectedInfo">
                             <div className = "title">
                                 <label>
-                                    {selected.name} ({selected.gender}) : {selected.status}
+                                    {selected.name} ({selected.gender})
                                 </label>
                             </div>
                             <label>

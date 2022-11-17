@@ -4,6 +4,7 @@ import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
+import { names } from "./Constants.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -32,12 +33,14 @@ function CreatePage() {
     const [nextAssistant, setNextAssistant] = useState(0);
 
     const [simID, setSimID] = useState(0);
+    const [totalPopulation, setTotalPopulation] = useState(0);
     const [cookies, setCookie] = useCookies(['name']);
 
     // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, git pus will be a range and a rule, spread_cooldown, mutation_chance
     // creation time, cured status [ongoing, fail, success], completion time, 
+
     const InsertSim = () => {
-        var severity_rating, origin_rating, max_rules, total_population, spread_rate, spread_radius, mutation_time;
+        var severity_rating, origin_rating, max_rules, spread_rate, spread_radius, mutation_time;
         if (severity === 'Random') severity_rating = Math.floor(Math.random() * 3) + 1;
         else if (severity === 'Average') severity_rating = 1;
         else if (severity === 'Strong') severity_rating = 2;
@@ -69,19 +72,19 @@ function CreatePage() {
             mutation_time = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
         }
         if (origin_rating === 1) {
-            total_population = 45 + Math.floor(Math.random() * 31);
+            setTotalPopulation(45 + Math.floor(Math.random() * 31));
         } else if (origin_rating === 2) {
-            total_population = 125 + Math.floor(Math.random() * 51);
+            setTotalPopulation(125 + Math.floor(Math.random() * 51));
         } else {
-            total_population = 250 + Math.floor(Math.random() * 101);
+            setTotalPopulation(250 + Math.floor(Math.random() * 101));
         }
-        // console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + total_population + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
+        // console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + totalPopulation + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
             creation_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
             completion_time: null, 
             last_modified_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
-            starting_population: total_population, 
+            starting_population: totalPopulation, 
             isolation_capacity: 10, 
             sim_status: "Ongoing",
             num_deceased: 0, 
@@ -94,8 +97,8 @@ function CreatePage() {
 
     useEffect(() => { 
         if (simID === 0) return;
-        console.log(simID);
         InsertParticipation();
+        InsertSimulationHumans();
         navigate("/Mainpage");
     }, [simID]);
 
@@ -126,7 +129,44 @@ function CreatePage() {
             })
         }
     }
-    
+
+    const InsertSimulationHumans = () => {
+        var stageWidth = 3000;
+        var stageHeight = 2200;
+        var donationRate = randomNumberInRange(20, 50);
+        for (var i = 0; i < totalPopulation; ++i) {
+            var curName = "";
+            var curGender = "M";
+            if (randomNumberInRange(1, 2) == 2) {
+                curGender = "F";
+                curName = names.femaleFirstName[randomNumberInRange(0, names.femaleFirstName.length - 1)];
+            } else {
+                curName = names.maleFirstName[randomNumberInRange(0, names.maleFirstName.length - 1)];
+            }
+            curName += " " + names.lastName[randomNumberInRange(0, names.lastName.length - 1)];
+
+            Axios.post('http://localhost:3001/api/insert-sim-human', {
+                num: i + 1,
+                id: simID,
+                status: "alive",
+                isolated: 0,
+                age: randomNumberInRange(15, 80),
+                weight: randomNumberInRange(60, 280),
+                height: randomNumberInRange(80, 220),
+                blood_sugar: randomNumberInRange(60, 280),
+                blood_pressure: randomNumberInRange(60, 160),
+                cholesterol: randomNumberInRange(20, 100),
+                radiation: randomNumberInRange(40, 3000),
+                x: -stageWidth/2 + randomNumberInRange(0, stageWidth),
+                y: -stageHeight/2 + randomNumberInRange(0, stageHeight),
+                tax: randomNumberInRange(0, donationRate * 2),
+                mark: null,
+                name: curName,
+                gender: curGender
+            })
+        }
+    }
+
     const removeAssistant = (name) => {
         setAssistants((current) =>
             current.filter((assistant) => assistant.title !== name)
