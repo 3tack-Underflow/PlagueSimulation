@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLogged, setKeepLogged] = useState("");
+  const [keepLogged, setKeepLogged] = useState(false);
   const [cookies, setCookie] = useCookies(['name']);
 
   function checkInfo() {
@@ -18,8 +18,17 @@ function Login() {
           user: username, 
           pass: password
       }).then((response) => {
-        console.log(response.data[0][Object.keys(response.data[0])[0]])
+        const isValid = response.data[0][Object.keys(response.data[0])[0]]
         setCookie('name', username, { path: '/' }); 
+        if (isValid)
+        {
+          if (keepLogged)
+          {
+            setCookie('pass', password, { path: '/' })
+            setCookie('remember', true, { path: '/' })
+          }
+          navigate("/Mainpage");
+        }
       })
 
     return;
@@ -50,7 +59,7 @@ function Login() {
       
       <div className = "horizontal">
         <input type = "checkbox" name = "keepLogged" style={{width: "20px", margin: "5px"}} onChange = {(e) => {
-          setKeepLogged(e.target.value)
+          setKeepLogged(e.target.checked)
         }}/>
         <label>Keep me logged in</label>
       </div>
