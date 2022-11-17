@@ -78,14 +78,15 @@ function CreatePage() {
         // console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + total_population + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
-            settings_severity: severity_rating, 
-            settings_max_rules: max_rules, 
-            environment_total_population: total_population,
-            environment_isolation_capacity: 5,
-            disease_spread_rate: spread_rate, 
-            disease_spread_radius: spread_radius, 
-            disease_mutation_time: mutation_time, 
-            fund: 1000
+            creation_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            completion_time: null, 
+            last_modified_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            starting_population: total_population, 
+            isolation_capacity: 10, 
+            sim_status: "Ongoing",
+            num_deceased: 0, 
+            seed: "abcd", 
+            funds: 1000
         }).then((response) => {
             setSimID(response.data[1][0]['LAST_INSERT_ID()']);
         })
@@ -100,27 +101,28 @@ function CreatePage() {
 
     const InsertParticipation = () => {
         // check if cookie exists
-        var username = null
-        if (cookies.name != null)
-        {
-            username = cookies.name
-        }
-        else
-        {
-            // redirect to login
-            navigate("/Login");
-        }
+        // var username = null
+        // if (cookies.name != null)
+        // {
+        //     username = cookies.name
+        // }
+        // else
+        // {
+        //     // redirect to login
+        //     navigate("/Login");
+        // }
 
         Axios.post('http://localhost:3001/api/insert-sim-participation', {
-            simulation_ID: simID,
+            id: simID,
             owner: 1,
-            assistant_username: username
+            //assistant_username: username
+            username: 'robert'
         })
         for (var i = 0; i < assistants.length; ++i) {
             Axios.post('http://localhost:3001/api/insert-sim-participation', {
-                simulation_ID: simID,
+                id: simID,
                 owner: 0,
-                assistant_username: assistants[i].title
+                username: assistants[i].title
             })
         }
     }
