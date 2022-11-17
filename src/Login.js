@@ -16,6 +16,8 @@ function Login() {
 
     //console.log(cookies.name)
 
+    /*
+
     setCookie('name', username, { path: '/' }); // temporarily here while I figure out this login thing
 
     var len = userList.length;
@@ -30,13 +32,27 @@ function Login() {
       }
     }
     alert("Username or password not match!");
+    */
+
+    console.log(username)
+    console.log(password)
+
+    Axios.post('http://localhost:3001/api/login', {
+          user: username, 
+          pass: password
+      }).then((response) => {
+        console.log(response.data[0][Object.keys(response.data[0])[0]])
+      })
+
     return;
   }
 
   useEffect(() => {
+    /*
     Axios.get('http://localhost:3001/api/get-login').then((response) => {
       setUserList(response.data);
     });
+    */
   }, []);
 
 
