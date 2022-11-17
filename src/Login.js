@@ -8,32 +8,9 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [keepLogged, setKeepLogged] = useState("");
-  const [userList, setUserList] = useState([]);
   const [cookies, setCookie] = useCookies(['name']);
 
   function checkInfo() {
-    // temporary cookie testing place
-
-    //console.log(cookies.name)
-
-    /*
-
-    setCookie('name', username, { path: '/' }); // temporarily here while I figure out this login thing
-
-    var len = userList.length;
-    console.log(userList)
-    for (var i = 0; i < len; i++) {
-      if (userList[i].username === username  && userList[i].password === password) {
-        // add a cookie onto the browser
-        setCookie('name', username, { path: '/' });
-
-        navigate("/Mainpage");
-        return;
-      }
-    }
-    alert("Username or password not match!");
-    */
-
     console.log(username)
     console.log(password)
 
@@ -49,11 +26,6 @@ function Login() {
   }
 
   useEffect(() => {
-    /*
-    Axios.get('http://localhost:3001/api/get-login').then((response) => {
-      setUserList(response.data);
-    });
-    */
   }, []);
 
 
