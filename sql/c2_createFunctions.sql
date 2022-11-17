@@ -6,6 +6,8 @@ BEGIN
 
 IF val IS NULL THEN
 	ROLLBACK;
+ELSE
+    COMMIT;
 END IF;
 
 END$$

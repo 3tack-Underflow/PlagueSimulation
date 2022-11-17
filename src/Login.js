@@ -7,36 +7,34 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLogged, setKeepLogged] = useState("");
-  const [userList, setUserList] = useState([]);
+  const [keepLogged, setKeepLogged] = useState(false);
   const [cookies, setCookie] = useCookies(['name']);
 
   function checkInfo() {
-    // temporary cookie testing place
+    console.log(username)
+    console.log(password)
 
-    //console.log(cookies.name)
+    Axios.post('http://localhost:3001/api/login', {
+          user: username, 
+          pass: password
+      }).then((response) => {
+        const isValid = response.data[0][Object.keys(response.data[0])[0]]
+        setCookie('name', username, { path: '/' }); 
+        if (isValid)
+        {
+          if (keepLogged)
+          {
+            setCookie('pass', password, { path: '/' })
+            setCookie('remember', true, { path: '/' })
+          }
+          navigate("/Mainpage");
+        }
+      })
 
-    setCookie('name', username, { path: '/' }); // temporarily here while I figure out this login thing
-
-    var len = userList.length;
-    console.log(userList)
-    for (var i = 0; i < len; i++) {
-      if (userList[i].username === username  && userList[i].password === password) {
-        // add a cookie onto the browser
-        setCookie('name', username, { path: '/' });
-
-        navigate("/Mainpage");
-        return;
-      }
-    }
-    alert("Username or password not match!");
     return;
   }
 
   useEffect(() => {
-    Axios.get('http://localhost:3001/api/get-login').then((response) => {
-      setUserList(response.data);
-    });
   }, []);
 
 
@@ -61,7 +59,7 @@ function Login() {
       
       <div className = "horizontal">
         <input type = "checkbox" name = "keepLogged" style={{width: "20px", margin: "5px"}} onChange = {(e) => {
-          setKeepLogged(e.target.value)
+          setKeepLogged(e.target.checked)
         }}/>
         <label>Keep me logged in</label>
       </div>

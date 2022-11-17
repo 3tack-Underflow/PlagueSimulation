@@ -22,6 +22,17 @@ app.use(bodyParser.urlencoded({extended: true}));
 // Login Queries
 ////////////////////////////////////////////////////////
 
+app.post('/api/login', (req, res) => {
+    const username = req.body.user; 
+    const password = req.body.pass;
+    // send to the front end
+    const sql = "SELECT IF(EXISTS (SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'), true, false);";
+    db.query(sql, [username, password], (err, result) => {
+        console.log(result);
+        res.send(result);
+    });
+});
+
 ////////////////////////////////////////////////////////
 // Register Queries
 ////////////////////////////////////////////////////////

@@ -1,0 +1,55 @@
+-- initial humans --
+
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+1	2	dead	0	        15	    125	    105	       100	            125	            50	            2	        65	    24	    10		David	M
+2	2	dead	1	        29	    145	    111	       100	            100	            50	            2	        37	    38	    10		Henry	M
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+-- initial env conditions in simulation 2 --
+environment_isolation_capacity    funds
+5                                 1000
+
+-- conditions after 1): David is gone and funds are decreased --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+2	2	dead	1	        29	    145	    111	       100	            100	            50	            2	        37	    38	    10		Henry	M
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+environment_isolation_capacity    funds
+5                                 950
+
+-- conditions after 2): no change --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+2	2	dead	1	        29	    145	    111	       100	            100	            50	            2	        37	    38	    10		Henry	M
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+environment_isolation_capacity    funds
+5                                 950
+
+-- conditions after 3): no change --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+2	2	dead	1	        29	    145	    111	       100	            100	            50	            2	        37	    38	    10		Henry	M
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+environment_isolation_capacity    funds
+5                                 950
+
+-- conditions after 4): no change --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+2	2	dead	1	        29	    145	    111	       100	            100	            50	            2	        37	    38	    10		Henry	M
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+environment_isolation_capacity    funds
+5                                 950
+
+-- conditions after 5): Henry is gone, funds decreased, isolation capacity increased --
+num	id	status	isolated	age     weight  height     blood_sugar      blood_pressure  cholesterol     radiation   x       y       tax     mark    name        gender
+3	2	alive	0	        10	    110	    132	       95	            95	            20	            0	        20	    25	    5		Tyler	M
+4	2	alive	0	        17	    130	    105	       97	            100	            75	            0	        -20	    -50	    5		Shehab	M
+
+environment_isolation_capacity    funds
+6                                 900
