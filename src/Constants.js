@@ -1,3 +1,6 @@
+const stageWidth = 4200;
+const stageHeight = 3400;
+
 const names = {
 femaleFirstName: [
     'Abagael',
@@ -9132,4 +9135,4 @@ lastName: [
 ]
 }
 
-export { names };
+export { stageWidth, stageHeight, names };
