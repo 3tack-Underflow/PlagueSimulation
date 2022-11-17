@@ -33,7 +33,7 @@ function SimInfo(){
           <label>Current status: {dataList.status}</label>
           <label>Seed: {dataList.seed}</label>
           <label>Funds: {dataList.funds}</label>
-          <button onClick = {() => {navigate("/Login")}}> Back to main page</button>
+          <button onClick = {() => {navigate("/Mainpage")}}> Back to main page</button>
         </div>
       </div>
     );
