@@ -42,6 +42,7 @@ function Login() {
           pass: password
       }).then((response) => {
         console.log(response.data[0][Object.keys(response.data[0])[0]])
+        setCookie('name', username, { path: '/' }); 
       })
 
     return;
