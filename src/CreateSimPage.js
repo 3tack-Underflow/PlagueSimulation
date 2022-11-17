@@ -130,10 +130,11 @@ function CreatePage() {
         }
     }
 
-    const InsertSimulationHumans = () => {
+    const InsertSimulationHumans = async () => {
         var stageWidth = 3000;
         var stageHeight = 2200;
         var donationRate = randomNumberInRange(20, 50);
+        var values = [];
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
             var curGender = "M";
@@ -145,26 +146,26 @@ function CreatePage() {
             }
             curName += " " + names.lastName[randomNumberInRange(0, names.lastName.length - 1)];
 
-            Axios.post('http://localhost:3001/api/insert-sim-human', {
-                num: i + 1,
-                id: simID,
-                status: "alive",
-                isolated: 0,
-                age: randomNumberInRange(15, 80),
-                weight: randomNumberInRange(60, 280),
-                height: randomNumberInRange(80, 220),
-                blood_sugar: randomNumberInRange(60, 280),
-                blood_pressure: randomNumberInRange(60, 160),
-                cholesterol: randomNumberInRange(20, 100),
-                radiation: randomNumberInRange(40, 3000),
-                x: -stageWidth/2 + randomNumberInRange(0, stageWidth),
-                y: -stageHeight/2 + randomNumberInRange(0, stageHeight),
-                tax: randomNumberInRange(0, donationRate * 2),
-                mark: null,
-                name: curName,
-                gender: curGender
-            })
+            values.push(
+                [i + 1,
+                    simID,
+                    "alive",
+                    0,
+                    randomNumberInRange(15, 80),
+                    randomNumberInRange(60, 280),
+                    randomNumberInRange(80, 220),
+                    randomNumberInRange(60, 280),
+                    randomNumberInRange(60, 160),
+                    randomNumberInRange(20, 100),
+                    randomNumberInRange(40, 3000),
+                    -stageWidth/2 + randomNumberInRange(0, stageWidth),
+                    -stageHeight/2 + randomNumberInRange(0, stageHeight),
+                    randomNumberInRange(0, donationRate * 2),
+                    null,
+                    curName,
+                    curGender]);
         }
+        await Axios.post('http://localhost:3001/api/insert-sim-human', {values: values});
     }
 
     const removeAssistant = (name) => {

@@ -123,31 +123,14 @@ app.post('/api/insert-sim-participation', (req, res) => {
     });
 });
 
-app.post('/api/insert-sim-human', (req, res) => {
-    const arg1 = req.body.num;
-    const arg2 = req.body.id;
-    const arg3 = req.body.status
-    const arg4 = req.body.isolated;
-    const arg5 = req.body.age;
-    const arg6 = req.body.weight;
-    const arg7 = req.body.height;
-    const arg8 = req.body.blood_sugar;
-    const arg9 = req.body.blood_pressure;
-    const arg10 = req.body.cholesterol;
-    const arg11 = req.body.radiation;
-    const arg12 = req.body.x;
-    const arg13 = req.body.y;
-    const arg14 = req.body.tax;
-    const arg15 = req.body.mark;
-    const arg16 = req.body.name;
-    const arg17 = req.body.gender;
-    const sql = "INSERT INTO simulation_humans " + 
+app.post('/api/insert-sim-human', async (req, res) => {
+    const values = req.body.values;
+    const sql = "INSERT INTO simulation_humans " +
         "(num, id, status, isolated, age, weight, height, " + 
         "blood_sugar, blood_pressure, cholesterol, radiation, " + 
         "x, y, tax, mark, name, gender) " + 
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    db.query(sql, [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, 
-            arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17], (err, result) => {
+        "VALUES ?;";
+    db.query(sql, [values], (err, result) => {
         console.log(err)
     }); 
 });
