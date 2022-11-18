@@ -128,33 +128,34 @@ function CreatePage() {
 
         // later, pick 2 humans to start with, and use their stat as rules
 
+        var ruleValues = [];
         for (var i = 1; i <= numRules; ++i) {
             var start = ruleList[i][1] + Math.floor(Math.random() * (ruleList[i][2] - ruleList[i][1] - ruleList[i][3]))
-            await Axios.post('http://localhost:3001/api/insert-plague-rule', {
-                num: i,
-                variant: 1,
-                id: simID,
-                category: ruleList[i][0],
-                range_lower: start,
-                range_upper: start + ruleList[i][3],
-                match_value: 10 + Math.floor(Math.random() * (40)),
-                miss_value: 10 + Math.floor(Math.random() * (40))
-            })
+            var variant = 1;
+            var id = simID;
+            var category = ruleList[i][0];
+            var range_lower = start;
+            var range_upper = start + ruleList[i][3];
+            var match_value = 10 + Math.floor(Math.random() * (40));
+            var miss_value = 10 + Math.floor(Math.random() * (40));
+            ruleValues.push([variant, id, category, range_lower, range_upper, match_value, miss_value]);
         }
+
+        await Axios.post('http://localhost:3001/api/insert-plague-rule', {
+            values: ruleValues
+        })
         
         var humanIds = [];
         for (var i = 1; i <= totalPopulation; ++i) humanIds.push(i);
         humanIds.sort(() => 0.5 - Math.random());
 
+        var infestValues = [];
         for (var i = 1; i <= numInfest; ++i) {
-            await Axios.post('http://localhost:3001/api/infest', {
-                human: humanIds[i],
-                human_id: simID,
-                plague: 1,
-                plague_id: simID,
-                known: 0
-            })
+            infestValues.push([i, simID, 1, simID, 0]);
         }
+        await Axios.post('http://localhost:3001/api/infest', {
+            infestValues: infestValues
+        })
     }
 
     useEffect(() => { 
@@ -168,6 +169,20 @@ function CreatePage() {
             })
         }) 
     }, [simID]);
+
+    // const GenerateSimulation = async () => {
+    //     for (var i = 0; i < 1000; ++i) {
+    //         InsertSim().then(() => {
+    //             InsertParticipation().then(() => {
+    //                 InsertSimulationHumans().then(() => {
+    //                     InsertPlague().then(() => {
+    //                         navigate("/Mainpage");
+    //                     })
+    //                 })
+    //             }) 
+    //         })
+    //     }
+    // }
 
     const InsertParticipation = async () => {
         // check if cookie exists

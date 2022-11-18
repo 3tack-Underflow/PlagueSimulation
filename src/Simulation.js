@@ -17,7 +17,7 @@ function Simulation() {
     const [simHumans, setSimHumans] = useState([]);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
-    var testSimId = 2457;
+    var testSimId = 2523;
 
     const Isolate = () => {
         Axios.post('http://localhost:3001/api/isolate', {

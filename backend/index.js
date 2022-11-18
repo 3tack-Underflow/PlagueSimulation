@@ -145,35 +145,23 @@ app.post('/api/insert-plague', (req, res) => {
 });
 
 app.post('/api/insert-plague-rule', (req, res) => {
-    const arg1 = req.body.num;
-    const arg2 = req.body.variant;
-    const arg3 = req.body.id;
-    const arg4 = req.body.category;
-    const arg5 = req.body.range_lower;
-    const arg6 = req.body.range_upper;
-    const arg7 = req.body.match_value;
-    const arg8 = req.body.miss_value;
+    const args = req.body.values;
     const sql = "INSERT INTO plague_rules " +
-        "(num, variant, id, category, range_lower, range_upper, match_value, miss_value) " + 
-        "VALUES (?,?,?,?,?,?,?,?);";
-    db.query(sql, [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8], (err, result) => {
+        "(variant, id, category, range_lower, range_upper, match_value, miss_value) " + 
+        "VALUES ?;";
+    db.query(sql, [args], (err, result) => {
         res.send(result);
-        // console.log(err);
+        console.log(err);
     }); 
 });
 
 app.post('/api/infest', (req, res) => {
-    const arg1 = req.body.human;
-    const arg2 = req.body.human_id;
-    const arg3 = req.body.plague;
-    const arg4 = req.body.plague_id;
-    const arg5 = req.body.known;
+    const args = req.body.infestValues;
     const sql = "INSERT INTO infection " +
         "(human, human_id, plague, plague_id, known) " + 
-        "VALUES (?,?,?,?,?);";
-    db.query(sql, [arg1, arg2, arg3, arg4, arg5], (err, result) => {
+        "VALUES ?;";
+    db.query(sql, [args], (err, result) => {
         res.send(result);
-        // console.log(err);
     });
 });
 
