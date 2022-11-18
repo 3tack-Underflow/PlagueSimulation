@@ -52,6 +52,7 @@ app.post('/api/insert-user', (req, res) => {
     const sql = "INSERT INTO user (username, password) VALUES (?,?);";
     db.query(sql, [username, password], (err, result) => {
         console.log(result);
+        res.send(result);
     });
 });
 
@@ -66,20 +67,6 @@ app.post('/api/get-sims', (req, res) => {
         "as T2 WHERE T1.id = T2.id;";
     db.query(sql, [user], (err, result) => {
         res.send(result);
-    });
-});
-
-
-////////////////////////////////////////////////////////
-// Simulation Info Queries
-////////////////////////////////////////////////////////
-
-app.post('/api/get-sim', (req, res) => {
-    const id = req.body.id;
-    const sqlInsert = "SELECT * FROM simulation WHERE id = ?;";
-    db.query(sqlInsert, [id], (err, result) => {
-        res.send(result);
-        console.log(result);
     });
 });
 
@@ -262,6 +249,17 @@ app.post('/api/unisolate', (req, res) => {
     
     "COMMIT;";
     db.query(sql);
+});
+
+// req is request, res is response
+app.post('/api/get-sim', (req, res) => {
+    const id = req.body.id;
+    // send to the front end
+    const sqlInsert = "SELECT * FROM simulation WHERE id = (?);";
+    db.query(sqlInsert, [id], (err, result) => {
+        res.send(result);
+        console.log(result);
+    });
 });
 
 app.listen(3001, () => {
