@@ -123,7 +123,7 @@ app.post('/api/insert-sim-participation', (req, res) => {
     });
 });
 
-app.post('/api/insert-sim-human', async (req, res) => {
+app.post('/api/insert-sim-human', (req, res) => {
     const values = req.body.values;
     const sql = "INSERT INTO simulation_humans " +
         "(num, id, status, isolated, age, weight, height, " + 
@@ -131,8 +131,63 @@ app.post('/api/insert-sim-human', async (req, res) => {
         "x, y, tax, mark, name, gender) " + 
         "VALUES ?;";
     db.query(sql, [values], (err, result) => {
-        console.log(err)
+        res.send(result);
     }); 
+});
+
+app.post('/api/insert-plague', (req, res) => {
+    const arg1 = req.body.variant;
+    const arg2 = req.body.id;
+    const arg3 = req.body.strength;
+    const arg4 = req.body.spread_chance;
+    const arg5 = req.body.spread_radius;
+    const arg6 = req.body.spread_cooldown;
+    const arg7 = req.body.mutation_chance;
+    const arg8 = req.body.curing_threshhold;
+    const arg9 = req.body.fatality_threshhold;
+    const arg10 = req.body.death_rate;
+    const arg11 = req.body.death_cooldown;
+    const sql = "INSERT INTO plague " +
+        "(variant, id, strength, spread_chance, spread_radius, spread_cooldown, mutation_chance, " + 
+        "curing_threshhold, fatality_threshhold, death_rate, death_cooldown) " + 
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+    db.query(sql, [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11], (err, result) => {
+        res.send(result);
+        // console.log(err);
+    }); 
+});
+
+app.post('/api/insert-plague-rule', (req, res) => {
+    const arg1 = req.body.num;
+    const arg2 = req.body.variant;
+    const arg3 = req.body.id;
+    const arg4 = req.body.category;
+    const arg5 = req.body.range_lower;
+    const arg6 = req.body.range_upper;
+    const arg7 = req.body.match_value;
+    const arg8 = req.body.miss_value;
+    const sql = "INSERT INTO plague_rules " +
+        "(num, variant, id, category, range_lower, range_upper, match_value, miss_value) " + 
+        "VALUES (?,?,?,?,?,?,?,?);";
+    db.query(sql, [arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8], (err, result) => {
+        res.send(result);
+        // console.log(err);
+    }); 
+});
+
+app.post('/api/infest', (req, res) => {
+    const arg1 = req.body.human;
+    const arg2 = req.body.human_id;
+    const arg3 = req.body.plague;
+    const arg4 = req.body.plague_id;
+    const arg5 = req.body.known;
+    const sql = "INSERT INTO infection " +
+        "(human, human_id, plague, plague_id, known) " + 
+        "VALUES (?,?,?,?,?);";
+    db.query(sql, [arg1, arg2, arg3, arg4, arg5], (err, result) => {
+        res.send(result);
+        // console.log(err);
+    });
 });
 
 ////////////////////////////////////////////////////////

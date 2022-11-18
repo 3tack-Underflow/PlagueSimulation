@@ -36,41 +36,13 @@ function CreatePage() {
     const [totalPopulation, setTotalPopulation] = useState(0);
     const [cookies, setCookie] = useCookies(['name']);
 
-    // add spread time, rename max_rules to starting_rules, rename spread_rate to spread chance, git pus will be a range and a rule, spread_cooldown, mutation_chance
-    // creation time, cured status [ongoing, fail, success], completion time, 
-
     const InsertSim = () => {
-        var severity_rating, origin_rating, max_rules, spread_rate, spread_radius, mutation_time;
-        if (severity === 'Random') severity_rating = Math.floor(Math.random() * 3) + 1;
-        else if (severity === 'Average') severity_rating = 1;
-        else if (severity === 'Strong') severity_rating = 2;
-        else severity_rating = 3;
+        var origin_rating;
         if (origin === 'Random') origin_rating = Math.floor(Math.random() * 3) + 1;
         else if (origin === 'Outskirt') origin_rating = 1;
         else if (origin === 'City') origin_rating = 2;
         else origin_rating = 3;
-        if (severity_rating === 1) {
-            severity_rating = 1;
-            max_rules = 2;
-            // spread_time
-            spread_rate = Math.floor(1 + Math.random() * 1); // percentage chance for an individual to be infected after an update
-            spread_radius = 10 + Math.floor(Math.random() * 5); // km
-            // spead_cooldown
-            mutation_time = 60 * 6 + Math.floor(Math.random() * (60 * 7)) // time (minutes) * delta_time
-            // mutation_chance
-        } else if (severity_rating === 2) {
-            severity_rating = 2
-            max_rules = 3;
-            spread_rate = 3 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
-            spread_radius = 10 + Math.floor(Math.random() * 5); // km
-            mutation_time = 60 * 3 + Math.floor(Math.random() * (60 * 4)) // time (minutes) * delta_time
-        } else {
-            severity_rating = 3
-            max_rules = 4;
-            spread_rate = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
-            spread_radius = 10 + Math.floor(Math.random() * 5); // km
-            mutation_time = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
-        }
+        
         if (origin_rating === 1) {
             setTotalPopulation(45 + Math.floor(Math.random() * 31));
         } else if (origin_rating === 2) {
@@ -78,7 +50,7 @@ function CreatePage() {
         } else {
             setTotalPopulation(250 + Math.floor(Math.random() * 101));
         }
-        // console.log(bacteriumName + ' ' + severity_rating + ' ' + max_rules + ' ' + totalPopulation + ' ' + spread_rate + ' ' + spread_radius + ' ' + mutation_time);
+        
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
             creation_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -95,14 +67,109 @@ function CreatePage() {
         })
     }
 
+    const InsertPlague = async () =>  {
+        var severity_rating, spread_r, spread_c, mutation_c, curing_t, fatality_t, death_r, death_c, numRules, numInfest;
+        if (severity === 'Random') severity_rating = Math.floor(Math.random() * 3) + 1;
+        else if (severity === 'Average') severity_rating = 1;
+        else if (severity === 'Strong') severity_rating = 2;
+        else severity_rating = 3;
+        if (severity_rating === 1) {
+            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_c = Math.floor(1 + Math.random() * 1); // percentage chance for an individual to be infected after an update
+            mutation_c = 60 * 6 + Math.floor(Math.random() * (60 * 7)) // time (minutes) * delta_time
+            curing_t = 50;
+            fatality_t = 20;
+            death_r = 5;
+            death_c = 60 * 6 + Math.floor(Math.random() * (60 * 7))
+            numRules = 2;
+            numInfest = 1;
+        } else if (severity_rating === 2) {
+            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_c = 3 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
+            mutation_c = 60 * 3 + Math.floor(Math.random() * (60 * 4)) // time (minutes) * delta_time
+            curing_t = 65;
+            fatality_t = 40;
+            death_r = 10;
+            death_c = 60 * 5 + Math.floor(Math.random() * (60 * 6))
+            numRules = 2;
+            numInfest = 2;
+        } else {
+            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_c = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
+            mutation_c = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
+            curing_t = 80;
+            fatality_t = 60;
+            death_r = 20;
+            death_c = 60 * 4 + Math.floor(Math.random() * (60 * 5))
+            numRules = 3;
+            numInfest = 2;
+        }
+        
+        await Axios.post('http://localhost:3001/api/insert-plague', {
+            variant: 1,
+            id: simID,
+            strength: 1,
+            spread_chance: 20,
+            spread_radius: spread_r, 
+            spread_cooldown: spread_c, 
+            mutation_chance: mutation_c,
+            curing_threshhold: curing_t, 
+            fatality_threshhold: fatality_t,
+            death_rate: death_r,
+            death_cooldown: death_c
+        })
+
+        // name, min, max, rule_size
+        var ruleList = [["temperature", 10, 40, 5], ["humidity", 20, 60, 5], ["elevation", 1, 3, 1], ["age", 15, 80, 25], 
+            ["weight", 80, 280, 100], ["height", 80, 220, 80], ["blood_sugar", 60, 280, 100], 
+            ["blood_pressure", 60, 160, 30], ["cholesterol", 20, 100, 30], ["radiation", 40, 3000, 1000]];
+        
+        ruleList.sort(() => 0.5 - Math.random());
+
+        // later, pick 2 humans to start with, and use their stat as rules
+
+        for (var i = 1; i <= numRules; ++i) {
+            var start = ruleList[i][1] + Math.floor(Math.random() * (ruleList[i][2] - ruleList[i][1] - ruleList[i][3]))
+            await Axios.post('http://localhost:3001/api/insert-plague-rule', {
+                num: i,
+                variant: 1,
+                id: simID,
+                category: ruleList[i][0],
+                range_lower: start,
+                range_upper: start + ruleList[i][3],
+                match_value: 10 + Math.floor(Math.random() * (40)),
+                miss_value: 10 + Math.floor(Math.random() * (40))
+            })
+        }
+        
+        var humanIds = [];
+        for (var i = 1; i <= totalPopulation; ++i) humanIds.push(i);
+        humanIds.sort(() => 0.5 - Math.random());
+
+        for (var i = 1; i <= numInfest; ++i) {
+            await Axios.post('http://localhost:3001/api/infest', {
+                human: humanIds[i],
+                human_id: simID,
+                plague: 1,
+                plague_id: simID,
+                known: 0
+            })
+        }
+    }
+
     useEffect(() => { 
         if (simID === 0) return;
-        InsertParticipation();
-        InsertSimulationHumans();
-        navigate("/Mainpage");
+        console.log(simID);
+        InsertParticipation().then(() => {
+            InsertSimulationHumans().then(() => {
+                InsertPlague().then(() => {
+                    navigate("/Mainpage");
+                })
+            })
+        }) 
     }, [simID]);
 
-    const InsertParticipation = () => {
+    const InsertParticipation = async () => {
         // check if cookie exists
         var username = null
         if (cookies.name != null)
@@ -115,14 +182,15 @@ function CreatePage() {
             navigate("/Login");
         }
 
-        Axios.post('http://localhost:3001/api/insert-sim-participation', {
+        await Axios.post('http://localhost:3001/api/insert-sim-participation', {
             id: simID,
             owner: 1,
             //assistant_username: username
             username: 'robert'
         })
+        
         for (var i = 0; i < assistants.length; ++i) {
-            Axios.post('http://localhost:3001/api/insert-sim-participation', {
+            await Axios.post('http://localhost:3001/api/insert-sim-participation', {
                 id: simID,
                 owner: 0,
                 username: assistants[i].title
@@ -144,7 +212,7 @@ function CreatePage() {
             }
         }
         positions.sort(() => 0.5 - Math.random());
-        console.log(positions.length);
+        
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
             var curGender = "M";
@@ -162,7 +230,7 @@ function CreatePage() {
                     "alive",
                     0,
                     randomNumberInRange(15, 80),
-                    randomNumberInRange(60, 280),
+                    randomNumberInRange(80, 280),
                     randomNumberInRange(80, 220),
                     randomNumberInRange(60, 280),
                     randomNumberInRange(60, 160),
@@ -175,7 +243,7 @@ function CreatePage() {
                     curName,
                     curGender]);
         }
-        await Axios.post('http://localhost:3001/api/insert-sim-human', {values: values});
+        await Axios.post('http://localhost:3001/api/insert-sim-human', {values: values})
     }
 
     const removeAssistant = (name) => {
