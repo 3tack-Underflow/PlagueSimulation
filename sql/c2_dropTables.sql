@@ -1,0 +1,11 @@
+DROP TABLE `showing_symptoms`;
+DROP TABLE `infection`;
+DROP TABLE `simulation_humans`;
+DROP TABLE `simulation_participation`;
+DROP TABLE `plague_rules`;
+DROP TABLE `vaccine_rules`;
+DROP TABLE `plague`;
+DROP TABLE `symptom`;
+DROP TABLE `vaccine`;
+DROP TABLE `user`;
+DROP TABLE `simulation`;
