@@ -4,10 +4,10 @@
 SELECT * FROM simulation_participation;
 
 -- 1) find which simulations belong to a user, for example grace --
+
 SELECT id
 FROM simulation_participation
 WHERE username = 'grace' and is_owner = true;
-
 -- 2) find which simulations a user is part of, for example robert --
 SELECT id
 FROM simulation_participation
