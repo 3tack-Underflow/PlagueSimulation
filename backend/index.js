@@ -210,7 +210,9 @@ app.post('/api/isolate', (req, res) => {
     "WHERE num = " + humanID + " AND id = " + simID + "; " + 
     
     "COMMIT;";
-    db.query(sql);
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
 });
 
 app.post('/api/unisolate', (req, res) => {
@@ -236,7 +238,9 @@ app.post('/api/unisolate', (req, res) => {
     "WHERE num = " + humanID + " AND id = " + simID + "; " + 
     
     "COMMIT;";
-    db.query(sql);
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
 });
 
 // req is request, res is response

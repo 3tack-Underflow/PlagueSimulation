@@ -20,18 +20,36 @@ function Simulation() {
     var testSimId = 2523;
 
     const Isolate = () => {
+        // CHECK IF THE ISOLATION CAPACITY IS FULL!
         Axios.post('http://localhost:3001/api/isolate', {
             cost: 10, 
             simID: testSimId,
             humanID: selected.num
-        })
+        }).then((res) => {
+            if (res.data) {
+                console.log(res.data);
+                return;
+            }
+            // WE SHOULD ALSO UPDATE THE FUNDS
+            let isolatedHuman = simHumans[selected.num - 1];
+            isolatedHuman.isolated = 1;
+            setSimHumans(simHumans.map(human => {return human.num === selected.num ? isolatedHuman : human}));
+        });
     }
 
     const Unisolate = () => {
         Axios.post('http://localhost:3001/api/unisolate', {
             simID: testSimId,
             humanID: selected.num
-        })
+        }).then((res) => {
+            if (res.data) {
+                console.log(res.data);
+                return;
+            }
+            let unisolatedHuman = simHumans[selected.num - 1];
+            unisolatedHuman.isolated = 0;
+            setSimHumans(simHumans.map(human => {return human.num === selected.num ? unisolatedHuman : human}));
+        });
     }
     
     const LoadSimHimans = () => {
@@ -315,7 +333,7 @@ function Simulation() {
                                 y = {datapoint.y - 35}
                                 width = {70}
                                 height = {70}
-                                visible = {datapoint.isolated === 1 ? true : false}
+                                visible = {datapoint.isolated === 1}
                                 image = {cage}
                                 onClick={
                                     () => {
