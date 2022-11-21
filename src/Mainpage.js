@@ -23,7 +23,6 @@ function Mainpage() {
             navigate("/Login");
         }
         
-        console.log(username)
         Axios.post('http://localhost:3001/api/get-sims', {
             user: username
         }).then((response) => {
@@ -44,7 +43,7 @@ function Mainpage() {
         <div className = "scroll-pane">
             {simList.map(datapoint => 
             <SimulationButton 
-                key={datapoint.id}
+                id={datapoint.id}
                 title={datapoint.sim_name}>
             </SimulationButton>
             )}
