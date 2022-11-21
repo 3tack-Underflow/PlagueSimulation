@@ -37,7 +37,7 @@ function SimInfo(){
             <div className = "horizontal">
               <button onClick = {() => {navigate("/Simulation?id=" + id)}}> Enter</button>
               <button onClick = {() => {}}> Delete</button>
-              <button onClick = {() => {navigate("/Mainpage")}}> Back</button>
+              <button onClick = {() => {navigate("/Mainpage?id=" + id)}}> Back</button>
             </div>
           </div>
       </div>
