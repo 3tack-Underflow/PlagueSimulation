@@ -5,6 +5,11 @@ import { useCookies } from 'react-cookie';
 import { stageWidth, stageHeight } from "./Constants.js"
 
 function Simulation() {
+    const windowUrl = window.location.search;
+    const params = new URLSearchParams(windowUrl);
+
+    const id = params.get('id')
+
     const mapRef = useRef(0);
 
     const [size, setSize] = useState({ 
@@ -17,7 +22,7 @@ function Simulation() {
     const [simHumans, setSimHumans] = useState([]);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
-    var testSimId = 2523;
+    var testSimId = id;
 
     const Isolate = () => {
         // CHECK IF THE ISOLATION CAPACITY IS FULL!

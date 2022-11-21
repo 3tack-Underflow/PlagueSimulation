@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import './App.css';
 import Axios from "axios";
-import { useParams } from 'react-router-dom'
 
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +35,7 @@ function SimInfo(){
             <label>Current status: {dataList.status}</label>
             <label>Funds: {dataList.funds}</label>
             <div className = "horizontal">
-              <button onClick = {() => {navigate("/Simulation")}}> Enter</button>
+              <button onClick = {() => {navigate("/Simulation?id=" + id)}}> Enter</button>
               <button onClick = {() => {}}> Delete</button>
               <button onClick = {() => {navigate("/Mainpage")}}> Back</button>
             </div>
