@@ -43,8 +43,8 @@ app.post('/api/login', (req, res) => {
 ////////////////////////////////////////////////////////
 // Register Queries
 ////////////////////////////////////////////////////////
-// req is request, res is response
 
+// req is request, res is response
 app.post('/api/insert-user', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
@@ -166,6 +166,28 @@ app.post('/api/infest', (req, res) => {
 });
 
 ////////////////////////////////////////////////////////
+// Simulation Info
+////////////////////////////////////////////////////////
+
+app.post('/api/get-alive', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT COUNT(*) AS totalAlive FROM simulation_humans " + 
+        "WHERE id = ? AND status = 'alive';";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-isolated', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT COUNT(*) AS totalIsolated FROM simulation_humans " + 
+        "WHERE id = ? AND isolated = 1;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
+////////////////////////////////////////////////////////
 // Simulation Queries
 ////////////////////////////////////////////////////////
 
@@ -178,6 +200,15 @@ app.post('/api/get-simulation_humans', (req, res) => {
 });
 
 app.post('/api/get-current_simulation', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT * FROM simulation WHERE id = ?;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/mark-human', (req, res) => {
+    const num = req.body.num;
     const simID = req.body.simID;
     const sql = "SELECT * FROM simulation WHERE id = ?;";
     db.query(sql, [simID], (err, result) => {

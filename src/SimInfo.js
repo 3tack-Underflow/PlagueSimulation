@@ -19,10 +19,9 @@ function SimInfo(){
             id: id
         }).then((response) => {
           setDataList(response.data[0]);
-          console.log(dataList);
         });
     }, []);
-    return(
+    return (
         <div className = "SimInfo">
           <label>{dataList.sim_name}</label>
           <div className = "Info">

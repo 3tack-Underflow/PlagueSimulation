@@ -20,10 +20,13 @@ function Simulation() {
     const [view, setView] = useState("none");
     const [simulation, setSimulation] = useState({});
     const [simHumans, setSimHumans] = useState([]);
+    const [simHumansAlive, setSimHumansAlive] = useState(0);
+    const [simHumansIsolated, setSimHumansIsolated] = useState(0);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
 
+    // if return value is true, isolation is successful
     const Isolate = () => {
         // CHECK IF THE ISOLATION CAPACITY IS FULL!
         Axios.post('http://localhost:3001/api/isolate', {
@@ -56,6 +59,22 @@ function Simulation() {
             setSimHumans(simHumans.map(human => {return human.num === selected.num ? unisolatedHuman : human}));
         });
     }
+
+    const GetAlive = () => {
+        Axios.post('http://localhost:3001/api/get-alive', {
+            simID: testSimId
+        }).then((res) => {
+            setSimHumansAlive(res.data[0]["totalAlive"]);
+        });
+    }
+
+    const GetIsolated = () => {
+        Axios.post('http://localhost:3001/api/get-isolated', {
+            simID: testSimId
+        }).then((res) => {
+            setSimHumansIsolated(res.data[0]["totalIsolated"]);
+        });
+    }
     
     const LoadSimHimans = () => {
         Axios.post('http://localhost:3001/api/get-simulation_humans', {
@@ -75,6 +94,8 @@ function Simulation() {
 
     useEffect(() => {
         LoadSimHimans();
+        GetAlive();
+        GetIsolated();
     }, []);
 
     useEffect(() => {
@@ -97,6 +118,133 @@ function Simulation() {
 
     return (
         <div className = "Simulation">
+            <div className = "infoPane">
+                <div className = "globalInfo">
+                    <div className = "title">
+                        <label>
+                            {simulation.sim_name}
+                        </label>
+                    </div>
+                    <label>
+                        Population: {simHumansAlive}/{simulation.environment_starting_population}
+                    </label> 
+                    <label> 
+                        Funds: ${simulation.funds}
+                    </label>
+                    <label> 
+                        Isolation Count: {simHumansIsolated}
+                    </label>
+                    <label> 
+                        Isolation Capacity: {simulation.environment_isolation_capacity}
+                    </label>
+                    <label style={{fontWeight: "bold"}}> 
+                        Display Range View
+                    </label>
+                    <div className="view-buttons" onChange = {(e) => {setView(e.target.value)}}>
+                        <div className="radio-group">
+                            <input style={{accentColor: 'black'}} type="radio" value="none" name="view" defaultChecked/>  
+                            <label style={{margin: "0px"}}>
+                                None
+                            </label>
+                        </div>
+                        <div className="radio-group">
+                            <input style={{accentColor: 'black'}} type="radio" value="temperature" name="view"/>  
+                            <label style={{margin: "0px"}}>
+                                Temperature
+                            </label>
+                        </div>
+                        <div className="radio-group">
+                            <input style={{accentColor: 'black'}} type="radio" value="humidity" name="view"/>  
+                            <label style={{margin: "0px"}}>
+                                Humidity
+                            </label>
+                        </div>
+                        <div className="radio-group">
+                            <input style={{accentColor: 'black'}} type="radio" value="elevation" name="view"/>  
+                            <label style={{margin: "0px"}}>
+                                Elevation
+                            </label>   
+                        </div>
+                    </div>
+                    
+                    <button>
+                        Open Vaccine Lab
+                    </button>
+                    <button>
+                        Fetch Latest Data
+                    </button>
+                </div>
+                <div className = "localInfo">
+                    {selected != null &&
+                        <div className = "selectedInfo">
+                            <div className = "title">
+                                <label>
+                                    {selected.name} ({selected.gender})
+                                </label>
+                            </div>
+                            <label>
+                                Age: {selected.age}
+                            </label>
+                            <label>
+                                Weight: {selected.weight}
+                            </label>
+                            <label>
+                                Blood Sugar: {selected.blood_sugar}
+                            </label>
+                            <label>
+                                Blood Pressure: {selected.blood_pressure}
+                            </label>
+                            <label>
+                                Cholesterol: {selected.cholesterol}
+                            </label>
+                            <label>
+                                Radiation: {selected.radiation}
+                            </label>
+                            <label>
+                                Fund Rate: ${selected.tax}
+                            </label>
+                            
+                            <button disabled = {simulation.funds < 50}>
+                                Test: $50
+                            </button>
+                            <button>
+                                Vaccinate
+                            </button>
+                            <button onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
+                                {selected.isolated ? "Unisolate" : "Isolate"}
+                            </button>
+                            <button>
+                                Sanitize
+                            </button>
+                            <div className = "mark">
+                                <label>
+                                    Mark:
+                                </label>
+                                <button style={{backgroundColor: "transparent", 
+                                    width: selected.marked == null ? "30px" : "20px",
+                                    height: selected.marked == null ? "30px" : "20px",
+                                    borderRadius: selected.marked == null ? "15px" : "10px"}}></button>
+                                <button style={{backgroundColor: "yellow", 
+                                    width: selected.marked == 1 ? "30px" : "20px",
+                                    height: selected.marked == 1 ? "30px" : "20px",
+                                    borderRadius: selected.marked == 1 ? "15px" : "10px"}}></button>
+                                <button style={{backgroundColor: "orange", 
+                                    width: selected.marked == 2 ? "30px" : "20px",
+                                    height: selected.marked == 2 ? "30px" : "20px",
+                                    borderRadius: selected.marked == 2 ? "15px" : "10px"}}></button>
+                                <button style={{backgroundColor: "red", 
+                                    width: selected.marked == 3 ? "30px" : "20px",
+                                    height: selected.marked == 3 ? "30px" : "20px",
+                                    borderRadius: selected.marked == 3 ? "15px" : "10px"}}></button>
+                                <button style={{backgroundColor: "crimson", 
+                                    width: selected.marked == 4 ? "30px" : "20px",
+                                    height: selected.marked == 4 ? "30px" : "20px",
+                                    borderRadius: selected.marked == 4 ? "15px" : "10px"}}></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
             <div className = "locationMap" ref = {mapRef}> 
                 <Stage
                     width = {stageWidth}
@@ -317,6 +465,16 @@ function Simulation() {
                     </Layer>
                     <Layer>
                         {simHumans.map(datapoint => 
+                            <Circle
+                                key = {datapoint.num}
+                                x = {datapoint.x}
+                                y = {datapoint.y}
+                                radius = {26}
+                                strokeWidth = {datapoint.marked == null ? 0 : 5}
+                                stroke = {datapoint.marked == null ? "black" : "yellow"}>
+                            </Circle>
+                        )}
+                        {simHumans.map(datapoint => 
                             <Image
                                 key = {datapoint.num}
                                 image = {datapoint.gender === "M" ? healthyMale : healthyFemale}
@@ -357,106 +515,12 @@ function Simulation() {
                     </Layer>
                 </Stage>
             </div>
-            <div className = "infoPane">
-                <div className = "globalInfo">
-                    <div className = "title">
-                        <label>
-                            {simulation.sim_name}
-                        </label>
-                    </div>
-                    <label>
-                        Population: 3/{simulation.environment_starting_population}
-                    </label> 
-                    <label> 
-                        Funds: ${simulation.funds}
-                    </label>
-                    <label> 
-                        Isolation Count: 0
-                    </label>
-                    <label> 
-                        Isolation Capacity: {simulation.environment_isolation_capacity}
-                    </label>
-                    <label style={{fontWeight: "bold"}}> 
-                        Display Range View
-                    </label>
-                    <div className="view-buttons" onChange = {(e) => {setView(e.target.value)}}>
-                        <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="none" name="view" defaultChecked/>  
-                            <label style={{margin: "0px"}}>
-                                None
-                            </label>
-                        </div>
-                        <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="temperature" name="view"/>  
-                            <label style={{margin: "0px"}}>
-                                Temperature
-                            </label>
-                        </div>
-                        <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="humidity" name="view"/>  
-                            <label style={{margin: "0px"}}>
-                                Humidity
-                            </label>
-                        </div>
-                        <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="elevation" name="view"/>  
-                            <label style={{margin: "0px"}}>
-                                Elevation
-                            </label>   
-                        </div>
-                    </div>
+            <div className="actionPane">
+                <div className="vaccineInfo">
                     
-                    <button>
-                        Open Vaccine Lab
-                    </button>
-                    <button>
-                        Fetch Latest Data
-                    </button>
                 </div>
-                <div className = "localInfo">
-                    {selected != null &&
-                        <div className = "selectedInfo">
-                            <div className = "title">
-                                <label>
-                                    {selected.name} ({selected.gender})
-                                </label>
-                            </div>
-                            <label>
-                                Age: {selected.age}
-                            </label>
-                            <label>
-                                Weight: {selected.weight}
-                            </label>
-                            <label>
-                                Blood Sugar: {selected.blood_sugar}
-                            </label>
-                            <label>
-                                Blood Pressure: {selected.blood_pressure}
-                            </label>
-                            <label>
-                                Cholesterol: {selected.cholesterol}
-                            </label>
-                            <label>
-                                Radiation: {selected.radiation}
-                            </label>
-                            <label>
-                                Fund Rate: ${selected.tax}
-                            </label>
-                            
-                            <button disabled = {simulation.funds < 50}>
-                                Test: $50
-                            </button>
-                            <button>
-                                Vaccinate
-                            </button>
-                            <button onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
-                                Isolate
-                            </button>
-                            <button>
-                                Sanitize
-                            </button>
-                        </div>
-                    }
+                <div className="actionInfo">
+                    
                 </div>
             </div>
         </div>

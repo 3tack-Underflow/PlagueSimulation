@@ -36,27 +36,25 @@ function CreatePage() {
     const [totalPopulation, setTotalPopulation] = useState(0);
     const [cookies, setCookie] = useCookies(['name']);
 
-    const InsertSim = () => {
+    const InsertSim = async () => {
         var origin_rating;
         if (origin === 'Random') origin_rating = Math.floor(Math.random() * 3) + 1;
         else if (origin === 'Outskirt') origin_rating = 1;
         else if (origin === 'City') origin_rating = 2;
         else origin_rating = 3;
         
-        if (origin_rating === 1) {
-            setTotalPopulation(45 + Math.floor(Math.random() * 31));
-        } else if (origin_rating === 2) {
-            setTotalPopulation(125 + Math.floor(Math.random() * 51));
-        } else {
-            setTotalPopulation(250 + Math.floor(Math.random() * 101));
-        }
-        
+        var starting_population = 0;
+        if (origin_rating === 1) starting_population = 45 + Math.floor(Math.random() * 31);
+        else if (origin_rating === 2) starting_population = 125 + Math.floor(Math.random() * 51);
+        else starting_population = 250 + Math.floor(Math.random() * 101);
+        setTotalPopulation(starting_population);
+
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
             creation_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
             completion_time: null, 
             last_modified_time: new Date().toISOString().slice(0, 19).replace('T', ' '),
-            starting_population: totalPopulation, 
+            starting_population: starting_population, 
             isolation_capacity: 10, 
             sim_status: "Ongoing",
             num_deceased: 0, 

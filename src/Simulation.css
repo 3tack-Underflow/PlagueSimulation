@@ -3,14 +3,14 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 95vw;
+    width: 97vw;
     overflow: hidden;
 }
 
 .locationMap {
     display: flex;
-    width: 75vw;
-    height: 90vh;
+    width: 100vw;
+    height: 95vh;
     border: 2px solid black;
     overflow: hidden;
     border-radius: 10px;
@@ -19,9 +19,21 @@
 .infoPane {
     display: flex;
     flex-direction: column;
-    width: 25vw;
-    height: 90vh;
-    margin: 0px 10px 0px 20px;
+    width: 275px;
+    min-width: 275px;
+    height: 95vh;
+    margin: 0px 20px 0px 0px;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.actionPane {
+    display: flex;
+    flex-direction: column;
+    width: 275px;
+    min-width: 275px;
+    height: 95vh;
+    margin: 0px 0px 0px 20px;
     overflow: hidden;
     font-family: sans-serif;
 }
@@ -51,6 +63,29 @@
 }
 
 .localInfo {
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    align-items: center;
+    justify-content: flex-start;
+    border: 2px solid black;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
+
+.vaccineInfo {
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0px 0px 20px 0px;
+    border: 2px solid black;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
+
+.actionInfo {
     display: flex;
     flex-direction: column;
     height: 50vh;
@@ -91,7 +126,7 @@
 }
 
 .title {
-    margin: 10px 0px 10px 0px;
+    margin: 15px 0px 10px 0px;
     text-align: center;
 }
 
@@ -112,4 +147,24 @@
 .radio-group input[type = radio]{
     scale: 1.5;
     margin: 0px 15px 0px 0px;
+}
+
+.mark {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+}
+
+.mark label {
+    margin: 0px 5px 0px 0px;
+}
+
+.mark button {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: black 2px solid;
 }
