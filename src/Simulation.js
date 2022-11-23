@@ -21,14 +21,15 @@ function Simulation() {
     const [simulation, setSimulation] = useState({});
     const [simHumans, setSimHumans] = useState([]);
     const [simHumansAlive, setSimHumansAlive] = useState(0);
-    const [simHumansIsolated, setSimHumansIsolated] = useState(0);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
 
-    // if return value is true, isolation is successful
     const Isolate = () => {
-        // CHECK IF THE ISOLATION CAPACITY IS FULL!
+        if (simulation.environment_isolation_capacity === 0) {
+            alert("Your environment isolation capacity is full!");
+            return;
+        }
         Axios.post('http://localhost:3001/api/isolate', {
             cost: 10, 
             simID: testSimId,
@@ -38,10 +39,12 @@ function Simulation() {
                 console.log(res.data);
                 return;
             }
-            // WE SHOULD ALSO UPDATE THE FUNDS
             let isolatedHuman = simHumans[selected.num - 1];
             isolatedHuman.isolated = 1;
             setSimHumans(simHumans.map(human => {return human.num === selected.num ? isolatedHuman : human}));
+            let updated_isolation_capacity_simulation = simulation;
+            --updated_isolation_capacity_simulation.environment_isolation_capacity;
+            setSimulation(updated_isolation_capacity_simulation);
         });
     }
 
@@ -57,6 +60,9 @@ function Simulation() {
             let unisolatedHuman = simHumans[selected.num - 1];
             unisolatedHuman.isolated = 0;
             setSimHumans(simHumans.map(human => {return human.num === selected.num ? unisolatedHuman : human}));
+            let updated_isolation_capacity_simulation = simulation;
+            ++updated_isolation_capacity_simulation.environment_isolation_capacity;
+            setSimulation(updated_isolation_capacity_simulation);
         });
     }
 
@@ -65,14 +71,6 @@ function Simulation() {
             simID: testSimId
         }).then((res) => {
             setSimHumansAlive(res.data[0]["totalAlive"]);
-        });
-    }
-
-    const GetIsolated = () => {
-        Axios.post('http://localhost:3001/api/get-isolated', {
-            simID: testSimId
-        }).then((res) => {
-            setSimHumansIsolated(res.data[0]["totalIsolated"]);
         });
     }
     
@@ -95,7 +93,6 @@ function Simulation() {
     useEffect(() => {
         LoadSimHimans();
         GetAlive();
-        GetIsolated();
     }, []);
 
     useEffect(() => {
@@ -130,9 +127,6 @@ function Simulation() {
                     </label> 
                     <label> 
                         Funds: ${simulation.funds}
-                    </label>
-                    <label> 
-                        Isolation Count: {simHumansIsolated}
                     </label>
                     <label> 
                         Isolation Capacity: {simulation.environment_isolation_capacity}
