@@ -517,7 +517,11 @@ function Simulation() {
             </div>
             <div className="actionPane">
                 <div className="vaccineInfo">
-                    
+                    <div className = "title">
+                        <label>
+                            Vaccine Lab
+                        </label>
+                    </div>
                 </div>
                 <div className="actionInfo">
                     
