@@ -519,6 +519,16 @@ function Simulation() {
                         </Circle>
                     </Layer>
                 </Stage>
+
+                <div className="legend" style={{
+                                                position: "absolute", 
+                                                zIndex: "1000", 
+                                                width: "200px",
+                                                height: "300px",
+                                                right: "16.5%",
+                                                bottom: "1%"}}>
+                    asdfasdfasdf
+                </div>
             </div>
             <div className="actionPane">
                 <div className="vaccineInfo">
