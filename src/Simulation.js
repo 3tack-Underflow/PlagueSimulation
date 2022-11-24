@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
+import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
 import { stageWidth, stageHeight } from "./Constants.js"
@@ -24,6 +25,15 @@ function Simulation() {
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
+
+
+    // vaccine fields
+    const [vaccineName, setVaccineName] = useState("");
+    const [ruleType, setRuleType] = useState("None");
+    const [ruleMin, setRuleMin] = useState(0);
+    const [ruleMax, setRuleMax] = useState(0);
+    const [bloodType, setBloodType] = useState("A");
+    const [elevation, setElevation] = useState("A");
 
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
@@ -113,6 +123,7 @@ function Simulation() {
     let cage = new window.Image();
     cage.src = "res/cage.png"; 
 
+    let navigate = useNavigate();
     return (
         <div className = "Simulation">
             <div className = "infoPane">
@@ -162,10 +173,10 @@ function Simulation() {
                     </div>
                     
                     <button>
-                        Open Vaccine Lab
-                    </button>
-                    <button>
                         Fetch Latest Data
+                    </button>
+                    <button onClick={() => {navigate("/Mainpage")}}>
+                        Exit Simulation
                     </button>
                 </div>
                 <div className = "localInfo">
@@ -511,14 +522,96 @@ function Simulation() {
             </div>
             <div className="actionPane">
                 <div className="vaccineInfo">
-                    <div className = "title">
+                    <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
                         <label>
                             Vaccine Lab
                         </label>
                     </div>
+                    <div className="vaccineHorizontal">
+                        <img src={require('./vaccine.png')} width = "60px" height = "60px" >
+                        </img>
+                        <div className="vaccineVerticle">
+                            <label>Name</label>
+                            <input value={vaccineName} type = "vaccine" name = "Vaccine Name" onChange = {(e) => {
+                                setVaccineName(e.target.value);
+                            }}/>
+                        </div>
+                    </div>
+                    <div className = "vaccineHorizontal">
+                        <select value={ruleType} onChange = {(e) => {
+                            setRuleType(e.target.value);
+                        }}>
+                            <option value="None">Select Rule</option>
+                            <option value="Temperature">Temperature</option>
+                            <option value="Humidity">Humidity</option>
+                            <option value="Elevation">Elevation</option>
+                            <option value="Age">Age</option>
+                            <option value="Weight">Weight</option>
+                            <option value="Blood Type">Blood Type</option>
+                            <option value="Blood Pressure">Blood Pressure</option>
+                            <option value="Cholesterol">Cholesterol</option>
+                            <option value="Radiation">Radiation</option>
+                        </select>
+                        <label>
+                            UNIT
+                        </label>
+                    </div>
+
+                    <div className = "ruleCategory">
+                        <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "Blood Type" ? 
+                            "Type" : ruleType == "Elevation" ? "Ground Level" : "Range"}</label></div>
+
+                    <div className = "vaccineRules">
+                        {(() => {
+                            if (ruleType == "Blood Type") {
+                                return (
+                                    <div>
+                                        <select style={{margin: "0px 0px 0px 0px"}}
+                                            value = {bloodType} onChange = {(e) => {setBloodType(e.target.value);}}>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="O">O</option>
+                                        </select>
+                                    </div>
+                                )
+                            } else if (ruleType == "Elevation") {
+                                return (
+                                    <div>
+                                        <select style={{margin: "0px 0px 0px 0px"}}
+                                            value = {elevation} onChange = {(e) => {setElevation(e.target.value);}}>
+                                            <option value="Low">Low</option>
+                                            <option value="Mid">Mid</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                    </div>
+                                )
+                            } else {
+                                return (
+                                    <div>
+                                        <label>MIN</label>
+                                        <input value={ruleMin} type = "ruleMin" name = "ruleMin" onChange = {(e) => {
+                                            setRuleMin(e.target.value);
+                                        }}/>
+                                        <label style={{margin: "0px 0px 0px 5px"}}>MAX</label>
+                                        <input value={ruleMax} type = "ruleMax" name = "ruleMax" onChange = {(e) => {
+                                            setRuleMax(e.target.value);
+                                        }}/>
+                                    </div>
+                                )
+                            }
+                        })()}
+                        
+                    </div>
+                    <div className="vaccineRuleOptions"><button>Add Rule</button></div>  
+                    
+                    <div className="vaccineRuleOptions"><button>Create Vaccine Template</button></div> 
+                    
+                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> COST: $$$$ </label>
                 </div>
                 <div className="actionInfo">
-                    
+                    <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
+                        <label>Vaccine Storage</label>
+                    </div>
                 </div>
             </div>
         </div>

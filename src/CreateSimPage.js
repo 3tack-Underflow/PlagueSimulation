@@ -219,11 +219,13 @@ function CreatePage() {
         var values = [];
         
         var positions = [];
-        for (var i = 0; i < stageW / gridGap; ++i) {
-            for (var j = 0; j < stageH / gridGap; ++j) {
+        for (var i = 0; i < Math.floor(stageW / gridGap) - 1; ++i) {
+            for (var j = 0; j < Math.floor(stageH / gridGap) - 1; ++j) {
                 positions.push([i, j]);
             }
         }
+        
+        positions.sort(() => 0.5 - Math.random());
         positions.sort(() => 0.5 - Math.random());
         
         for (var i = 0; i < totalPopulation; ++i) {

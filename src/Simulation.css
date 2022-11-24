@@ -168,3 +168,91 @@
     border-radius: 10px;
     border: black 2px solid;
 }
+
+.vaccineHorizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0px 0px 0px;
+}
+
+.vaccineHorizontal label {
+    width: 50px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.ruleCategory {
+    margin: 10px 0px 0px 0px;
+}
+
+.ruleCategory label {
+    width: 150px;
+    min-width: 150px;
+    text-align: center;
+}
+
+.vaccineVerticle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 40px 0px 40px;
+    width: 100px;
+}
+
+.vaccineVerticle label {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.vaccineVerticle input {
+    width: 165px;
+    height: 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: white;
+    border: black 2px solid;
+    text-align: center;
+}
+
+.vaccineInfo select {
+    font-size: 18px;
+    text-align: center;
+    background-color: white;
+    border: black 2px solid;
+    margin: 0px 20px 0px 0px;
+    border-radius: 5px;
+}
+
+.vaccineRules {
+    margin: 5px 0px 0px 0px;
+}   
+
+.vaccineRules input {
+    width: 65px;
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: white;
+    border: black 2px solid;
+    text-align: center;
+    margin: 0px 5px 0px 5px;
+}
+
+.vaccineRuleOptions {
+    flex-direction: row;
+    margin: 15px 0px 0px 0px;
+    justify-content: center;
+    align-items: center;
+}
+
+.vaccineRuleOptions button {
+    flex-direction: row;
+    background-color: white;
+    border-radius: 5px;
+    border: black 2px solid;
+    text-align: center;
+    font-size: 18px;
+}
