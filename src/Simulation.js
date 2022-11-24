@@ -523,11 +523,15 @@ function Simulation() {
                 <div className="legend" style={{
                                                 position: "absolute", 
                                                 zIndex: "1000", 
-                                                width: "200px",
-                                                height: "300px",
+                                                width: "400px",
+                                                height: "400px",
                                                 right: "16.5%",
                                                 bottom: "1%"}}>
-                    asdfasdfasdf
+                    <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
+                        <label>
+                            Legend
+                        </label>
+                    </div>
                 </div>
             </div>
             <div className="actionPane">
