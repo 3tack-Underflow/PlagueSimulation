@@ -525,7 +525,7 @@ function Simulation() {
                                                 zIndex: "1000", 
                                                 width: "400px",
                                                 height: "45.8%",
-                                                right: "16.5%",
+                                                right: "300px",
                                                 bottom: "1%"}}>
                     <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
                         <label>
