@@ -604,9 +604,10 @@ function Simulation() {
                     </div>
                     <div className="vaccineRuleOptions"><button>Add Rule</button></div>  
 
-                    <div className="vaccineRuleOptions"><button>Create Vaccine Prototype</button></div> 
+                    <div className="vaccineRuleOptions"><button>Prototype Vaccine</button></div> 
                     
-                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> COST: $$$$ </label>
+                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Prototype Cost: $$$$ </label>
+                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Production Cost: $$$$ </label>
                 </div>
                 <div className="actionInfo">
                     <div className = "title" style={{margin: "15px 0px 0px 0px"}}>

@@ -331,11 +331,11 @@ function CreatePage() {
                     <input style={{accentColor: 'black'}} type="radio" value="Outskirt" name="origin" /> 
                 </div>
                 <div className = "verticle">
-                    <label>City</label>
+                    <label>Village</label>
                     <input style={{accentColor: 'black'}} type="radio" value="City" name="origin" /> 
                 </div>
                 <div className = "verticle">
-                    <label>Metropolis</label>
+                    <label>Town</label>
                     <input style={{accentColor: 'black'}} type="radio" value="Metropolis" name="origin" /> 
                 </div>
                 <div className = "verticle">
