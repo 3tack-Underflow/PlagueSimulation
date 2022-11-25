@@ -537,6 +537,60 @@ function Simulation() {
                             {view}
                         </label>
                     </div>
+                    <div 
+                        visible = {view === "temperature"}
+                        style={{
+                                 margin: "15px 0px 0px 0px", 
+                                 display: "flex",
+                                 fledDirection: "row",
+                                 }}>
+                        Low
+                        <div 
+                            style = {{
+                                height: "20px",
+                                width: "300px",
+                                backgroundColor: "Blue",
+                                backgroundImage: "linear-gradient(to right, #ff9d99 , #ff0000)"
+                            }}>
+                        </div>
+                        High
+                    </div>
+                    <div 
+                        visible = {view === "humidity"}
+                        style={{
+                                 margin: "15px 0px 0px 0px", 
+                                 display: "flex",
+                                 fledDirection: "row",
+                                 }}>
+                        Low
+                        <div 
+                            style = {{
+                                height: "20px",
+                                width: "300px",
+                                backgroundColor: "Blue",
+                                backgroundImage: "linear-gradient(to right, #b3b3ff, #0000ff)"
+                            }}>
+                        </div>
+                        High
+                    </div>
+                    <div 
+                        visible = {view === "elevation"}
+                        style={{
+                                 margin: "15px 0px 0px 0px", 
+                                 display: "flex",
+                                 fledDirection: "row",
+                                 }}>
+                        Low
+                        <div 
+                            style = {{
+                                height: "20px",
+                                width: "300px",
+                                backgroundColor: "Blue",
+                                backgroundImage: "linear-gradient(to right, #AAFFAA, #00BB00)"
+                            }}>
+                        </div>
+                        High
+                    </div>
                 </div>
             </div>
             <div className="actionPane">
