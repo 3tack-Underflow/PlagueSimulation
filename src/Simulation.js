@@ -3,7 +3,9 @@ import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
-import { stageWidth, stageHeight } from "./Constants.js"
+import { stageWidth, stageHeight, temperatureColors, 
+    humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
+    humidityRangeMin, humidityRangeMax, elevationRange} from "./Constants.js"
 
 function Simulation() {
     const windowUrl = window.location.search;
@@ -33,7 +35,7 @@ function Simulation() {
     const [ruleMin, setRuleMin] = useState(0);
     const [ruleMax, setRuleMax] = useState(0);
     const [bloodType, setBloodType] = useState("A");
-    const [elevation, setElevation] = useState("A");
+    const [Elevation, setElevation] = useState("A");
 
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
@@ -153,19 +155,19 @@ function Simulation() {
                             </label>
                         </div>
                         <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="temperature" name="view"/>  
+                            <input style={{accentColor: 'black'}} type="radio" value="Temperature" name="view"/>  
                             <label style={{margin: "0px"}}>
                                 Temperature
                             </label>
                         </div>
                         <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="humidity" name="view"/>  
+                            <input style={{accentColor: 'black'}} type="radio" value="Humidity" name="view"/>  
                             <label style={{margin: "0px"}}>
                                 Humidity
                             </label>
                         </div>
                         <div className="radio-group">
-                            <input style={{accentColor: 'black'}} type="radio" value="elevation" name="view"/>  
+                            <input style={{accentColor: 'black'}} type="radio" value="Elevation" name="view"/>  
                             <label style={{margin: "0px"}}>
                                 Elevation
                             </label>   
@@ -250,7 +252,78 @@ function Simulation() {
                     }
                 </div>
             </div>
-            <div className = "locationMap" ref = {mapRef}> 
+            <div className = "locationMap" ref = {mapRef} style = {{position: "relative"}}> 
+                {(() => {
+                    if (view != "none") 
+                    return <div className = "legend" 
+                            style = {{position: "absolute", zIndex: "1", right: "20px", bottom: "20px"}}>
+                        <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
+                            <label> {view} </label>
+                        </div>
+                        {(() => {
+                            if (view == "Temperature") {
+                                return (
+                                    <div className = "legendGroup"> 
+                                        <div className = "legendContentGroup">
+                                            {temperatureColors.map(datapoint => 
+                                                <div className= "legendContent" key = {temperatureColors.indexOf(datapoint)}>
+                                                    <div className = "legendColor"
+                                                        style={{opacity: "0.25", backgroundColor: datapoint}}>
+                                                    </div>
+                                                    <label>
+                                                        {temperatureRangeMin[temperatureColors.indexOf(datapoint)]} - {temperatureRangeMax[temperatureColors.indexOf(datapoint)]} C°
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            } else if (view == "Humidity") {
+                                return (
+                                    <div className = "legendGroup"> 
+                                        <div className = "legendContentGroup">
+                                            {humidityColors.map(datapoint => 
+                                                <div className= "legendContent" key = {humidityColors.indexOf(datapoint)}>
+                                                    <div className = "legendColor"
+                                                        style={{opacity: "0.25", backgroundColor: datapoint}}>
+                                                    </div>
+                                                    <label>
+                                                        {humidityRangeMin[humidityColors.indexOf(datapoint)]} - {humidityRangeMax[humidityColors.indexOf(datapoint)]} %
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            } else if (view == "Elevation") {
+                                return (
+                                    <div className = "legendGroup"> 
+                                        <div className = "legendContentGroup">
+                                            <div className= "legendContent">
+                                                <div className = "legendColor"
+                                                    style={{opacity: "0.25", backgroundColor: elevationColors[0]}}>
+                                                </div>
+                                                <label> {elevationRange[0]} </label>
+                                            </div>
+                                            <div className= "legendContent">
+                                                <div className = "legendColor"
+                                                    style={{opacity: "0.25", backgroundColor: elevationColors[1]}}>
+                                                </div>
+                                                <label> {elevationRange[1]} </label>
+                                            </div>
+                                            <div className= "legendContent">
+                                                <div className = "legendColor"
+                                                    style={{opacity: "0.25", backgroundColor: elevationColors[2]}}>
+                                                </div>
+                                                <label> {elevationRange[2]} </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        })()}
+                    </div>
+                })()}
                 <Stage
                     width = {stageWidth}
                     height = {stageHeight}
@@ -271,133 +344,30 @@ function Simulation() {
                 }}
                 >
                     <Layer>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff0000"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2 + stageHeight / 6}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff3033"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2 + stageHeight / 6 * 2}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff4d4d"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2 + stageHeight / 6 * 3}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff6666"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2 + stageHeight / 6 * 4}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff8080"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2 + stageHeight / 6 * 5}
-                            width = {stageWidth}
-                            height = {stageHeight / 6}
-                            fill = "#ff9d99"
-                            opacity = {0.25}
-                            visible = {view === "temperature"}>
-                        </Rect>
-
-                        <Rect 
-                            x = {-stageWidth / 2}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#0000FF"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#1a1aff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 2}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#3333ff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 3}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#4d4dff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 4}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#6666ff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 5}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#8080ff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 6}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#9999ff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
-                        <Rect 
-                            x = {-stageWidth / 2 + stageWidth / 8 * 7}
-                            y = {-stageHeight / 2}
-                            width = {stageWidth / 8}
-                            height = {stageHeight}
-                            fill = "#b3b3ff"
-                            opacity = {0.2}
-                            visible = {view === "humidity"}>
-                        </Rect>
+                        {temperatureColors.map(datapoint => 
+                            <Rect
+                                key = {temperatureColors.indexOf(datapoint)}
+                                x = {-stageWidth / 2}
+                                y = {-stageHeight / 2 + stageHeight / 6 * (temperatureColors.indexOf(datapoint))}
+                                width = {stageWidth}
+                                height = {stageHeight / 6}
+                                fill = {datapoint}
+                                opacity = {0.25}
+                                visible = {view === "Temperature" ? 1 : 0}>
+                            </Rect>
+                        )}
+                        {humidityColors.map(datapoint => 
+                            <Rect
+                                key = {humidityColors.indexOf(datapoint)}
+                                x = {-stageWidth / 2 + stageWidth / 8 * (humidityColors.indexOf(datapoint))}
+                                y = {-stageHeight / 2}
+                                width = {stageWidth / 8}
+                                height = {stageHeight}
+                                fill = {datapoint}
+                                opacity = {0.2}
+                                visible = {view === "Humidity" ? 1 : 0}>
+                            </Rect>
+                        )}
 
                         <Shape
                             sceneFunc={(context, shape) => {
@@ -410,7 +380,7 @@ function Simulation() {
                             }}
                             fill = "#00BB00"
                             opacity = {0.2}
-                            visible = {view === "elevation"}
+                            visible = {view === "Elevation" ? 1 : 0}
                         />
                         <Shape
                             sceneFunc={(context, shape) => {
@@ -424,7 +394,7 @@ function Simulation() {
                             }}
                             fill = "#55DD55"
                             opacity = {0.2}
-                            visible = {view === "elevation"}
+                            visible = {view === "Elevation" ? 1 : 0}
                         />
                         <Shape
                             sceneFunc={(context, shape) => {
@@ -438,7 +408,7 @@ function Simulation() {
                             }}
                             fill = "#AAFFAA"
                             opacity = {0.2}
-                            visible = {view === "elevation"}
+                            visible = {view === "Elevation" ? 1 : 0}
                         />
                         <Shape
                             sceneFunc={(context, shape) => {
@@ -452,7 +422,7 @@ function Simulation() {
                             }}
                             fill = "#55DD55"
                             opacity = {0.2}
-                            visible = {view === "elevation"}
+                            visible = {view === "Elevation" ? 1 : 0}
                         />
                         <Shape
                             sceneFunc={(context, shape) => {
@@ -465,7 +435,7 @@ function Simulation() {
                             }}
                             fill = "#00BB00"
                             opacity = {0.2}
-                            visible = {view === "elevation"}
+                            visible = {view === "Elevation" ? 1 : 0}
                         />
                     </Layer>
                     <Layer>
@@ -501,7 +471,7 @@ function Simulation() {
                                 y = {datapoint.y - 35}
                                 width = {70}
                                 height = {70}
-                                visible = {datapoint.isolated === 1}
+                                visible = {datapoint.isolated === 1 ? 1 : 0}
                                 image = {cage}
                                 onClick={
                                     () => {
@@ -519,79 +489,6 @@ function Simulation() {
                         </Circle>
                     </Layer>
                 </Stage>
-
-                <div className="legend" style={{
-                                                position: "absolute", 
-                                                zIndex: "1000", 
-                                                width: "400px",
-                                                height: "45.8%",
-                                                right: "310px",
-                                                bottom: "1%"}}>
-                    <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
-                        <label>
-                            Legend
-                        </label>
-                    </div>
-                    <div style={{margin: "15px 0px 0px 0px"}}>
-                        <label>
-                            {view}
-                        </label>
-                    </div>
-                    <div 
-                        visible = {view === "temperature"}
-                        style={{
-                                 margin: "15px 0px 0px 0px", 
-                                 display: "flex",
-                                 fledDirection: "row",
-                                 }}>
-                        Low
-                        <div 
-                            style = {{
-                                height: "20px",
-                                width: "300px",
-                                backgroundColor: "Blue",
-                                backgroundImage: "linear-gradient(to right, #ff9d99 , #ff0000)"
-                            }}>
-                        </div>
-                        High
-                    </div>
-                    <div 
-                        visible = {view === "humidity"}
-                        style={{
-                                 margin: "15px 0px 0px 0px", 
-                                 display: "flex",
-                                 fledDirection: "row",
-                                 }}>
-                        Low
-                        <div 
-                            style = {{
-                                height: "20px",
-                                width: "300px",
-                                backgroundColor: "Blue",
-                                backgroundImage: "linear-gradient(to right, #b3b3ff, #0000ff)"
-                            }}>
-                        </div>
-                        High
-                    </div>
-                    <div 
-                        visible = {view === "elevation"}
-                        style={{
-                                 margin: "15px 0px 0px 0px", 
-                                 display: "flex",
-                                 fledDirection: "row",
-                                 }}>
-                        Low
-                        <div 
-                            style = {{
-                                height: "20px",
-                                width: "300px",
-                                backgroundColor: "Blue",
-                                backgroundImage: "linear-gradient(to right, #AAFFAA, #00BB00)"
-                            }}>
-                        </div>
-                        High
-                    </div>
-                </div>
             </div>
             <div className="actionPane">
                 <div className="vaccineInfo">
@@ -651,7 +548,7 @@ function Simulation() {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
-                                            value = {elevation} onChange = {(e) => {setElevation(e.target.value);}}>
+                                            value = {Elevation} onChange = {(e) => {setElevation(e.target.value);}}>
                                             <option value="Low">Low</option>
                                             <option value="Mid">Mid</option>
                                             <option value="High">High</option>
@@ -673,7 +570,6 @@ function Simulation() {
                                 )
                             }
                         })()}
-                        
                     </div>
                     <div className="vaccineRuleOptions"><button>Add Rule</button></div>  
 

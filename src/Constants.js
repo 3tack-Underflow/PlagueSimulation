@@ -1,6 +1,21 @@
 const stageWidth = 4200;
 const stageHeight = 3400;
 
+const temperatureColors = ["#ff0000", "#ff3033", "#ff4d4d", "#ff6666", "#ff8080", "#ff9d99"];
+const humidityColors = ["#0000FF", "#1a1aff", "#3333ff", "#4d4dff", "#6666ff", "#8080ff", "#9999ff", "#b3b3ff"];
+const elevationColors = ["#00BB00", "#55DD55", "#AAFFAA"];
+
+const temperatureRangeMin = [26, 21, 16, 11, 6, 0];
+const temperatureRangeMax = [30, 25, 20, 15, 10, 5];
+
+const humidityRangeMin = [76, 71, 66, 61, 56, 51, 46, 40];
+const humidityRangeMax = [80, 75, 70, 65, 60, 55, 50, 45];
+
+const elevationRange = ["Low", "Mid", "High"];
+
+export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, 
+    temperatureRangeMin, temperatureRangeMax, humidityRangeMin, humidityRangeMax, elevationRange};
+
 const names = {
 femaleFirstName: [
     'Abbe',
@@ -6011,4 +6026,4 @@ lastName: [
 ]
 }
 
-export { stageWidth, stageHeight, names };
+export { names };
