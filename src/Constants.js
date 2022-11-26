@@ -13,7 +13,17 @@ const humidityRangeMax = [80, 75, 70, 65, 60, 55, 50, 45];
 
 const elevationRange = ["Low", "Mid", "High"];
 
-export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, 
+const units = [{type: "Temperature", unit: "°C"}, 
+            {type: "Humidity", unit: "%"}, 
+            {type: "Elevation", unit: "-"}, 
+            {type: "Age", unit: "-"}, 
+            {type: "Weight", unit: "lb"},
+            {type: "Blood Type", unit: "-"},
+            {type: "Blood Pressure", unit: "mmHg"},
+            {type: "Cholesterol", unit: "mg/dL"},
+            {type: "Radiation", unit: "☢"}];
+
+export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, units,
     temperatureRangeMin, temperatureRangeMax, humidityRangeMin, humidityRangeMax, elevationRange};
 
 const names = {

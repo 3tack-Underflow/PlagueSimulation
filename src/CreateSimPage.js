@@ -227,6 +227,8 @@ function CreatePage() {
         
         positions.sort(() => 0.5 - Math.random());
         positions.sort(() => 0.5 - Math.random());
+
+        var bloodTypes = ["A", "B", "O"];
         
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
@@ -247,7 +249,7 @@ function CreatePage() {
                     randomNumberInRange(15, 80),
                     randomNumberInRange(80, 280),
                     randomNumberInRange(80, 220),
-                    randomNumberInRange(60, 280),
+                    bloodTypes[randomNumberInRange(0, 2)],
                     randomNumberInRange(60, 160),
                     randomNumberInRange(20, 100),
                     randomNumberInRange(40, 3000),

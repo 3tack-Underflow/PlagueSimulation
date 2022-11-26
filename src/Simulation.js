@@ -5,7 +5,7 @@ import Axios from "axios";
 import { useCookies } from 'react-cookie';
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
-    humidityRangeMin, humidityRangeMax, elevationRange} from "./Constants.js"
+    humidityRangeMin, humidityRangeMax, elevationRange, units} from "./Constants.js"
 
 function Simulation() {
     const windowUrl = window.location.search;
@@ -28,14 +28,92 @@ function Simulation() {
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
 
-
     // vaccine fields
     const [vaccineName, setVaccineName] = useState("");
     const [ruleType, setRuleType] = useState("None");
     const [ruleMin, setRuleMin] = useState(0);
     const [ruleMax, setRuleMax] = useState(0);
-    const [bloodType, setBloodType] = useState("A");
-    const [Elevation, setElevation] = useState("A");
+    const [bloodType, setBloodType] = useState(1);
+    const [Elevation, setElevation] = useState(1);
+
+    const [rules, setRules] = useState([]);
+
+    const [nextVaccine, setNextVaccine] = useState(1);
+
+    const ProductionCost = () => {
+        var cost = 0;
+        for (var i = 0; i < rules.length; ++i) {
+            if (rules[i].category === "Temperature") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
+            } else if (rules[i].category === "Humidity") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
+            } else if (rules[i].category === "Elevation") {
+                cost += 100;
+            } else if (rules[i].category === "Age") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
+            } else if (rules[i].category === "Weight") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
+            } else if (rules[i].category === "Blood Type") {
+                cost += 100;
+            } else if (rules[i].category === "Blood Pressure") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
+            } else if (rules[i].category === "Cholesterol") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
+            } else if (rules[i].category === "Radiation") {
+                cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
+            }
+        }
+        return cost;
+    }
+
+    const PrototypeCost = () => {
+        return ProductionCost() * 5;
+    }
+
+    const FindUnit = (name) => {
+        for (var i = 0; i < units.length; ++i) {
+            if (units[i].type === name) {
+                return units[i].unit;
+            }
+        }
+        return "-";
+    }
+
+    const CheckRule = () => {
+        if (ruleType === "None" || ruleMin > ruleMax) {
+            return false;
+        }
+        return true;
+    }
+
+    const AddRule = () => {
+        var min = null, max = null;
+        if (ruleType == "Elevation") {
+            min = Elevation;
+            max = Elevation;
+        } else if (ruleType == "Blood Type") {
+            min = bloodType;
+            max = Elevation;
+        } else {
+            min = ruleMin;
+            max = ruleMax;
+        }
+        rules.push({num: rules.length + 1, vaccine: nextVaccine, id: testSimId, category: ruleType, range_lower: min, range_upper: max})
+        setRules(rules);
+        setRuleMax(0);
+        setRuleMin(0);
+    }
+
+    const VaccineConditionsMet = () => {
+        if (vaccineName === null || vaccineName.trim() === "") {
+            return false;
+        }
+        return true;
+    }
+
+    const Prototype = () => {
+        InsertVaccine();
+    }
 
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
@@ -78,6 +156,27 @@ function Simulation() {
         });
     }
 
+    const InsertVaccine = () => {
+        Axios.post('http://localhost:3001/api/prototype-vaccine', {
+            id: testSimId,
+            vaccineName: vaccineName
+        }).then((res) => {
+            InsertRules();
+        });
+    }
+
+    const InsertRules = () => {
+        for (var i = 0; i < rules.length; ++i) {
+            Axios.post('http://localhost:3001/api/prototype-vaccine', {
+                vaccine: 1,
+                id: testSimId,
+                category: rules[i].category,
+                range_lower: rules[i].range_lower,
+                range_upper: rules[i].range_upper
+            });
+        }
+    }
+    
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
             simID: testSimId
@@ -196,7 +295,7 @@ function Simulation() {
                                 Weight: {selected.weight}
                             </label>
                             <label>
-                                Blood Sugar: {selected.blood_sugar}
+                                Blood Type: {selected.blood_type}
                             </label>
                             <label>
                                 Blood Pressure: {selected.blood_pressure}
@@ -523,24 +622,24 @@ function Simulation() {
                             <option value="Radiation">Radiation</option>
                         </select>
                         <label>
-                            UNIT
+                            {ruleType === "None" ? "UNIT" : FindUnit(ruleType)}
                         </label>
                     </div>
 
-                    <div className = "ruleCategory">
+                    <div className = "ruleCategory" hidden = {ruleType == "None" ? 1 : 0}>
                         <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "Blood Type" ? 
                             "Type" : ruleType == "Elevation" ? "Ground Level" : "Range"}</label></div>
 
-                    <div className = "vaccineRules">
+                    <div className = "vaccineRules" hidden = {ruleType == "None" ? 1 : 0}>
                         {(() => {
                             if (ruleType == "Blood Type") {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
                                             value = {bloodType} onChange = {(e) => {setBloodType(e.target.value);}}>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="O">O</option>
+                                            <option value={1}>A</option>
+                                            <option value={2}>B</option>
+                                            <option value={3}>O</option>
                                         </select>
                                     </div>
                                 )
@@ -549,9 +648,9 @@ function Simulation() {
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
                                             value = {Elevation} onChange = {(e) => {setElevation(e.target.value);}}>
-                                            <option value="Low">Low</option>
-                                            <option value="Mid">Mid</option>
-                                            <option value="High">High</option>
+                                            <option value={1}>Low</option>
+                                            <option value={2}>Mid</option>
+                                            <option value={3}>High</option>
                                         </select>
                                     </div>
                                 )
@@ -571,12 +670,23 @@ function Simulation() {
                             }
                         })()}
                     </div>
-                    <div className="vaccineRuleOptions"><button>Add Rule</button></div>  
+                    <div hidden = {ruleType == "None" ? 1 : 0} className="vaccineRuleOptions" onClick = {() => {if (CheckRule()) AddRule();}}
+                        ><button>Add Rule</button></div>  
 
-                    <div className="vaccineRuleOptions"><button>Prototype Vaccine</button></div> 
+                    <div className = "ruleGroup">
+                        {rules.map(datapoint => 
+                            <label key = {datapoint.num}>
+                                {datapoint.category}: {datapoint.range_lower} {datapoint.range_upper === datapoint.range_lower ? "" : " - " + datapoint.range_upper}
+                            </label>
+                        )}
+                    </div>
                     
-                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Prototype Cost: $$$$ </label>
-                    <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Production Cost: $$$$ </label>
+                    <div hidden = {rules.length > 0 ? 0 : 1} style={{margin: "20px 0px 0px 0px"}}
+                        className="vaccineRuleOptions" onClick = {() => {if (VaccineConditionsMet()) Prototype();}}>
+                        <button>Prototype Vaccine</button></div> 
+                    
+                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Prototype Cost: {PrototypeCost()} </label>
+                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Production Cost: {ProductionCost()} </label>
                 </div>
                 <div className="actionInfo">
                     <div className = "title" style={{margin: "15px 0px 0px 0px"}}>

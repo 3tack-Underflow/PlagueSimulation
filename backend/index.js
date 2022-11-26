@@ -114,7 +114,7 @@ app.post('/api/insert-sim-human', (req, res) => {
     const values = req.body.values;
     const sql = "INSERT INTO simulation_humans " +
         "(num, id, status, isolated, age, weight, height, " + 
-        "blood_sugar, blood_pressure, cholesterol, radiation, " + 
+        "blood_type, blood_pressure, cholesterol, radiation, " + 
         "x, y, tax, mark, name, gender) " + 
         "VALUES ?;";
     db.query(sql, [values], (err, result) => {
@@ -271,6 +271,29 @@ app.post('/api/unisolate', (req, res) => {
     "COMMIT;";
     db.query(sql, (err, result) => {
         res.send(err);
+    });
+});
+
+app.post('/api/prototype-vaccine', (req, res) => {
+    const id = req.body.id;
+    const vaccineName = req.body.vaccineName;
+    const sql = "INSERT INTO vaccine (id, name) VALUES (?, ?);";
+    db.query(sql, [id, vaccineName], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/add-vaccine-rule', (req, res) => {
+    const vaccine = req.body.vaccine;
+    const id = req.body.id;
+    const category = req.body.category;
+    const range_lower = req.body.range_lower;
+    const range_upper = req.body.range_upper;
+    const sql = "INSERT INTO vaccine_rules " +
+        "(vaccine, id, category, range_lower, range_upper) " + 
+        "VALUES (?,?,?,?,?);";
+    db.query(sql, [vaccine, id, category, range_lower, range_upper], (err, result) => {
+        res.send(result);
     });
 });
 
