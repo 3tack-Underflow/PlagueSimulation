@@ -118,6 +118,10 @@ function Simulation() {
         return () => window.removeEventListener('resize', checkSize);
     }, []);
 
+    const getNumberOfElapsedCyclesToNow = (startTime, cycle_length_in_seconds) => {
+        return Math.floor((new Date() - new Date(startTime)) / 1000 / cycle_length_in_seconds);
+    };
+
     let healthyMale = new window.Image();
     healthyMale.src = "res/healthy_male.png"; 
     let healthyFemale = new window.Image();
