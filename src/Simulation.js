@@ -115,11 +115,14 @@ function Simulation() {
         InsertVaccine();
     }
 
+    const [UIEnabled, setUIEnabled] = useState(true);
+
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
             alert("Your environment isolation capacity is full!");
             return;
         }
+        setUIEnabled(false);
         Axios.post('http://localhost:3001/api/isolate', {
             cost: 10, 
             simID: testSimId,
@@ -127,6 +130,7 @@ function Simulation() {
         }).then((res) => {
             if (res.data) {
                 console.log(res.data);
+                setUIEnabled(true);
                 return;
             }
             let isolatedHuman = simHumans[selected.num - 1];
@@ -135,16 +139,19 @@ function Simulation() {
             let updated_isolation_capacity_simulation = simulation;
             --updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
+            setUIEnabled(true);
         });
     }
 
     const Unisolate = () => {
+        setUIEnabled(false);
         Axios.post('http://localhost:3001/api/unisolate', {
             simID: testSimId,
             humanID: selected.num
         }).then((res) => {
             if (res.data) {
                 console.log(res.data);
+                setUIEnabled(true);
                 return;
             }
             let unisolatedHuman = simHumans[selected.num - 1];
@@ -153,6 +160,7 @@ function Simulation() {
             let updated_isolation_capacity_simulation = simulation;
             ++updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
+            setUIEnabled(true);
         });
     }
 
@@ -216,6 +224,10 @@ function Simulation() {
         window.addEventListener('resize', checkSize);
         return () => window.removeEventListener('resize', checkSize);
     }, []);
+
+    const getNumberOfElapsedCyclesToNow = (startTime, cycle_length_in_seconds) => {
+        return Math.floor((new Date() - new Date(startTime)) / 1000 / cycle_length_in_seconds);
+    };
 
     let healthyMale = new window.Image();
     healthyMale.src = "res/healthy_male.png"; 
@@ -316,7 +328,7 @@ function Simulation() {
                             <button>
                                 Vaccinate
                             </button>
-                            <button onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
+                            <button disabled={!UIEnabled} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
                                 {selected.isolated ? "Unisolate" : "Isolate"}
                             </button>
                             <button>
