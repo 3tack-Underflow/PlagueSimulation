@@ -94,6 +94,9 @@
     border: 2px solid black;
     border-radius: 10px;
     overflow-y: scroll;
+    overflow-x: hidden;
+    margin: 15px 0px 10px 0px;
+    text-align: center;
 }
 
 .selectedInfo {
@@ -308,4 +311,56 @@
 
 .ruleGroup label {
     text-align: center;
+}
+
+.vaccineDisplay {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 0px 10px 0px;
+}
+
+.vaccineDisplay label {
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.vaccineDisplay button {
+    font-size: 18px;
+    font-weight: normal;
+    margin: 10px 10px 0px 10px;
+    border: black 2px solid;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.vaccine {
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    background-color: white;
+    border: black 2px solid;
+    min-width: 220px;
+    margin: 10px;
+}
+
+.vaccineName {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    margin: 10px 10px 0px 10px;
+}
+
+.vaccineName label {
+    font-size: 18px;
+    font-weight: bold;
+    min-width: 155px;
+}
+
+.vaccineName button {
+    font-size: 18px;
+    font-weight: normal;
+    border-radius: 8px;
+    background-color: white;
+    border: black 2px solid;
 }

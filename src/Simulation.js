@@ -33,14 +33,21 @@ function Simulation() {
     const [ruleType, setRuleType] = useState("None");
     const [ruleMin, setRuleMin] = useState(0);
     const [ruleMax, setRuleMax] = useState(0);
-    const [bloodType, setBloodType] = useState(1);
-    const [Elevation, setElevation] = useState(1);
+    const [bloodType, setBloodType] = useState(0);
+    const [Elevation, setElevation] = useState(0);
 
     const [rules, setRules] = useState([]);
 
     const [nextVaccine, setNextVaccine] = useState(1);
 
-    const ProductionCost = () => {
+    const [vaccineID, setVaccineID] = useState(1);
+    const [vaccinesRaw, setVaccinesRaw] = useState([]);
+    const [vaccines, setVaccines] = useState([]);
+    const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
+    const [vaccineRules, setVaccineRules] = useState([]);
+    const [selectedVaccine, setSelectedVaccine] = useState(0);
+
+    const ProductionCost = (rules) => {
         var cost = 0;
         for (var i = 0; i < rules.length; ++i) {
             if (rules[i].category === "Temperature") {
@@ -66,8 +73,22 @@ function Simulation() {
         return cost;
     }
 
-    const PrototypeCost = () => {
-        return ProductionCost() * 5;
+    const PrototypeCost = (rules) => {
+        return ProductionCost(rules) * 5;
+    }
+
+    const CategoryString = (category, value) => {
+        if (category === "Elevation") {
+            if (value === "1") return "Low";
+            else if (value === "2") return "Mid";
+            else if (value === "3") return "High";
+        } else if (category === "Blood Type") {
+            if (value === "1") return "A";
+            else if (value === "2") return "B";
+            else if (value === "3") return "O";
+        } else {
+            return value;
+        }
     }
 
     const FindUnit = (name) => {
@@ -79,8 +100,23 @@ function Simulation() {
         return "-";
     }
 
+    const ViewUnit = (name) => {
+        if (FindUnit(name) != "-") return FindUnit(name);
+    }
+
     const CheckRule = () => {
-        if (ruleType === "None" || ruleMin > ruleMax) {
+        if (ruleType === "None" || ruleMin > ruleMax ||
+            (ruleType != "Elevation" && ruleType != "Blood Type" &&
+                (ruleMin.length === 0 || ruleMax.length === 0))) {
+            alert("Invalid vaccine rule format!");
+            return false;
+        }
+        if (ruleType === "Elevation" && Elevation === 0) {
+            alert("Invalid vaccine rule format!");
+            return false;
+        }
+        if (ruleType === "Blood Type" && bloodType === 0) {
+            alert("Invalid vaccine rule format!");
             return false;
         }
         return true;
@@ -93,26 +129,26 @@ function Simulation() {
             max = Elevation;
         } else if (ruleType == "Blood Type") {
             min = bloodType;
-            max = Elevation;
+            max = bloodType;
         } else {
             min = ruleMin;
             max = ruleMax;
         }
         rules.push({num: rules.length + 1, vaccine: nextVaccine, id: testSimId, category: ruleType, range_lower: min, range_upper: max})
         setRules(rules);
+        setRuleType("None");
         setRuleMax(0);
         setRuleMin(0);
+        setElevation(0);
+        setBloodType(0);
     }
 
     const VaccineConditionsMet = () => {
-        if (vaccineName === null || vaccineName.trim() === "") {
+        if (vaccineName.length === 0) {
+            alert("Vaccine prototype requires a name!");
             return false;
         }
         return true;
-    }
-
-    const Prototype = () => {
-        InsertVaccine();
     }
 
     const [UIEnabled, setUIEnabled] = useState(true);
@@ -129,7 +165,6 @@ function Simulation() {
             humanID: selected.num
         }).then((res) => {
             if (res.data) {
-                console.log(res.data);
                 setUIEnabled(true);
                 return;
             }
@@ -150,7 +185,6 @@ function Simulation() {
             humanID: selected.num
         }).then((res) => {
             if (res.data) {
-                console.log(res.data);
                 setUIEnabled(true);
                 return;
             }
@@ -164,26 +198,87 @@ function Simulation() {
         });
     }
 
-    const InsertVaccine = () => {
-        Axios.post('http://localhost:3001/api/prototype-vaccine', {
+    const InsertVaccine = async () => {
+        await Axios.post('http://localhost:3001/api/prototype-vaccine', {
             id: testSimId,
             vaccineName: vaccineName
         }).then((res) => {
-            InsertRules();
+            setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
         });
     }
 
-    const InsertRules = () => {
+    const InsertRules = async () => {
         for (var i = 0; i < rules.length; ++i) {
-            Axios.post('http://localhost:3001/api/prototype-vaccine', {
-                vaccine: 1,
+            await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
+                vaccine: vaccineID,
                 id: testSimId,
                 category: rules[i].category,
-                range_lower: rules[i].range_lower,
-                range_upper: rules[i].range_upper
-            });
+                range_lower: parseInt(rules[i].range_lower),
+                range_upper: parseInt(rules[i].range_upper)
+            })
         }
     }
+
+    const FindVaccine = (vac) => {
+        for (var i = 0; i < vaccines.length; ++i) {
+            if (vaccines[i].num == vac) {
+                return vaccines[i];
+            }
+        }
+        return null;
+    }
+
+    const GetVaccine = async () => {
+        Axios.post('http://localhost:3001/api/get-vaccine', {
+            id: testSimId
+        }).then((response) => {
+            setVaccines(response.data);
+        });
+    }
+
+    const FindVaccineRule = (vac) => {
+        for (var i = 0; i < vaccineRules.length; ++i) {
+            if (vaccineRules[i].length > 0 && vaccineRules[i][0].vaccine === vac) {
+                return vaccineRules[i];
+            }
+        }
+        return null;
+    }
+
+    const GetVaccineRules = async () => {
+        setVaccineRules([]);
+        for (var i = 0; i < vaccines.length; ++i) {
+            Axios.post('http://localhost:3001/api/get-vaccine-rules', {
+                id: testSimId,
+                vaccine: vaccines[i].num
+            }).then((response) => { 
+                vaccineRules.push(response.data)
+                setVaccineRules(vaccineRules); 
+            }); 
+        } 
+    }
+
+    const DeleteVaccine = async (vaccine) => {
+        Axios.post('http://localhost:3001/api/delete-vaccine', {
+            vaccine: vaccine
+        }).then(() => {
+            GetVaccine();
+        });
+    }
+
+    useEffect(() => {
+        GetVaccineRules();
+    }, [vaccines]);
+
+    // useEffect(() => {
+    //     vaccines[vaccineRulesRaw.index].rules = [];
+    //     for (var i = 0; i < vaccineRulesRaw.values.length; ++i) {
+    //         vaccines[vaccineRulesRaw.index].rules.push(vaccineRulesRaw.values[i]);
+    //     }
+    //     //vaccineRules[vaccineRulesRaw.index] = vals;
+    //     setVaccines(vaccines);
+    //     //setVaccineRules({vals: vaccineRules}); 
+    // }, [vaccineRulesRaw]);  
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -201,6 +296,10 @@ function Simulation() {
         });
     }
 
+    const Prototype = () => {
+        InsertVaccine();
+    }
+
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {
             simID: testSimId
@@ -212,7 +311,21 @@ function Simulation() {
     useEffect(() => {
         LoadSimHimans();
         GetAlive();
+        GetVaccine();
     }, []);
+
+    useEffect(() => { 
+        InsertRules().then(() => {
+            setVaccineName("");
+            setRuleType("None");
+            setRuleMax(0);
+            setRuleMin(0);
+            setElevation(0);
+            setBloodType(0);
+            setRules([]);
+            GetVaccine();
+        });
+    }, [vaccineID]);
 
     useEffect(() => {
         const checkSize = () => {
@@ -301,22 +414,22 @@ function Simulation() {
                                 </label>
                             </div>
                             <label>
-                                Age: {selected.age}
+                                Age: {selected.age} {ViewUnit("Age")}
                             </label>
                             <label>
-                                Weight: {selected.weight}
+                                Weight: {selected.weight} {ViewUnit("Weight")}
                             </label>
                             <label>
-                                Blood Type: {selected.blood_type}
+                                Blood Type: {selected.blood_type} {ViewUnit("Blood Type")}
                             </label>
                             <label>
-                                Blood Pressure: {selected.blood_pressure}
+                                Blood Pressure: {selected.blood_pressure} {ViewUnit("Blood Pressure")}
                             </label>
                             <label>
-                                Cholesterol: {selected.cholesterol}
+                                Cholesterol: {selected.cholesterol} {ViewUnit("Cholesterol")}
                             </label>
                             <label>
-                                Radiation: {selected.radiation}
+                                Radiation: {selected.radiation} {ViewUnit("Radiation")}
                             </label>
                             <label>
                                 Fund Rate: ${selected.tax}
@@ -326,7 +439,7 @@ function Simulation() {
                                 Test: $50
                             </button>
                             <button>
-                                Vaccinate
+                                Vaccinate{FindVaccine(selectedVaccine) != null ? " " + FindVaccine(selectedVaccine).name : ""}
                             </button>
                             <button disabled={!UIEnabled} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
                                 {selected.isolated ? "Unisolate" : "Isolate"}
@@ -649,6 +762,7 @@ function Simulation() {
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
                                             value = {bloodType} onChange = {(e) => {setBloodType(e.target.value);}}>
+                                            <option value={0}>SELECT</option>
                                             <option value={1}>A</option>
                                             <option value={2}>B</option>
                                             <option value={3}>O</option>
@@ -660,6 +774,7 @@ function Simulation() {
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
                                             value = {Elevation} onChange = {(e) => {setElevation(e.target.value);}}>
+                                            <option value={0}>SELECT</option>
                                             <option value={1}>Low</option>
                                             <option value={2}>Mid</option>
                                             <option value={3}>High</option>
@@ -682,28 +797,56 @@ function Simulation() {
                             }
                         })()}
                     </div>
-                    <div hidden = {ruleType == "None" ? 1 : 0} className="vaccineRuleOptions" onClick = {() => {if (CheckRule()) AddRule();}}
-                        ><button>Add Rule</button></div>  
+                    <div hidden = {ruleType == "None" ? 1 : 0} className="vaccineRuleOptions">
+                        <button onClick = {() => {if (CheckRule()) AddRule();}}>Add Rule</button></div>  
 
                     <div className = "ruleGroup">
                         {rules.map(datapoint => 
                             <label key = {datapoint.num}>
-                                {datapoint.category}: {datapoint.range_lower} {datapoint.range_upper === datapoint.range_lower ? "" : " - " + datapoint.range_upper}
+                                {datapoint.category}: {CategoryString(datapoint.category, datapoint.range_lower + "")} {datapoint.range_upper === datapoint.range_lower ? "" : " - " + datapoint.range_upper} {ViewUnit(datapoint.category)}
                             </label>
                         )}
                     </div>
                     
                     <div hidden = {rules.length > 0 ? 0 : 1} style={{margin: "20px 0px 0px 0px"}}
-                        className="vaccineRuleOptions" onClick = {() => {if (VaccineConditionsMet()) Prototype();}}>
-                        <button>Prototype Vaccine</button></div> 
-                    
-                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Prototype Cost: {PrototypeCost()} </label>
-                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Production Cost: {ProductionCost()} </label>
+                        className="vaccineRuleOptions">
+                        <button onClick = {() => {if (VaccineConditionsMet()) Prototype();}}>Prototype Vaccine</button></div> 
+                
+                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Prototype Cost: {PrototypeCost(rules)} </label>
+                    <label hidden = {rules.length > 0 ? 0 : 1} style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}> Production Cost: {ProductionCost(rules)} </label>
                 </div>
                 <div className="actionInfo">
                     <div className = "title" style={{margin: "15px 0px 0px 0px"}}>
                         <label>Vaccine Storage</label>
                     </div>
+                    {vaccines.map(datapoint => 
+                        <div className = "vaccine" key = {datapoint.num} style = {{backgroundColor: selectedVaccine == datapoint.num ? "lightgray" : "white"}}>
+                            <div className="vaccineName">
+                                <img src={require('./vaccine.png')} width = "40px" height = "40px" ></img>
+                                <label>{datapoint.name}</label>
+                                <button onClick = {() => {if (datapoint.num == selectedVaccine) {setSelectedVaccine(0)} DeleteVaccine(datapoint.num)}}>X</button> 
+                            </div>
+                            {(() => {
+                                var rule = FindVaccineRule(datapoint.num);
+                                if (rule != null) {
+                                    return (
+                                        <div className = "vaccineDisplay">
+                                            {rule.map(val => 
+                                                <label key = {val.num}>
+                                                    {val.category}: {CategoryString(val.category, val.range_lower + "")} {val.range_upper === val.range_lower ? "" : " - " + val.range_upper} {ViewUnit(val.category)}
+                                                </label>
+                                            )}
+                                            <label style={{fontWeight: "bold", margin: "10px 0px 0px 0px"}}>
+                                                Production Cost: ${ProductionCost(rule)}
+                                            </label>
+                                            <button style = {{border: selectedVaccine == datapoint.num ? "lightgray 2px solid" : "black 2px solid"}} 
+                                                disabled = {selectedVaccine == datapoint.num} onClick={()=>{setSelectedVaccine(datapoint.num)}}>SELECT</button>
+                                        </div>
+                                    )
+                                } 
+                            })()}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

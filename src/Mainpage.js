@@ -13,13 +13,9 @@ function Mainpage() {
     useEffect(() => {
         // check if cookie exists
         var username = null
-        if (cookies.name != null)
-        {
+        if (cookies.name != null) {
             username = cookies.name
-        }
-        else
-        {
-            // redirect to login
+        } else {
             navigate("/Login");
         }
         
@@ -28,11 +24,6 @@ function Mainpage() {
         }).then((response) => {
             setSimList(response.data);
         });
-
-        // Axios.post('http://localhost:3001/api/get-sims', 
-        // {user: 'robert'}).then((response) => {
-        //     setSimList(response.data);
-        // });
     }, []);
     
     return (
@@ -43,6 +34,7 @@ function Mainpage() {
         <div className = "scroll-pane">
             {simList.map(datapoint => 
             <SimulationButton 
+                key={datapoint.id}
                 id={datapoint.id}
                 title={datapoint.sim_name}>
             </SimulationButton>

@@ -59,7 +59,8 @@ function CreatePage() {
             sim_status: "Ongoing",
             num_deceased: 0, 
             seed: "abcd", 
-            funds: 1000
+            funds: 1000,
+            update: new Date().toISOString().slice(0, 19).replace('T', ' ')
         }).then((response) => {
             setSimID(response.data[1][0]['LAST_INSERT_ID()']);
         })
@@ -158,7 +159,6 @@ function CreatePage() {
 
     useEffect(() => { 
         if (simID === 0) return;
-        console.log(simID);
         InsertParticipation().then(() => {
             InsertSimulationHumans().then(() => {
                 InsertPlague().then(() => {

@@ -85,15 +85,18 @@ app.post('/api/insert-sim', (req, res) => {
     const num_deceased = req.body.num_deceased;
     const seed = req.body.seed;
     const funds = req.body.funds;
+    const update = req.body.update;
     const sql = "INSERT INTO simulation " + 
         "(sim_name, creation_time, completion_time, last_modified_time, " + 
         "environment_starting_population, environment_isolation_capacity, " + 
-        "status, num_deceased, seed, funds) VALUES (?,?,?,?,?,?,?,?,?,?); " + 
+        "status, num_deceased, seed, funds, last_background_update_time) " + 
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?); " + 
         "SELECT LAST_INSERT_ID();";
     db.query(sql, 
         [disease_name, creation_time, completion_time, 
             last_modified_time, starting_population, isolation_capacity, 
-            sim_status, num_deceased, seed, funds], (err, result) => {
+            sim_status, num_deceased, seed, funds, update], (err, result) => {
+                console.log(err);
         res.send(result);
     });
 });
@@ -277,7 +280,8 @@ app.post('/api/unisolate', (req, res) => {
 app.post('/api/prototype-vaccine', (req, res) => {
     const id = req.body.id;
     const vaccineName = req.body.vaccineName;
-    const sql = "INSERT INTO vaccine (id, name) VALUES (?, ?);";
+    const sql = "INSERT INTO vaccine (id, name) VALUES (?, ?);" + 
+                "SELECT LAST_INSERT_ID()";
     db.query(sql, [id, vaccineName], (err, result) => {
         res.send(result);
     });
@@ -297,6 +301,32 @@ app.post('/api/add-vaccine-rule', (req, res) => {
     });
 });
 
+app.post('/api/get-vaccine', (req, res) => {
+    const id = req.body.id;
+    const sql = "SELECT * FROM vaccine WHERE id = ?;";
+    db.query(sql, [id], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-vaccine-rules', (req, res) => {
+    const id = req.body.id;
+    const vaccine = req.body.vaccine;
+    const sql = "SELECT * FROM vaccine_rules WHERE id = ? AND vaccine = ?";
+    db.query(sql, [id, vaccine], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/delete-vaccine', (req, res) => {
+    const id = req.body.vaccine;
+    const sql = "DELETE FROM vaccine WHERE num = ?; " + 
+        "DELETE FROM vaccine_rules WHERE vaccine = ?;";
+    db.query(sql, [id, id], (err, result) => {
+        res.send(result);
+    });
+});
+
 // req is request, res is response
 app.post('/api/get-sim', (req, res) => {
     const id = req.body.id;
@@ -304,7 +334,6 @@ app.post('/api/get-sim', (req, res) => {
     const sqlInsert = "SELECT * FROM simulation WHERE id = (?);";
     db.query(sqlInsert, [id], (err, result) => {
         res.send(result);
-        console.log(result);
     });
 });
 
