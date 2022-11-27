@@ -202,6 +202,14 @@ app.post('/api/get-simulation_humans', (req, res) => {
     });
 });
 
+app.post('/api/get-infected', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT * FROM infection WHERE plague_id = ?;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
 app.post('/api/get-current_simulation', (req, res) => {
     const simID = req.body.simID;
     const sql = "SELECT * FROM simulation WHERE id = ?;";

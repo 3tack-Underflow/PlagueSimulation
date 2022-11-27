@@ -8,6 +8,9 @@ import { stageWidth, stageHeight, temperatureColors,
     humidityRangeMin, humidityRangeMax, elevationRange, units} from "./Constants.js"
 
 function Simulation() {
+    // ADD THIS VARIABLE TO THE SIMULATION OBJECT IN BOTH FRONTEND AND DB
+    const cycle_length_in_seconds = 60;
+
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
 
@@ -24,6 +27,7 @@ function Simulation() {
     const [simulation, setSimulation] = useState({});
     const [simHumans, setSimHumans] = useState([]);
     const [simHumansAlive, setSimHumansAlive] = useState(0);
+    const [infected, setInfected] = useState({});
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
@@ -300,6 +304,21 @@ function Simulation() {
         InsertVaccine();
     }
 
+    const LoadInfected = () => {
+        Axios.post('http://localhost:3001/api/get-infected', {
+            simID: testSimId
+        }).then((response) => {
+            let infected = {};
+            response.data.forEach((infection) => {
+                infected[infection.human.toString()] = {
+                    known: infection.known,
+                    infection_time: infection.infection_time,
+                    cycles_to_die: infection.cycles_to_die};
+            });
+            setInfected(infected);
+        });
+    }
+
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {
             simID: testSimId
@@ -312,6 +331,7 @@ function Simulation() {
         LoadSimHimans();
         GetAlive();
         GetVaccine();
+        LoadInfected();
     }, []);
 
     useEffect(() => { 
@@ -345,9 +365,36 @@ function Simulation() {
     let healthyMale = new window.Image();
     healthyMale.src = "res/healthy_male.png"; 
     let healthyFemale = new window.Image();
-    healthyFemale.src = "res/healthy_female.png"; 
+    healthyFemale.src = "res/healthy_female.png";
+    let infectedMale = new window.Image();
+    infectedMale.src = "res/sick_male.png";
+    let infectedFemale = new window.Image();
+    infectedFemale.src = "res/sick_female.png";
     let cage = new window.Image();
-    cage.src = "res/cage.png"; 
+    cage.src = "res/cage.png";
+
+    /* Assumes human is alive */
+    const getHumanIcon = (human_num, gender) => {
+        const infected_human = infected[human_num.toString()];
+        if (infected_human === undefined) {
+            return gender === 'M' ? healthyMale : healthyFemale;
+        }
+
+        if (infected_human.known === 1) {
+            return gender === 'M' ? infectedMale : infectedFemale;
+        }
+
+        const infection_start_time = new Date(infected_human.infection_time);
+        const infected_duration = (new Date() - infection_start_time) / 1000;
+        const time_to_die_in_seconds = infected_human.cycles_to_die * cycle_length_in_seconds;
+        const infection_reveal_threshold = 0.75
+
+        if (infected_duration >= time_to_die_in_seconds * infection_reveal_threshold) {
+            return gender === 'M' ? infectedMale : infectedFemale;
+        }
+
+        return gender === 'M' ? healthyMale : healthyFemale;
+    };
 
     let navigate = useNavigate();
     return (
@@ -676,7 +723,7 @@ function Simulation() {
                         {simHumans.map(datapoint => 
                             <Image
                                 key = {datapoint.num}
-                                image = {datapoint.gender === "M" ? healthyMale : healthyFemale}
+                                image = {getHumanIcon(datapoint.num, datapoint.gender)}
                                 x = {datapoint.x - 25}
                                 y = {datapoint.y - 25}
                                 width = {50}
