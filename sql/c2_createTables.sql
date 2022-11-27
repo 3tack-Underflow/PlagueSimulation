@@ -33,8 +33,7 @@ CREATE TABLE `simulation` (
    `mutation_chance` int NOT NULL,
    `curing_threshhold` int NOT NULL,
    `fatality_threshhold` int NOT NULL,
-   `death_rate` int NOT NULL,
-   `death_cooldown` int NOT NULL,
+   `avg_death_cycles` int NOT NULL,
    PRIMARY KEY(`variant`, `id`),
    CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
  );
@@ -69,7 +68,7 @@ CREATE TABLE `simulation` (
    `range_lower` int,
    `range_upper` int,
    PRIMARY KEY(`num`, `vaccine`, `id`),
-   CONSTRAINT FOREIGN KEY (`id`) REFERENCES `simulation` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+   CONSTRAINT FOREIGN KEY (`vaccine`, `id`) REFERENCES `vaccine` (`num`, `id`) ON DELETE CASCADE ON UPDATE RESTRICT,
    CONSTRAINT CHECK (range_lower <= range_upper)
  );
  

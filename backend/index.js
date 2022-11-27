@@ -239,19 +239,20 @@ app.post('/api/isolate', (req, res) => {
     "SET funds = funds - " + isolationCost + 
     ", environment_isolation_capacity = environment_isolation_capacity - 1 " +
     "WHERE id = " + simID + "; " + 
+
+    "SELECT @human:=NULL;" +
     
     "SELECT @human:=num " +
     "FROM simulation_humans " + 
     "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
     "isolated = 0 AND status = 'alive'; " + 
     
-    "CALL `user_schema`.`checkRollback`(@human); " + 
-    
     "UPDATE simulation_humans " +
     "SET isolated = 1 " + 
-    "WHERE num = " + humanID + " AND id = " + simID + "; " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 0 AND status = 'alive'; " + 
     
-    "COMMIT;";
+    "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, (err, result) => {
         res.send(err);
     });
@@ -267,23 +268,72 @@ app.post('/api/unisolate', (req, res) => {
     "UPDATE simulation " + 
     "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
     "WHERE id = " + simID + "; " + 
+
+    "SELECT @human:=NULL;" +
     
     "SELECT @human:=num " +
     "FROM simulation_humans " + 
     "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
     "isolated = 1 AND status = 'alive'; " + 
     
-    "CALL `user_schema`.`checkRollback`(@human); " + 
-    
     "UPDATE simulation_humans " +
     "SET isolated = 0 " + 
-    "WHERE num = " + humanID + " AND id = " + simID + "; " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 0 AND status = 'alive'; " +
     
-    "COMMIT;";
+    "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, (err, result) => {
         res.send(err);
     });
 });
+
+app.post('/api/sanitize', (req, res) => {
+    const sanitizeCost = req.body.cost; 
+    const simID = req.body.simID; 
+    const humanID = req.body.humanID; 
+
+    const sql = 
+    "START TRANSACTION; " + 
+
+    "UPDATE simulation " +
+    "SET funds = funds - " + santizeCost + " " +
+    "WHERE id = " + simID + ";" +
+
+    "UPDATE simulation " +
+    "SET environment_isolation_capacity = environment_isolation_capacity + 1 " +
+    "WHERE (SELECT status, isolated FROM simulation_humans WHERE num = " + humanID + " AND id = " + simID + " ) = ('dead', 1) " +
+    "AND id = " + simID + ";" +
+
+    "SELECT @human:=NULL;" +
+    
+    "SELECT @human:=num " +
+    "FROM simulation_humans " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "status = 'dead'; " + 
+    
+    "DELETE FROM simulation_humans " +
+    "WHERE num = " + humanID + " AND id = " + simID +
+    " AND status = 'dead'; " +
+    
+    "CALL `user_schema`.`checkRollback`(@human);"
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
+app.post('/api/collect-tax', (req, res) => {
+    const id = req.body.id; 
+
+    const sql = 
+    "UPDATE simulation " +
+    "SET funds = funds + (SELECT SUM(tax) FROM simulation_humans WHERE id = " + id + " AND status = 'alive' AND isolated = 0) " +
+    "WHERE id = (simulation id);"
+
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
 
 app.post('/api/prototype-vaccine', (req, res) => {
     const id = req.body.id;
@@ -330,6 +380,14 @@ app.post('/api/delete-vaccine', (req, res) => {
     const id = req.body.vaccine;
     const sql = "DELETE FROM vaccine WHERE num = ?; " + 
         "DELETE FROM vaccine_rules WHERE vaccine = ?;";
+    db.query(sql, [id, id], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/find-mutate', (req, res) => {
+    const id = req.body.id;
+    const sql = "SELECT plague FROM infection WHERE plague_id = " + id + " GROUP BY plague HAVING COUNT(*) = (SELECT MAX(count) FROM (SELECT plague, COUNT(*) as count FROM infection WHERE plague_id = " + 1 + " GROUP BY plague) as T);"
     db.query(sql, [id, id], (err, result) => {
         res.send(result);
     });
