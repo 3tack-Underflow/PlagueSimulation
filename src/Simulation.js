@@ -247,16 +247,18 @@ function Simulation() {
     }
 
     const GetVaccineRules = async () => {
-        setVaccineRules([]);
-        for (var i = 0; i < vaccines.length; ++i) {
-            Axios.post('http://localhost:3001/api/get-vaccine-rules', {
+        let new_vaccine_rules = [];
+        let promises = [];
+        for (let i = 0; i < vaccines.length; ++i) {
+            promises.push(Axios.post('http://localhost:3001/api/get-vaccine-rules', {
                 id: testSimId,
                 vaccine: vaccines[i].num
-            }).then((response) => { 
-                vaccineRules.push(response.data)
-                setVaccineRules(vaccineRules); 
-            }); 
-        } 
+            }).then((response) => {
+                new_vaccine_rules.push(response.data)
+            }));
+        }
+        await Promise.all(promises);
+        setVaccineRules(new_vaccine_rules);
     }
 
     const DeleteVaccine = async (vaccine) => {
