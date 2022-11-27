@@ -4,7 +4,7 @@ import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
-import { names, stageWidth, stageHeight } from "./Constants.js"
+import { names, stageWidth, stageHeight, cycle_length_in_seconds } from "./Constants.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -129,6 +129,28 @@ function CreatePage() {
 
         var ruleValues = [];
         for (var i = 1; i <= numRules; ++i) {
+            var randRule = Math.floor(Math.random() * 10)
+            if (randRule === 0) {
+                // temperature rule
+            } else if (randRule == 1) {
+                // humidity rule
+            } else if (randRule == 2) {
+                // elevation rule
+            } else if (randRule == 2) {
+                // age rule by perlin noise
+            } else if (randRule == 3) {
+                // weight rule
+            } else if (randRule == 4) {
+                // height rule
+            } else if (randRule == 5) {
+                // blood type rule
+            } else if (randRule == 6) {
+                // blood pressure
+            } else if (randRule == 7) {
+                // cholesterol
+            } else if (randRule == 8) {
+                // radiation rule by perlin noise
+            }
             var start = ruleList[i][1] + Math.floor(Math.random() * (ruleList[i][2] - ruleList[i][1] - ruleList[i][3]))
             var variant = 1;
             var id = simID;

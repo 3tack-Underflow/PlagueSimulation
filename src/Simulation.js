@@ -5,12 +5,9 @@ import Axios from "axios";
 import { useCookies } from 'react-cookie';
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
-    humidityRangeMin, humidityRangeMax, elevationRange, units} from "./Constants.js"
+    humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds} from "./Constants.js"
 
 function Simulation() {
-    // ADD THIS VARIABLE TO THE SIMULATION OBJECT IN BOTH FRONTEND AND DB
-    const cycle_length_in_seconds = 60;
-
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
 
@@ -467,6 +464,9 @@ function Simulation() {
                                 Weight: {selected.weight} {ViewUnit("Weight")}
                             </label>
                             <label>
+                                Height: {selected.height} {ViewUnit("Height")}
+                            </label>
+                            <label>
                                 Blood Type: {selected.blood_type} {ViewUnit("Blood Type")}
                             </label>
                             <label>
@@ -485,10 +485,12 @@ function Simulation() {
                             <button disabled = {simulation.funds < 50}>
                                 Test: $50
                             </button>
-                            <button>
+                            <button 
+                                style = {{border: FindVaccine(selectedVaccine) === null ? "lightgray 2px solid" : "black 2px solid"}}
+                                disabled = {FindVaccine(selectedVaccine) === null ? 1 : 0}>
                                 Vaccinate{FindVaccine(selectedVaccine) != null ? " " + FindVaccine(selectedVaccine).name : ""}
                             </button>
-                            <button disabled={!UIEnabled} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
+                            <button disabled={!UIEnabled ? 1 : 0} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
                                 {selected.isolated ? "Unisolate" : "Isolate"}
                             </button>
                             <button>
@@ -787,6 +789,7 @@ function Simulation() {
                             <option value="Humidity">Humidity</option>
                             <option value="Elevation">Elevation</option>
                             <option value="Age">Age</option>
+                            <option value="Age">Height</option>
                             <option value="Weight">Weight</option>
                             <option value="Blood Type">Blood Type</option>
                             <option value="Blood Pressure">Blood Pressure</option>

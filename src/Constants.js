@@ -13,9 +13,13 @@ const humidityRangeMax = [80, 75, 70, 65, 60, 55, 50, 45];
 
 const elevationRange = ["Low", "Mid", "High"];
 
+// ADD THIS VARIABLE TO THE SIMULATION OBJECT IN BOTH FRONTEND AND DB
+const cycle_length_in_seconds = 60;
+
 const units = [{type: "Temperature", unit: "°C"}, 
             {type: "Humidity", unit: "%"}, 
             {type: "Elevation", unit: "-"}, 
+            {type: "Height", unit: "cm"},
             {type: "Age", unit: "-"}, 
             {type: "Weight", unit: "lb"},
             {type: "Blood Type", unit: "-"},
@@ -24,7 +28,7 @@ const units = [{type: "Temperature", unit: "°C"},
             {type: "Radiation", unit: "☢"}];
 
 export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, units,
-    temperatureRangeMin, temperatureRangeMax, humidityRangeMin, humidityRangeMax, elevationRange};
+    temperatureRangeMin, temperatureRangeMax, humidityRangeMin, humidityRangeMax, elevationRange, cycle_length_in_seconds};
 
 const names = {
 femaleFirstName: [

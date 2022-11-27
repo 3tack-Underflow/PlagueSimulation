@@ -101,6 +101,14 @@ app.post('/api/insert-sim', (req, res) => {
     });
 });
 
+app.post('/api/delete-sim', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "DELETE FROM simulation WHERE id = ?";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
 app.post('/api/insert-sim-participation', (req, res) => {
     const username = req.body.username;
     const id = req.body.id;
@@ -161,8 +169,7 @@ app.post('/api/insert-plague-rule', (req, res) => {
 app.post('/api/infest', (req, res) => {
     const args = req.body.infestValues;
     const sql = "INSERT INTO infection " +
-        "(human, human_id, plague, plague_id, known) " + 
-        "VALUES ?;";
+        "(human, human_id, plague, plague_id, known) VALUES ?;";
     db.query(sql, [args], (err, result) => {
         res.send(result);
     });
