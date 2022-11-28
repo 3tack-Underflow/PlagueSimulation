@@ -182,6 +182,12 @@ function CreatePage() {
     //     }
     // }
 
+    const handleButton = event => {
+        event.currentTarget.disabled = true;
+        console.log('button clicked');
+        InsertSim();
+    };
+
     const InsertParticipation = async () => {
         // check if cookie exists
         var username = null
@@ -367,7 +373,7 @@ function CreatePage() {
                     command={datapoint.function}>
                 </AssistantEntry>)}
             <div className = "horizontal" style={{margin: '15px 0px 0px 0px'}}>
-                <button onClick={() => {InsertSim()}}>Create</button>
+                <button onClick={handleButton}>Create</button>
                 <button onClick={() => {navigate("/Mainpage")}} >Delete</button>
             </div>
         </div>
