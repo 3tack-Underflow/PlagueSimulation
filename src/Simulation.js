@@ -20,6 +20,7 @@ function Simulation() {
         height: window.innerHeight 
     });
     
+
     const [view, setView] = useState("none");
     const [simulation, setSimulation] = useState({});
     const [simHumans, setSimHumans] = useState([]);

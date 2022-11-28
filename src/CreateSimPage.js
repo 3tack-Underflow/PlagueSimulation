@@ -36,6 +36,8 @@ function CreatePage() {
     const [totalPopulation, setTotalPopulation] = useState(0);
     const [cookies, setCookie] = useCookies(['name']);
 
+    var simHumans = [];
+
     const InsertSim = async () => {
         var origin_rating;
         if (origin === 'Random') origin_rating = Math.floor(Math.random() * 3) + 1;
@@ -125,23 +127,77 @@ function CreatePage() {
         
         ruleList.sort(() => 0.5 - Math.random());
 
-        // later, pick 2 humans to start with, and use their stat as rules
+        simHumans.sort(() => 0.5 - Math.random());
+        simHumans.sort(() => 0.5 - Math.random());
+
+        var status = simHumans[Math.floor(Math.random() * simHumans.length)];
+        var patientZero = status.val;
+        var gridX = status.x;
+        var gridY = status.y;
 
         var ruleValues = [];
         for (var i = 1; i <= numRules; ++i) {
-            var randRule = Math.floor(Math.random() * 10)
+            var randRule = Math.floor(Math.random() * 10);
+            var category, range_lower, range_upper;
             if (randRule === 0) {
-                // temperature rule
+                category = "temperature";
+                var tempRange = 0;
+                for (var k = -stageHeight/2; k < stageHeight/2; k += stageHeight / 6) {
+                    if (patientZero[11] >= stageHeight / 6 * k && patientZero[11] >= stageHeight / 6 * (k + 1)) {
+                        tempRange = k;
+                        break;
+                    }
+                }
+                if (tempRange == 1) {
+                    range_lower = 0;
+                    range_upper = 1;
+                } else if (tempRange == 5) {
+                    range_lower = 4;
+                    range_upper = 5;
+                } else {
+                    if (Math.floor(Math.random() * 2) == 0) {
+                        range_lower = tempRange;
+                        range_upper = tempRange + 1;
+                    } else {
+                        range_lower = tempRange - 1;
+                        range_upper = tempRange;
+                    }
+                }
+                // find 1 or 2 others within range
             } else if (randRule == 1) {
-                // humidity rule
+                category = "humidity"
+                var tempRange = 0;
+                for (var k = -stageWidth/2; k < stageWidth/2; k += stageWidth / 8) {
+                    if (patientZero[12] >= stageWidth / 8 * k && patientZero[12] >= stageWidth / 8 * (k + 1)) {
+                        tempRange = k;
+                        break;
+                    }
+                }
+                if (tempRange == 1) {
+                    range_lower = 0;
+                    range_upper = 1;
+                } else if (tempRange == 7) {
+                    range_lower = 6;
+                    range_upper = 7;
+                } else {
+                    if (Math.floor(Math.random() * 2) == 0) {
+                        range_lower = tempRange;
+                        range_upper = tempRange + 1;
+                    } else {
+                        range_lower = tempRange - 1;
+                        range_upper = tempRange;
+                    }
+                }
+                // find 1 or 2 others within range
             } else if (randRule == 2) {
-                // elevation rule
+                category = "elevation"
             } else if (randRule == 2) {
+                category = "age"
                 // age rule by perlin noise
             } else if (randRule == 3) {
-                // weight rule
+                category = "weight"
             } else if (randRule == 4) {
-                // height rule
+                category = "height"
             } else if (randRule == 5) {
                 // blood type rule
             } else if (randRule == 6) {
@@ -174,6 +230,7 @@ function CreatePage() {
         for (var i = 1; i <= numInfest; ++i) {
             infestValues.push([i, simID, 1, simID, 0]);
         }
+
         await Axios.post('http://localhost:3001/api/infest', {
             infestValues: infestValues
         })
@@ -232,7 +289,7 @@ function CreatePage() {
             })
         }
     }
-
+    
     const InsertSimulationHumans = async () => {
         const gridGap = 60;
         var stageW = stageWidth - gridGap * 2; 
@@ -262,25 +319,29 @@ function CreatePage() {
                 curName = names.maleFirstName[randomNumberInRange(0, names.maleFirstName.length - 1)];
             }
             curName += " " + names.lastName[randomNumberInRange(0, names.lastName.length - 1)];
+            
+            var simHuman = {
+                val: [i + 1,
+                simID,
+                "alive",
+                0,
+                randomNumberInRange(15, 80),
+                randomNumberInRange(80, 280),
+                randomNumberInRange(80, 220),
+                bloodTypes[randomNumberInRange(0, 2)],
+                randomNumberInRange(60, 160),
+                randomNumberInRange(20, 100),
+                randomNumberInRange(40, 3000),
+                gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16),
+                gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16),
+                randomNumberInRange(0, donationRate * 2),
+                null,
+                curName,
+                curGender], x: positions[i][0], y: positions[i][1]};
 
-            values.push(
-                [i + 1,
-                    simID,
-                    "alive",
-                    0,
-                    randomNumberInRange(15, 80),
-                    randomNumberInRange(80, 280),
-                    randomNumberInRange(80, 220),
-                    bloodTypes[randomNumberInRange(0, 2)],
-                    randomNumberInRange(60, 160),
-                    randomNumberInRange(20, 100),
-                    randomNumberInRange(40, 3000),
-                    gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16),
-                    gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16),
-                    randomNumberInRange(0, donationRate * 2),
-                    null,
-                    curName,
-                    curGender]);
+            simHumans.push(simHuman);
+
+            values.push(simHuman.val);
         }
         await Axios.post('http://localhost:3001/api/insert-sim-human', {values: values})
     }
