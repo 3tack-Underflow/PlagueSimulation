@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import { ElevationRange, TemperatureRange, HumidityRange } from "./Functions.js"
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
-    humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds} from "./Constants.js"
+    humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds, gridGap} from "./Constants.js"
 
 // manually calculate total alive maybe?
 
@@ -200,7 +200,8 @@ function Simulation() {
             }
             let isolatedHuman = simHumans[human_num - 1];
             isolatedHuman.isolated = 1;
-            setSimHumans(simHumans.map(human => {return human.num === human_num ? isolatedHuman : human}));
+            var arr = simHumans.map(human => {return human.num === human_num ? isolatedHuman : human});
+            setSimHumans(arr);
             let updated_isolation_capacity_simulation = simulation;
             --updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
@@ -221,7 +222,8 @@ function Simulation() {
             }
             let unisolatedHuman = simHumans[human_num - 1];
             unisolatedHuman.isolated = 0;
-            setSimHumans(simHumans.map(human => {return human.num === human_num ? unisolatedHuman : human}));
+            var arr = simHumans.map(human => {return human.num === human_num ? unisolatedHuman : human});
+            setSimHumans(arr);
             let updated_isolation_capacity_simulation = simulation;
             ++updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
@@ -329,7 +331,8 @@ function Simulation() {
         Axios.post('http://localhost:3001/api/get-simulation_humans', {
             simID: testSimId
         }).then((response) => {
-            setSimHumans(response.data);
+            var arr = response.data;
+            setSimHumans(arr);
         });
     }
 
@@ -405,6 +408,8 @@ function Simulation() {
     infectedFemale.src = "res/sick_female.png";
     let cage = new window.Image();
     cage.src = "res/cage.png";
+    let factory = new window.Image();
+    factory.src = "res/radiation.png";
 
     /* Assumes human is alive */
     const getHumanIcon = (human_num, gender) => {
@@ -484,8 +489,26 @@ function Simulation() {
                         Exit Simulation
                     </button>
                 </div>
-                <div className = "localInfo">
-                    {selected != null &&
+                <div className = "localInfo"> 
+                    {selected != null && selected.description != null && 
+                        <div className = "selectedInfo">
+                            <div className = "title">
+                                <label>
+                                    {selected.name}
+                                </label>
+                            </div>
+                            <label>
+                                Radiation Source
+                            </label>
+                            <img src = {require('./radiation.png')} width = "200px" height = "200px">
+                            </img>
+                            <label></label>
+                            <label>
+                                {selected.description}
+                            </label>
+                        </div>
+                    }
+                    {selected != null && selected.age != null && 
                         <div className = "selectedInfo">
                             <div className = "title">
                                 <label>
@@ -792,10 +815,21 @@ function Simulation() {
                         <Circle
                             x = {selected === null ? 0 : selected.x}
                             y = {selected === null ? 0 : selected.y}
-                            radius = {30}
+                            radius = {selected != null && selected.description != null ? 80 : 30}
                             strokeWidth = {selected === null ? 0 : 4}
                             stroke = "black">
                         </Circle>
+                        <Image 
+                            x = {simulation.factoryX - 25 - 50}
+                            y = {simulation.factoryY - 25 - 50}
+                            width = {50 * 3}
+                            height = {50 * 3}
+                            image = {factory}
+                            onClick = {() => {
+                                setSelected({name: "Factory", description: "The factory might be leaking... Individuals close to the factory might experience higher dosage of radiation...", 
+                                    x: simulation.factoryX, y: simulation.factoryY})
+                            }}>
+                        </Image>
                     </Layer>
                 </Stage>
             </div>

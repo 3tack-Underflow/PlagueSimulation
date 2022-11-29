@@ -5,7 +5,7 @@ import Axios from "axios";
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
 import { names, stageWidth, stageHeight, gridGap, cycle_length_in_seconds } from "./Constants.js"
-import { ElevationRange, HumidityRange, TemperatureRange } from "./Functions.js"
+import { ElevationRange, HumidityRange, TemperatureRange, Distance, MatchAllRules } from "./Functions.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -60,6 +60,11 @@ function CreatePage() {
         
         var facX = randomNumberInRange(11, stageWidth / gridGap - 11);
         var facY = randomNumberInRange(6, stageHeight / gridGap - 6);
+        var stageW = stageWidth - gridGap * 2; 
+        var stageH = stageHeight - gridGap * 2;
+        var facXCoord = gridGap - stageW/2 + facX * gridGap;
+        var facYCoord = gridGap - stageH/2 + facY * gridGap;
+
         invalidLocations.push({x: facX, y: facY});
         invalidLocations.push({x: facX - 1, y: facY});
         invalidLocations.push({x: facX + 1, y: facY});
@@ -69,8 +74,8 @@ function CreatePage() {
         invalidLocations.push({x: facX - 1, y: facY - 1});
         invalidLocations.push({x: facX - 1, y: facY + 1});
         invalidLocations.push({x: facX + 1, y: facY - 1});
-        setFactoryX(facX);
-        setFactoryY(facY);
+        setFactoryX(facXCoord);
+        setFactoryY(facYCoord);
 
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
@@ -83,7 +88,9 @@ function CreatePage() {
             num_deceased: 0, 
             seed: "abcd", 
             funds: 1000,
-            update: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            update: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            factoryX: facXCoord, 
+            factoryY: facYCoord
         }).then((response) => {
             setSimID(response.data[1][0]['LAST_INSERT_ID()']);
         })
@@ -96,7 +103,7 @@ function CreatePage() {
         else if (severity === 'Strong') severity_rating = 2;
         else severity_rating = 3;
         if (severity_rating === 1) {
-            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_r = 10 + Math.floor(Math.random() * 5) * gridGap; // km
             spread_c = Math.floor(1 + Math.random() * 1); // percentage chance for an individual to be infected after an update
             mutation_c = 60 * 6 + Math.floor(Math.random() * (60 * 7)) // time (minutes) * delta_time
             curing_t = 50;
@@ -106,7 +113,7 @@ function CreatePage() {
             numRules = 2;
             numInfest = 1;
         } else if (severity_rating === 2) {
-            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_r = 10 + Math.floor(Math.random() * 5) * gridGap; // km
             spread_c = 3 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 * 3 + Math.floor(Math.random() * (60 * 4)) // time (minutes) * delta_time
             curing_t = 65;
@@ -116,14 +123,14 @@ function CreatePage() {
             numRules = 2;
             numInfest = 2;
         } else {
-            spread_r = 10 + Math.floor(Math.random() * 5); // km
+            spread_r = (10 + Math.floor(Math.random() * 5)) * gridGap; // km
             spread_c = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
             curing_t = 80;
             fatality_t = 60;
             death_r = 20;
             death_c = 60 * 4 + Math.floor(Math.random() * (60 * 5))
-            numRules = 3;
+            numRules = 2;
             numInfest = 2;
         }
         
@@ -144,7 +151,7 @@ function CreatePage() {
         simHumans.sort(() => 0.5 - Math.random());
         simHumans.sort(() => 0.5 - Math.random());
 
-        var status = simHumans[Math.floor(Math.random() * simHumans.length)];
+        var status = simHumans[0];
         var patientZero = status.val;
 
         var ruleValues = [];
@@ -242,7 +249,7 @@ function CreatePage() {
                     range_upper = 220;
                 }
             } else if (randRule == 5) {
-                category = "blood_sugar"
+                category = "blood_type"
                 var type = bloodTypes.indexOf(patientZero[7]) + 1;
                 range_lower = type;
                 range_upper = type;
@@ -289,6 +296,23 @@ function CreatePage() {
         infestValues.push([patientZero[0], simID, 1, simID, 1, 
             initialInfected.toISOString().slice(0, 19).replace('T', ' '), 8]);
 
+        var curInfest = 1;
+        for (var i = 1; i < simHumans.length; ++i) {
+            if (curInfest === numInfest) {
+                break;
+            }
+            var simHuman = simHumans[i].val;
+            if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
+                if (MatchAllRules(simHuman, ruleValues)) {
+                    var infectedTime = new Date();
+                    infectedTime.setDate(infectedTime.getDate() - (Math.floor(Math.random() * 6) + 1) * cycle_length_in_seconds);
+                    infestValues.push([simHuman[0], simID, 1, simID, 0, 
+                        infectedTime.toISOString().slice(0, 19).replace('T', ' '), 8]);
+                    curInfest++;
+                }
+            }
+        }
+
         await Axios.post('http://localhost:3001/api/infest', {
             infestValues: infestValues
         })
@@ -314,7 +338,6 @@ function CreatePage() {
 
     const handleButton = event => {
         event.currentTarget.disabled = true;
-        console.log('button clicked');
         InsertSim();
     };
 
@@ -343,12 +366,8 @@ function CreatePage() {
         }
     }
 
-    var Distance = (x1, y1, x2, y2) => {
-        return (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))).toFixed(0);
-    }
-
     const DistanceToFactory = (x1, y1) => {
-        return Math.sqrt((factoryX * gridGap - x1) * (factoryX * gridGap - x1) + (factoryY * gridGap - y1) * (factoryY * gridGap - y1));
+        return Math.sqrt((factoryX - x1) * (factoryX - x1) + (factoryY - y1) * (factoryY - y1));
     }
     
     const InsertSimulationHumans = async () => {
@@ -416,8 +435,8 @@ function CreatePage() {
             else if (cholesterol >= 140 && cholesterol <= 200 && weight <= 130) cholesterol = randomNumberInRange(80, 200);
             else if (weight >= 130 && weight <= 180 && (cholesterol <= 140 || cholesterol > 200)) cholesterol = randomNumberInRange(50, 250);
 
-            var dist = Distance(positions[i][0] * gridGap, positions[i][1] * gridGap, factoryX * gridGap, factoryY * gridGap);
-            var radiation = 50 + stageWidth - dist;
+            var dist = Distance(gridGap - stageW/2 + positions[i][0] * gridGap, gridGap - stageH/2 + positions[i][1] * gridGap, factoryX, factoryY);
+            var radiation = 50 + stageWidth * 2 - dist;
 
             var simHuman = {
                 val: [i + 1, // id 0

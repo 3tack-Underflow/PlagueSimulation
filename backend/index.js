@@ -86,17 +86,18 @@ app.post('/api/insert-sim', (req, res) => {
     const seed = req.body.seed;
     const funds = req.body.funds;
     const update = req.body.update;
+    const factoryX = req.body.factoryX;
+    const factoryY = req.body.factoryY;
     const sql = "INSERT INTO simulation " + 
         "(sim_name, creation_time, completion_time, last_modified_time, " + 
         "environment_starting_population, environment_isolation_capacity, " + 
-        "status, num_deceased, seed, funds, last_background_update_time) " + 
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?); " + 
+        "status, num_deceased, seed, funds, last_background_update_time, factoryX, factoryY) " + 
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?); " + 
         "SELECT LAST_INSERT_ID();";
     db.query(sql, 
         [disease_name, creation_time, completion_time, 
             last_modified_time, starting_population, isolation_capacity, 
-            sim_status, num_deceased, seed, funds, update], (err, result) => {
-                console.log(err);
+            sim_status, num_deceased, seed, funds, update, factoryX, factoryY], (err, result) => {
         res.send(result);
     });
 });
@@ -130,6 +131,7 @@ app.post('/api/insert-sim-human', (req, res) => {
         "VALUES ?;";
     db.query(sql, [values], (err, result) => {
         res.send(result);
+        // console.log(err); 
     }); 
 });
 
