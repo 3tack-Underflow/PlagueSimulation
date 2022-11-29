@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie';
 
 function Mainpage() {
     const [simList, setSimList] = useState([]);
-    const [cookies, setCookie] = useCookies(['name']);
+    const [cookies, setCookie, removeCookie] = useCookies(['name']);
 
     let navigate = useNavigate();
     useEffect(() => {
@@ -25,10 +25,18 @@ function Mainpage() {
             setSimList(response.data);
         });
     }, []);
+
+    function logout() {
+        removeCookie('name', { path: '/' }); 
+        navigate("/Login")
+    }
     
     return (
     <div className = "Mainpage">
-        <label>Simulation Archive</label>
+        <div style = {{display: "flex", flexDirection: "row", width: "100%"}}>
+            <label>Simulation Archive</label>
+            <button onClick = {() => {logout()}} style={{width: "20%", marginLeft: "auto", marginTop: "0px", marginBottom: "0px", marginRight: "0px"}}> Logout </button>
+        </div>
         <button onClick = {() => {navigate("/Create")}}> Host Simulation </button>
         {/* {<button onClick = {addObject}>  Simulation </button> } */}
         <div className = "scroll-pane">
