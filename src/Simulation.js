@@ -155,24 +155,49 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
+    const test = () => {
+        setUIEnabled(false);
+        const human_num = selected.num;
+        Axios.post('http://localhost:3001/api/test', {
+            cost: 50,
+            simID: testSimId,
+            humanID: human_num
+        }).then((res) => {
+            let new_simulation = {...simulation};
+            new_simulation.funds -= 50;
+            setSimulation(new_simulation);
+
+            if (Object.entries(res.data[4][0])[0][1] === 'negative') {
+                // TELL THE USER THAT THIS PERSON IS NOT INFECTED
+                alert('This person is not infected');
+            } else {
+                let new_infected = {...infected};
+                new_infected[human_num.toString()].known = 1;
+                setInfected(new_infected);
+            }
+            setUIEnabled(true);
+        })
+    };
+
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
             alert("Your environment isolation capacity is full!");
             return;
         }
         setUIEnabled(false);
+        const human_num = selected.num;
         Axios.post('http://localhost:3001/api/isolate', {
             cost: 10, 
             simID: testSimId,
-            humanID: selected.num
+            humanID: human_num
         }).then((res) => {
             if (res.data) {
                 setUIEnabled(true);
                 return;
             }
-            let isolatedHuman = simHumans[selected.num - 1];
+            let isolatedHuman = simHumans[human_num - 1];
             isolatedHuman.isolated = 1;
-            setSimHumans(simHumans.map(human => {return human.num === selected.num ? isolatedHuman : human}));
+            setSimHumans(simHumans.map(human => {return human.num === human_num ? isolatedHuman : human}));
             let updated_isolation_capacity_simulation = simulation;
             --updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
@@ -182,17 +207,18 @@ function Simulation() {
 
     const Unisolate = () => {
         setUIEnabled(false);
+        const human_num = selected.num;
         Axios.post('http://localhost:3001/api/unisolate', {
             simID: testSimId,
-            humanID: selected.num
+            humanID: human_num
         }).then((res) => {
             if (res.data) {
                 setUIEnabled(true);
                 return;
             }
-            let unisolatedHuman = simHumans[selected.num - 1];
+            let unisolatedHuman = simHumans[human_num - 1];
             unisolatedHuman.isolated = 0;
-            setSimHumans(simHumans.map(human => {return human.num === selected.num ? unisolatedHuman : human}));
+            setSimHumans(simHumans.map(human => {return human.num === human_num ? unisolatedHuman : human}));
             let updated_isolation_capacity_simulation = simulation;
             ++updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
@@ -387,7 +413,6 @@ function Simulation() {
         if (infected_human.known === 1) {
             return gender === 'M' ? infectedMale : infectedFemale;
         }
-
         const infection_start_time = new Date(infected_human.infection_time);
         const infected_duration = (new Date() - infection_start_time) / 1000;
         const time_to_die_in_seconds = infected_human.cycles_to_die * cycle_length_in_seconds;
@@ -489,7 +514,9 @@ function Simulation() {
                                 Fund Rate: ${selected.tax}
                             </label>
                             
-                            <button disabled = {simulation.funds < 50}>
+                            <button disabled = {simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
+                                test();
+                            }}>
                                 Test: $50
                             </button>
                             <button 

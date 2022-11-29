@@ -18,6 +18,6 @@ WHERE human = (human num) AND human_id = (simulation id)), 'positive', 'negative
 
 UPDATE infection
 SET known = 1
-WHERE human = (human num) AND human_id = (simulation id) AND status = 'alive';
+WHERE human = (human num) AND human_id = (simulation id);
 
 CALL `user_schema`.`checkRollback`(@human);
