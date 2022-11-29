@@ -35,6 +35,6 @@ isolated = 1 AND status = 'alive';
 UPDATE simulation_humans
 SET isolated = 0
 WHERE num = (human num) AND id = (simulation id) AND
-isolated = 0 AND status = 'alive';
+isolated = 1 AND status = 'alive';
 
 CALL `user_schema`.`checkRollback`(@human);

@@ -4,7 +4,8 @@ import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
-import { names, stageWidth, stageHeight, cycle_length_in_seconds } from "./Constants.js"
+import { names, stageWidth, stageHeight, gridGap, cycle_length_in_seconds } from "./Constants.js"
+import { ElevationRange, HumidityRange, TemperatureRange } from "./Functions.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -39,6 +40,11 @@ function CreatePage() {
 
     var simHumans = [];
 
+    const bloodTypes = ["A", "B", "O"];
+    const [factoryX, setFactoryX] = useState(50);
+    const [factoryY, setFactoryY] = useState(50);
+    var invalidLocations = [];
+
     const InsertSim = async () => {
         var origin_rating;
         if (origin === 'Random') origin_rating = Math.floor(Math.random() * 3) + 1;
@@ -51,6 +57,20 @@ function CreatePage() {
         else if (origin_rating === 2) starting_population = 125 + Math.floor(Math.random() * 51);
         else starting_population = 250 + Math.floor(Math.random() * 101);
         setTotalPopulation(starting_population);
+        
+        var facX = randomNumberInRange(11, stageWidth / gridGap - 11);
+        var facY = randomNumberInRange(6, stageHeight / gridGap - 6);
+        invalidLocations.push({x: facX, y: facY});
+        invalidLocations.push({x: facX - 1, y: facY});
+        invalidLocations.push({x: facX + 1, y: facY});
+        invalidLocations.push({x: facX, y: facY + 1});
+        invalidLocations.push({x: facX, y: facY - 1});
+        invalidLocations.push({x: facX + 1, y: facY + 1});
+        invalidLocations.push({x: facX - 1, y: facY - 1});
+        invalidLocations.push({x: facX - 1, y: facY + 1});
+        invalidLocations.push({x: facX + 1, y: facY - 1});
+        setFactoryX(facX);
+        setFactoryY(facY);
 
         Axios.post('http://localhost:3001/api/insert-sim', {
             disease_name: bacteriumName,
@@ -121,99 +141,139 @@ function CreatePage() {
             death_cooldown: death_c
         })
 
-        // name, min, max, rule_size
-        var ruleList = [["temperature", 10, 40, 5], ["humidity", 20, 60, 5], ["elevation", 1, 3, 1], ["age", 15, 80, 25], 
-            ["weight", 80, 280, 100], ["height", 80, 220, 80], ["blood_sugar", 60, 280, 100], 
-            ["blood_pressure", 60, 160, 30], ["cholesterol", 20, 100, 30], ["radiation", 40, 3000, 1000]];
-        
-        ruleList.sort(() => 0.5 - Math.random());
-
         simHumans.sort(() => 0.5 - Math.random());
         simHumans.sort(() => 0.5 - Math.random());
 
         var status = simHumans[Math.floor(Math.random() * simHumans.length)];
         var patientZero = status.val;
-        var gridX = status.x;
-        var gridY = status.y;
 
         var ruleValues = [];
         for (var i = 1; i <= numRules; ++i) {
-            var randRule = Math.floor(Math.random() * 10);
+            var randRule = Math.floor(Math.random() * 8);
             var category, range_lower, range_upper;
+            var radiationChance = 0;
+            var distToFactory = DistanceToFactory(patientZero[11], patientZero[12]);
+            var ruleFound = false;
+            if (distToFactory < 500) radiationChance = 2;
+            else if (distToFactory < 1000) radiationChance = 3;
+            else if (distToFactory < 1500) radiationChance = 5;
+            if (radiationChance > 0 && randomNumberInRange(1, radiationChance) == 1) {
+                ruleFound = true;
+                category = "radiation";
+                range_lower = patientZero[10] - randomNumberInRange(100, 500);
+                range_upper = stageWidth * 2;
+            }
+            if (!ruleFound) {
             if (randRule === 0) {
                 category = "temperature";
-                var tempRange = 0;
-                for (var k = -stageHeight/2; k < stageHeight/2; k += stageHeight / 6) {
-                    if (patientZero[11] >= stageHeight / 6 * k && patientZero[11] >= stageHeight / 6 * (k + 1)) {
-                        tempRange = k;
-                        break;
-                    }
-                }
-                if (tempRange == 1) {
-                    range_lower = 0;
-                    range_upper = 1;
-                } else if (tempRange == 5) {
-                    range_lower = 4;
-                    range_upper = 5;
+                var level = TemperatureRange(patientZero[12]);
+                if (level === 1) {
+                    range_lower = 1;
+                    range_upper = 2;
+                } else if (level === 6) {
+                    range_lower = 5;
+                    range_upper = 6;
                 } else {
-                    if (Math.floor(Math.random() * 2) == 0) {
-                        range_lower = tempRange;
-                        range_upper = tempRange + 1;
+                    if (Math.floor(Math.random() * 2)=== 0) {
+                        range_lower = level;
+                        range_upper = level + 1;
                     } else {
-                        range_lower = tempRange - 1;
-                        range_upper = tempRange;
+                        range_lower = level - 1;
+                        range_upper = level;
                     }
                 }
-                // find 1 or 2 others within range
             } else if (randRule == 1) {
                 category = "humidity"
-                var tempRange = 0;
-                for (var k = -stageWidth/2; k < stageWidth/2; k += stageWidth / 8) {
-                    if (patientZero[12] >= stageWidth / 8 * k && patientZero[12] >= stageWidth / 8 * (k + 1)) {
-                        tempRange = k;
-                        break;
-                    }
-                }
-                if (tempRange == 1) {
-                    range_lower = 0;
-                    range_upper = 1;
-                } else if (tempRange == 7) {
-                    range_lower = 6;
-                    range_upper = 7;
+                var level = HumidityRange(patientZero[11]);
+                if (level === 1) {
+                    range_lower = 1;
+                    range_upper = 2;
+                } else if (level === 8) {
+                    range_lower = 7;
+                    range_upper = 8;
                 } else {
                     if (Math.floor(Math.random() * 2) == 0) {
-                        range_lower = tempRange;
-                        range_upper = tempRange + 1;
+                        range_lower = level;
+                        range_upper = level + 1;
                     } else {
-                        range_lower = tempRange - 1;
-                        range_upper = tempRange;
+                        range_lower = level - 1;
+                        range_upper = level;
                     }
                 }
-                // find 1 or 2 others within range
+            } else if (randRule == 8) {
+                category = "elevation";
+                var level = ElevationRange(patientZero[11], patientZero[12]);
+                range_lower = level;
+                range_upper = level;
             } else if (randRule == 2) {
-                category = "elevation"
-            } else if (randRule == 2) {
-                category = "age"
-                // age rule by perlin noise
+                category = "age";
+                if (patientZero[4] <= 30) {
+                    range_lower = 15;
+                    range_upper = 30;
+                } else if (patientZero[4] <= 45) {
+                    range_lower = 30;
+                    range_upper = 45;
+                } else {
+                    range_lower = 45;
+                    range_upper = 85;
+                }
             } else if (randRule == 3) {
                 category = "weight"
+                if (patientZero[5] <= 135) {
+                    range_lower = 80;
+                    range_upper = 140;
+                } else if (patientZero[5] <= 180) {
+                    range_lower = 140;
+                    range_upper = 180;
+                } else {
+                    range_lower = 180;
+                    range_upper = 280;
+                }
             } else if (randRule == 4) {
                 category = "height"
+                if (patientZero[6] <= 165) {
+                    range_lower = 120;
+                    range_upper = 160;
+                } else if (patientZero[8] <= 185) {
+                    range_lower = 160;
+                    range_upper = 185;
+                } else {
+                    range_lower = 180;
+                    range_upper = 220;
+                }
             } else if (randRule == 5) {
-                // blood type rule
+                category = "blood_sugar"
+                var type = bloodTypes.indexOf(patientZero[7]) + 1;
+                range_lower = type;
+                range_upper = type;
             } else if (randRule == 6) {
-                // blood pressure
+                category = "blood_pressure"
+                if (patientZero[8] <= 95) {
+                    range_lower = 60;
+                    range_upper = 95;
+                } else if (patientZero[8] <= 120) {
+                    range_lower = 95;
+                    range_upper = 120;
+                } else {
+                    range_lower = 120;
+                    range_upper = 160;
+                }
             } else if (randRule == 7) {
-                // cholesterol
-            } else if (randRule == 8) {
-                // radiation rule by perlin noise
+                category = "cholesterol"
+                if (patientZero[9] <= 130) {
+                    range_lower = 80;
+                    range_upper = 140;
+                } else if (patientZero[9] <= 210) {
+                    range_lower = 130;
+                    range_upper = 210;
+                } else {
+                    range_lower = 200;
+                    range_upper = 260;
+                }
+            } 
             }
-            var start = ruleList[i][1] + Math.floor(Math.random() * (ruleList[i][2] - ruleList[i][1] - ruleList[i][3]))
             var variant = 1;
             var id = simID;
-            var category = ruleList[i][0];
-            var range_lower = start;
-            var range_upper = start + ruleList[i][3];
             var match_value = 10 + Math.floor(Math.random() * (40));
             var miss_value = 10 + Math.floor(Math.random() * (40));
             ruleValues.push([variant, id, category, range_lower, range_upper, match_value, miss_value]);
@@ -222,15 +282,12 @@ function CreatePage() {
         await Axios.post('http://localhost:3001/api/insert-plague-rule', {
             values: ruleValues
         })
-        
-        var humanIds = [];
-        for (var i = 1; i <= totalPopulation; ++i) humanIds.push(i);
-        humanIds.sort(() => 0.5 - Math.random());
 
         var infestValues = [];
-        for (var i = 1; i <= numInfest; ++i) {
-            infestValues.push([i, simID, 1, simID, 0]);
-        }
+        var initialInfected = new Date();
+        initialInfected.setDate(initialInfected.getDate() - 7 * cycle_length_in_seconds);
+        infestValues.push([patientZero[0], simID, 1, simID, 1, 
+            initialInfected.toISOString().slice(0, 19).replace('T', ' '), 8]);
 
         await Axios.post('http://localhost:3001/api/infest', {
             infestValues: infestValues
@@ -255,20 +312,6 @@ function CreatePage() {
         }) 
     }, [simID]);
 
-    // const GenerateSimulation = async () => {
-    //     for (var i = 0; i < 1000; ++i) {
-    //         InsertSim().then(() => {
-    //             InsertParticipation().then(() => {
-    //                 InsertSimulationHumans().then(() => {
-    //                     InsertPlague().then(() => {
-    //                         navigate("/Mainpage");
-    //                     })
-    //                 })
-    //             }) 
-    //         })
-    //     }
-    // }
-
     const handleButton = event => {
         event.currentTarget.disabled = true;
         console.log('button clicked');
@@ -278,13 +321,9 @@ function CreatePage() {
     const InsertParticipation = async () => {
         // check if cookie exists
         var username = null
-        if (cookies.name != null)
-        {
-            username = cookies.name
-        }
-        else
-        {
-            // redirect to login
+        if (cookies.name != null) {
+            username = cookies.name;
+        } else {
             navigate("/Login");
         }
 
@@ -303,9 +342,16 @@ function CreatePage() {
             })
         }
     }
+
+    var Distance = (x1, y1, x2, y2) => {
+        return (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))).toFixed(0);
+    }
+
+    const DistanceToFactory = (x1, y1) => {
+        return Math.sqrt((factoryX * gridGap - x1) * (factoryX * gridGap - x1) + (factoryY * gridGap - y1) * (factoryY * gridGap - y1));
+    }
     
     const InsertSimulationHumans = async () => {
-        const gridGap = 60;
         var stageW = stageWidth - gridGap * 2; 
         var stageH = stageHeight - gridGap * 2;
         var donationRate = randomNumberInRange(20, 50);
@@ -314,14 +360,21 @@ function CreatePage() {
         var positions = [];
         for (var i = 0; i < Math.floor(stageW / gridGap) - 1; ++i) {
             for (var j = 0; j < Math.floor(stageH / gridGap) - 1; ++j) {
-                positions.push([i, j]);
+                var canAdd = true;
+                for (var k = 0; k < invalidLocations.length; ++k) {
+                    if (invalidLocations[k].x === i && invalidLocations[k].y === j) {
+                        canAdd = false;
+                        break;
+                    }
+                }
+                if (canAdd) {
+                    positions.push([i, j]);
+                }
             }
         }
-        
-        positions.sort(() => 0.5 - Math.random());
-        positions.sort(() => 0.5 - Math.random());
 
-        var bloodTypes = ["A", "B", "O"];
+        positions.sort(() => 0.5 - Math.random());
+        positions.sort(() => 0.5 - Math.random());
         
         for (var i = 0; i < totalPopulation; ++i) {
             var curName = "";
@@ -334,24 +387,57 @@ function CreatePage() {
             }
             curName += " " + names.lastName[randomNumberInRange(0, names.lastName.length - 1)];
             
+            // setting unique random variables
+            var age = randomNumberInRange(15, 95);
+            if (age > 55) age = randomNumberInRange(15, 95);
+            if (age > 75) age = randomNumberInRange(15, 95);
+            
+            var weight = randomNumberInRange(80, 280);
+            if (weight < 130) weight = randomNumberInRange(80, 180);
+            if (weight > 180) weight = randomNumberInRange(130, 280);
+            if (weight > 180) weight = randomNumberInRange(130, 280);
+
+            var height = randomNumberInRange(120, 220);
+            if (height < 150) height = randomNumberInRange(120, 185);
+            if (height > 185) height = randomNumberInRange(150, 220);
+
+            var bloodPressure = randomNumberInRange(60, 160);
+            if (bloodPressure >= 80 && bloodPressure <= 120 && age >= 50) {
+                var rand = Math.floor(Math.random() * 3);
+                if (rand == 0) bloodPressure = randomNumberInRange(120, 160);
+                else if (rand == 1) bloodPressure = randomNumberInRange(60, 80);
+                else bloodPressure = randomNumberInRange(80, 120);
+            } else if (age < 50 && (bloodPressure < 80 || bloodPressure >= 120)) {
+                bloodPressure = randomNumberInRange(65, 155);
+            }
+            
+            var cholesterol = randomNumberInRange(80, 260);
+            if (cholesterol >= 140 && cholesterol <= 200 && weight >= 180) cholesterol = randomNumberInRange(140, 260);
+            else if (cholesterol >= 140 && cholesterol <= 200 && weight <= 130) cholesterol = randomNumberInRange(80, 200);
+            else if (weight >= 130 && weight <= 180 && (cholesterol <= 140 || cholesterol > 200)) cholesterol = randomNumberInRange(50, 250);
+
+            var dist = Distance(positions[i][0] * gridGap, positions[i][1] * gridGap, factoryX * gridGap, factoryY * gridGap);
+            var radiation = 50 + stageWidth - dist;
+
             var simHuman = {
-                val: [i + 1,
-                simID,
-                "alive",
-                0,
-                randomNumberInRange(15, 80),
-                randomNumberInRange(80, 280),
-                randomNumberInRange(80, 220),
-                bloodTypes[randomNumberInRange(0, 2)],
-                randomNumberInRange(60, 160),
-                randomNumberInRange(20, 100),
-                randomNumberInRange(40, 3000),
-                gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16),
-                gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16),
-                randomNumberInRange(0, donationRate * 2),
-                null,
-                curName,
-                curGender], x: positions[i][0], y: positions[i][1]};
+                val: [i + 1, // id 0
+                simID, // simID 1
+                "alive", // status 2
+                0, // isolated 3
+                age, // age 4
+                weight, // weight 5
+                randomNumberInRange(80, 220), //height 6
+                bloodTypes[randomNumberInRange(0, 2)], // blood type 7
+                bloodPressure, // blood pressure 8
+                cholesterol, // cholesterol 9
+                radiation, // radiation 10
+                gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16), // x 11
+                gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16), // y 12
+                randomNumberInRange(0, donationRate * 2), // tax 13
+                null, // mark 14
+                curName, // name 15
+                curGender], // gender 16
+                x: positions[i][0], y: positions[i][1]}; 
 
             simHumans.push(simHuman);
 

@@ -169,7 +169,7 @@ app.post('/api/insert-plague-rule', (req, res) => {
 app.post('/api/infest', (req, res) => {
     const args = req.body.infestValues;
     const sql = "INSERT INTO infection " +
-        "(human, human_id, plague, plague_id, known) VALUES ?;";
+        "(human, human_id, plague, plague_id, known, infection_time, cycles_to_die) VALUES ?;";
     db.query(sql, [args], (err, result) => {
         res.send(result);
     });
@@ -295,25 +295,25 @@ app.post('/api/unisolate', (req, res) => {
     const humanID = req.body.humanID; 
 
     const sql = 
-    "START TRANSACTION; " + 
+        "START TRANSACTION; " + 
 
-    "UPDATE simulation " + 
-    "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
-    "WHERE id = " + simID + "; " + 
+        "UPDATE simulation " + 
+        "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
+        "WHERE id = " + simID + "; " + 
 
-    "SELECT @human:=NULL;" +
-    
-    "SELECT @human:=num " +
-    "FROM simulation_humans " + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
-    "isolated = 1 AND status = 'alive'; " + 
-    
-    "UPDATE simulation_humans " +
-    "SET isolated = 0 " + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
-    "isolated = 0 AND status = 'alive'; " +
-    
-    "CALL `user_schema`.`checkRollback`(@human);"
+        "SELECT @human:=NULL;" +
+        
+        "SELECT @human:=num " +
+        "FROM simulation_humans " + 
+        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+        "isolated = 1 AND status = 'alive'; " + 
+        
+        "UPDATE simulation_humans " +
+        "SET isolated = 0 " + 
+        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+        "isolated = 1 AND status = 'alive'; " +
+        
+        "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, (err, result) => {
         res.send(err);
     });

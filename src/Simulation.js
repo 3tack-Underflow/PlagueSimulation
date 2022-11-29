@@ -3,9 +3,12 @@ import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
+import { ElevationRange, TemperatureRange, HumidityRange } from "./Functions.js"
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
     humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds} from "./Constants.js"
+
+// manually calculate total alive maybe?
 
 function Simulation() {
     const windowUrl = window.location.search;
@@ -675,7 +678,6 @@ function Simulation() {
                                 visible = {view === "Humidity" ? 1 : 0}>
                             </Rect>
                         )}
-
                         <Shape
                             sceneFunc={(context, shape) => {
                                 context.beginPath();
