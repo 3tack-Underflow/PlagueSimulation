@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { useCookies } from 'react-cookie';
 import './App.css';
 import Axios from "axios";
 
@@ -9,6 +10,7 @@ function SimInfo(){
     const [dataList, setDataList] = useState({});
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
+    const [cookies, setCookie] = useCookies(['name']);
 
     const id = params.get('id')
 
@@ -23,6 +25,10 @@ function SimInfo(){
     }
 
     useEffect(() => {
+      if (cookies.name == null) {
+        navigate("/Login");
+      }
+
         Axios.post('http://localhost:3001/api/get-sim', {
             id: id
         }).then((response) => {

@@ -35,6 +35,7 @@ function CreatePage() {
     const [simID, setSimID] = useState(0);
     const [totalPopulation, setTotalPopulation] = useState(0);
     const [cookies, setCookie] = useCookies(['name']);
+    var username = 'april'
 
     var simHumans = [];
 
@@ -237,6 +238,13 @@ function CreatePage() {
     }
 
     useEffect(() => { 
+        // check if cookie exists
+        if (cookies.name != null) {
+            username = cookies.name
+        } else {
+            navigate("/Login");
+        }
+
         if (simID === 0) return;
         InsertParticipation().then(() => {
             InsertSimulationHumans().then(() => {
@@ -284,7 +292,7 @@ function CreatePage() {
             id: simID,
             owner: 1,
             //assistant_username: username
-            username: 'robert'
+            username: username
         })
         
         for (var i = 0; i < assistants.length; ++i) {

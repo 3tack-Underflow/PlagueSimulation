@@ -271,6 +271,10 @@ function Simulation() {
     }
 
     useEffect(() => {
+        if (cookies.name == null) {
+            navigate("/Login");
+        }
+
         GetVaccineRules();
     }, [vaccines]);
 
