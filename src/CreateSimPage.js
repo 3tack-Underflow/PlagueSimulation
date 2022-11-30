@@ -186,7 +186,7 @@ function CreatePage() {
 
         var infestValues = [];
         var initialInfected = new Date();
-        initialInfected.setDate(initialInfected.getDate() - 7 * cycle_length_in_seconds);
+        initialInfected.setTime(initialInfected.getTime() - 7 * cycle_length_in_seconds);
         infestValues.push([patientZero[0], simID, 1, simID, 1, 
             initialInfected.toISOString().slice(0, 19).replace('T', ' '), 8]);
 
@@ -195,9 +195,9 @@ function CreatePage() {
             var simHuman = neighbours[i];
             if (MatchRules(simHuman, rules)) {
                 var infectedTime = new Date();
-                infectedTime.setDate(infectedTime.getDate() - (1 * cycle_length_in_seconds * 1000));
+                infectedTime.setTime(infectedTime.getTime() - (randomNumberInRange(1, 4) * cycle_length_in_seconds * 1000));
                 infestValues.push([simHuman[0], simID, 1, simID, 0, 
-                    infectedTime.toISOString().slice(0, 19).replace('T', ' '), 100]);
+                    infectedTime.toISOString().slice(0, 19).replace('T', ' '), 8]);
                 curInfest++;
             }
             if (curInfest === numInfest) {
