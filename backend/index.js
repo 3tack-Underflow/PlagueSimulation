@@ -361,7 +361,21 @@ app.post('/api/collect-tax', (req, res) => {
     const sql = 
     "UPDATE simulation " +
     "SET funds = funds + (SELECT SUM(tax) FROM simulation_humans WHERE id = " + id + " AND status = 'alive' AND isolated = 0) " +
-    "WHERE id = (simulation id);"
+    "WHERE id = " + id + ";"
+
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
+app.post('/api/mark', (req, res) => {
+    const simID = req.body.simID; 
+    const humanID = req.body.humanID; 
+    const mark = req.body.mark;
+
+    const sql = 
+    "UPDATE simulation_humans " +
+    "SET mark = " + mark + " WHERE id = " + simID + " AND num = " + humanID + ";"
 
     db.query(sql, (err, result) => {
         res.send(err);
