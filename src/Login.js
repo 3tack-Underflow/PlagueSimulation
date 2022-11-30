@@ -9,9 +9,13 @@ function  Login() {
   const [password, setPassword] = useState("");
   const [keepLogged, setKeepLogged] = useState(false);
   const [cookies, setCookie] = useCookies(['name']);
+  const [sims, setSims] = useState([]);
   var Capspool = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M','q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
   var passpool = ['!','@','#','$','%','^','&','*','(',')','1','2','3','4','5','6','7','8','9','0','Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M','q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
   var generateUser = async () => {
+    await Axios.post('http://localhost:3001/api/get-all-sims').then((response) => {
+        setSims(response.data);
+    });
     for (var i = 0; i < 100; i++) {
       var name = "";
       var pw = ""
@@ -20,8 +24,18 @@ function  Login() {
       for (var j = 0; j < namelen; j++) {
         name += Capspool[Math.floor(Math.random() * 52)];
       }
-      for (var j = 0; j < passlen; ++j) {
+      for (j = 0; j < passlen; ++j) {
         pw += passpool[Math.floor(Math.random() * 72)];
+      }
+      for (j = 0 ; j < sims.length ; ++j) {
+          // insert into simulations
+          if (Math.floor(Math.random() * 100) === 1) {
+            await Axios.post('http://localhost:3001/api/insert-sim-participation', {  
+                username : name,
+                id : sims[j].id,
+                owner : false
+            })
+          }
       }
       await Axios.post('http://localhost:3001/api/insert-user', {  
         user: name, 
@@ -32,8 +46,6 @@ function  Login() {
   function checkInfo() {
     console.log(username)
     console.log(password)
-
-    
 
     Axios.post('http://localhost:3001/api/login', {
           user: username, 

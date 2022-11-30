@@ -32,8 +32,8 @@ app.get('/api/get-login', (req, res) => {
 app.post('/api/login', (req, res) => {
     const username = req.body.user; 
     const password = req.body.pass;
-    // send to the front endgit 
-    const sql = "SELECT IF(EXISTS (SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'), true, false);";
+    // send to the front end
+    const sql = "SELECT IF(EXISTS (SELECT * FROM user WHERE username = ? AND password = ?), true, false);";
     db.query(sql, [username, password], (err, result) => {
         console.log(result);
         res.send(result);
@@ -245,24 +245,24 @@ app.post('/api/isolate', (req, res) => {
     "START TRANSACTION; " + 
 
     "UPDATE simulation " + 
-    "SET funds = funds - " + isolationCost + 
+    "SET funds = funds - ?"
     ", environment_isolation_capacity = environment_isolation_capacity - 1 " +
-    "WHERE id = " + simID + "; " + 
+    "WHERE id = ?; " + 
 
     "SELECT @human:=NULL;" +
     
     "SELECT @human:=num " +
     "FROM simulation_humans " + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "WHERE num = ? AND id = ? AND " + 
     "isolated = 0 AND status = 'alive'; " + 
     
     "UPDATE simulation_humans " +
     "SET isolated = 1 " + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "WHERE num = ? AND id = ? AND " + 
     "isolated = 0 AND status = 'alive'; " + 
     
     "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, (err, result) => {
+    db.query(sql, [0, simID, humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });
 });
@@ -274,20 +274,20 @@ app.post('/api/test', (req, res) => {
 
     const sql = "START TRANSACTION; " +
         "UPDATE simulation " +
-        "SET funds = funds - " + cost + " " +
-        "WHERE id = " + simID + "; " +
+        "SET funds = funds - ? " +
+        "WHERE id = ?; " +
         "SELECT @human:=NULL; " +
         "SELECT @human:=num " +
         "FROM simulation_humans " +
-        "WHERE num = " + humanID + " AND id = " + simID + " " +
+        "WHERE num = ? AND id = ? " +
         "AND status = 'alive'; " +
         "SELECT IF(EXISTS (SELECT * FROM infection " +
-        "WHERE human = " + humanID + " AND human_id = " + simID + "), 'positive', 'negative'); " +
+        "WHERE human = ? AND human_id = ?), 'positive', 'negative'); " +
         "UPDATE infection " +
         "SET known = 1 " +
-        "WHERE human = " + humanID + " AND human_id = " + simID + "; " +
+        "WHERE human = ? AND human_id = ?; " +
         "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, (err, result) => {
+    db.query(sql, [cost, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
         res.send(result);
     });
 });
@@ -301,22 +301,53 @@ app.post('/api/unisolate', (req, res) => {
 
         "UPDATE simulation " + 
         "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
-        "WHERE id = " + simID + "; " + 
+        "WHERE id = ?; " + 
 
         "SELECT @human:=NULL;" +
         
         "SELECT @human:=num " +
         "FROM simulation_humans " + 
-        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+        "WHERE num = ? AND id = ? AND " + 
         "isolated = 1 AND status = 'alive'; " + 
         
         "UPDATE simulation_humans " +
         "SET isolated = 0 " + 
-        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+        "WHERE num = ? AND id = ? AND " + 
         "isolated = 1 AND status = 'alive'; " +
         
         "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, (err, result) => {
+    db.query(sql, [simID, humanID, simID, humanID, simID], (err, result) => {
+        res.send(err);
+    });
+});
+
+app.post('/api/kill_human', (req, res) => {
+    const simID = req.body.simID;
+    const humanID = req.body.humanID;
+
+    const sql =
+        "START TRANSACTION; " +
+
+        "UPDATE simulation " +
+        "SET num_deceased = num_deceased + 1 " +
+        "WHERE id = ?;" +
+
+        "SELECT @human:=NULL;" +
+
+        "SELECT @human:=num " +
+        "FROM simulation_humans, infection " +
+        "WHERE num = ? AND id = ? AND status = 'alive' " +
+        "AND human = ? AND human_id = ?; " +
+
+        "DELETE FROM infection " +
+        "WHERE human = ? AND human_id = ?;" +
+
+        "UPDATE simulation_humans " +
+        "SET status = dead " +
+        "WHERE num = ? AND id = ?;" +
+
+        "CALL `user_schema`.`checkRollback`(@human);"
+    db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });
 });
@@ -330,27 +361,27 @@ app.post('/api/sanitize', (req, res) => {
     "START TRANSACTION; " + 
 
     "UPDATE simulation " +
-    "SET funds = funds - " + santizeCost + " " +
-    "WHERE id = " + simID + ";" +
+    "SET funds = funds - ? " +
+    "WHERE id = ?;" +
 
     "UPDATE simulation " +
     "SET environment_isolation_capacity = environment_isolation_capacity + 1 " +
-    "WHERE (SELECT status, isolated FROM simulation_humans WHERE num = " + humanID + " AND id = " + simID + " ) = ('dead', 1) " +
-    "AND id = " + simID + ";" +
+    "WHERE (SELECT status, isolated FROM simulation_humans WHERE num = ? AND id = ? ) = ('dead', 1) " +
+    "AND id = ?;" +
 
     "SELECT @human:=NULL;" +
     
     "SELECT @human:=num " +
     "FROM simulation_humans " + 
-    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "WHERE num = ? AND id = ? AND " + 
     "status = 'dead'; " + 
     
     "DELETE FROM simulation_humans " +
-    "WHERE num = " + humanID + " AND id = " + simID +
-    " AND status = 'dead'; " +
+    "WHERE num = ? AND id = ? " +
+    "AND status = 'dead'; " +
     
     "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, (err, result) => {
+    db.query(sql, [sanitizeCost, simID, humanID, simID, simID, humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });
 });
@@ -360,10 +391,10 @@ app.post('/api/collect-tax', (req, res) => {
 
     const sql = 
     "UPDATE simulation " +
-    "SET funds = funds + (SELECT SUM(tax) FROM simulation_humans WHERE id = " + id + " AND status = 'alive' AND isolated = 0) " +
-    "WHERE id = " + id + ";"
+    "SET funds = funds + (SELECT SUM(tax) FROM simulation_humans WHERE id = ? AND status = 'alive' AND isolated = 0) " +
+    "WHERE id = ?;"
 
-    db.query(sql, (err, result) => {
+    db.query(sql, [id, id], (err, result) => {
         res.send(err);
     });
 });
@@ -375,9 +406,9 @@ app.post('/api/mark', (req, res) => {
 
     const sql = 
     "UPDATE simulation_humans " +
-    "SET mark = " + mark + " WHERE id = " + simID + " AND num = " + humanID + ";"
+    "SET mark = ? WHERE id = ? AND num = ?;"
 
-    db.query(sql, (err, result) => {
+    db.query(sql, [mark, simID, humanID], (err, result) => {
         res.send(err);
     });
 });
@@ -435,7 +466,7 @@ app.post('/api/delete-vaccine', (req, res) => {
 
 app.post('/api/find-mutate', (req, res) => {
     const id = req.body.id;
-    const sql = "SELECT plague FROM infection WHERE plague_id = " + id + " GROUP BY plague HAVING COUNT(*) = (SELECT MAX(count) FROM (SELECT plague, COUNT(*) as count FROM infection WHERE plague_id = " + 1 + " GROUP BY plague) as T);"
+    const sql = "SELECT plague FROM infection WHERE plague_id = ? GROUP BY plague HAVING COUNT(*) = (SELECT MAX(count) FROM (SELECT plague, COUNT(*) as count FROM infection WHERE plague_id = ? GROUP BY plague) as T);"
     db.query(sql, [id, id], (err, result) => {
         res.send(result);
     });
@@ -447,6 +478,22 @@ app.post('/api/get-sim', (req, res) => {
     // send to the front end
     const sqlInsert = "SELECT * FROM simulation WHERE id = (?);";
     db.query(sqlInsert, [id], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-all-sims', (req, res) => {
+    // send to the front end
+    const sqlInsert = "SELECT * FROM simulation;";
+    db.query(sqlInsert, (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-all-users', (req, res) => {
+    // send to the front end
+    const sqlInsert = "SELECT * FROM user;";
+    db.query(sqlInsert, (err, result) => {
         res.send(result);
     });
 });

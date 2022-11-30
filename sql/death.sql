@@ -9,13 +9,14 @@ WHERE id = (simulation id);
 SELECT @human:=NULL;
 
 SELECT @human:=num
-FROM simulation_humans
-WHERE num = (human num) AND id = (simulation id) AND
-status = 'alive';
+FROM simulation_humans, infection
+WHERE num = (human num) AND id = (simulation id) AND status = 'alive'
+AND human = (human num) AND human_id = (simulation_id);
+
+DELETE FROM infection WHERE human= (human num) AND human_id = (simulation_id);
 
 UPDATE simulation_humans
 SET status = 'dead'
-WHERE num = (human num) AND id = (simulation id) AND
-status = 'alive';
+WHERE num = (human num) AND id = (simulation id) AND status = 'alive';
 
 CALL `user_schema`.`checkRollback`(@human);
