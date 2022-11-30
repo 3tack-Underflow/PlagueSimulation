@@ -321,6 +321,37 @@ app.post('/api/unisolate', (req, res) => {
     });
 });
 
+app.post('/api/kill_human', (req, res) => {
+    const simID = req.body.simID;
+    const humanID = req.body.humanID;
+
+    const sql =
+        "START TRANSACTION; " +
+
+        "UPDATE simulation " +
+        "SET num_deceased = num_deceased + 1 " +
+        "WHERE id = ?;" +
+
+        "SELECT @human:=NULL;" +
+
+        "SELECT @human:=num " +
+        "FROM simulation_humans, infection " +
+        "WHERE num = ? AND id = ? AND status = 'alive' " +
+        "AND human = ? AND human_id = ?; " +
+
+        "DELETE FROM infection " +
+        "WHERE human = ? AND human_id = ?;" +
+
+        "UPDATE simulation_humans " +
+        "SET status = dead " +
+        "WHERE num = ? AND id = ?;" +
+
+        "CALL `user_schema`.`checkRollback`(@human);"
+    db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
+        res.send(err);
+    });
+});
+
 app.post('/api/sanitize', (req, res) => {
     const sanitizeCost = req.body.cost; 
     const simID = req.body.simID; 

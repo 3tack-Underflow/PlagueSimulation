@@ -231,6 +231,24 @@ function Simulation() {
         });
     }
 
+    const killHuman = async (human_num) => {
+        Axios.post('http://localhost:3001/api/kill_human', {
+            simID: testSimId,
+            humanID: human_num
+        }).then((res) => {
+            if (res.data) return;
+            let new_simulation = {...simulation};
+            new_simulation.num_deceased++;
+            setSimulation(new_simulation);
+            let new_sim_humans = [...simHumans];
+            new_sim_humans[human_num - 1].status = 'dead';
+            setSimHumans(new_sim_humans);
+            let new_infected = {...infected};
+            delete new_infected[human_num.toString()];
+            setInfected(new_infected);
+        });
+    };
+
     const InsertVaccine = async () => {
         await Axios.post('http://localhost:3001/api/prototype-vaccine', {
             id: testSimId,
@@ -406,13 +424,22 @@ function Simulation() {
     infectedMale.src = "res/sick_male.png";
     let infectedFemale = new window.Image();
     infectedFemale.src = "res/sick_female.png";
+    let deadMale = new window.Image();
+    deadMale.src = "res/dead_male.png";
+    let deadFemale = new window.Image();
+    deadFemale.src = "res/dead_female.png";
     let cage = new window.Image();
     cage.src = "res/cage.png";
     let factory = new window.Image();
     factory.src = "res/radiation.png";
 
-    /* Assumes human is alive */
+    /* Gender is either 'M' or 'F' */
     const getHumanIcon = (human_num, gender) => {
+        const human = simHumans[human_num - 1];
+        if (human.status === 'dead') {
+            return gender === 'M' ? deadMale : deadFemale;
+        }
+
         const infected_human = infected[human_num.toString()];
         if (infected_human === undefined) {
             return gender === 'M' ? healthyMale : healthyFemale;
@@ -543,7 +570,7 @@ function Simulation() {
                                 Distance:{Distance(selected.x, selected.y, simulation.factoryX, simulation.factoryY)}
                             </label>
                             
-                            <button disabled = {simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
+                            <button disabled = {!UIEnabled || simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
                                 test();
                             }}>
                                 Test: $50
