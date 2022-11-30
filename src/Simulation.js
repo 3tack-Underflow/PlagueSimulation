@@ -51,6 +51,7 @@ function Simulation() {
     const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
     const [vaccineRules, setVaccineRules] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
+    const [markOption, setMarkOption] = useState(null);
 
     const ProductionCost = (rules) => {
         var cost = 0;
@@ -181,6 +182,19 @@ function Simulation() {
             setUIEnabled(true);
         })
     };
+
+    const Mark = (option) => {
+        if (option === markOption) return;
+        Axios.post('http://localhost:3001/api/mark', {
+            simID: testSimId,
+            humanID: selected.num,
+            mark: option
+        }).then(() => {
+            setMarkOption(option);
+            selected.mark = option;
+            setSelected(selected);
+        })
+    }
 
     const Isolate = () => {
         if (simulation.environment_isolation_capacity === 0) {
@@ -590,26 +604,31 @@ function Simulation() {
                                 <label>
                                     Mark:
                                 </label>
-                                <button style={{backgroundColor: "transparent", 
+                                <button style={{backgroundColor: "white", 
                                     width: selected.marked == null ? "30px" : "20px",
                                     height: selected.marked == null ? "30px" : "20px",
-                                    borderRadius: selected.marked == null ? "15px" : "10px"}}></button>
+                                    borderRadius: selected.marked == null ? "15px" : "10px"}}
+                                    onClick = {() => { Mark(null); }}></button>
                                 <button style={{backgroundColor: "yellow", 
                                     width: selected.marked == 1 ? "30px" : "20px",
                                     height: selected.marked == 1 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 1 ? "15px" : "10px"}}></button>
+                                    borderRadius: selected.marked == 1 ? "15px" : "10px"}}
+                                    onClick = {() => { Mark(1); }}></button>
                                 <button style={{backgroundColor: "orange", 
                                     width: selected.marked == 2 ? "30px" : "20px",
                                     height: selected.marked == 2 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 2 ? "15px" : "10px"}}></button>
+                                    borderRadius: selected.marked == 2 ? "15px" : "10px"}}
+                                    onClick = {() => { Mark(2); }}></button>
                                 <button style={{backgroundColor: "red", 
                                     width: selected.marked == 3 ? "30px" : "20px",
                                     height: selected.marked == 3 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 3 ? "15px" : "10px"}}></button>
+                                    borderRadius: selected.marked == 3 ? "15px" : "10px"}}
+                                    onClick = {() => { Mark(3); }}></button>
                                 <button style={{backgroundColor: "crimson", 
                                     width: selected.marked == 4 ? "30px" : "20px",
                                     height: selected.marked == 4 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 4 ? "15px" : "10px"}}></button>
+                                    borderRadius: selected.marked == 4 ? "15px" : "10px"}}
+                                    onClick = {() => { Mark(4); }}></button>
                             </div>
                         </div>
                     }

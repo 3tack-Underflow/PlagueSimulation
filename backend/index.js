@@ -409,7 +409,7 @@ app.post('/api/mark', (req, res) => {
     "SET mark = ? WHERE id = ? AND num = ?;"
 
     db.query(sql, [mark, simID, humanID], (err, result) => {
-        res.send(err);
+        res.send(result);
     });
 });
 
