@@ -368,6 +368,20 @@ app.post('/api/collect-tax', (req, res) => {
     });
 });
 
+app.post('/api/mark', (req, res) => {
+    const simID = req.body.simID; 
+    const humanID = req.body.humanID; 
+    const mark = req.body.mark;
+
+    const sql = 
+    "UPDATE simulation_humans " +
+    "SET mark = " + mark + " WHERE id = " + simID + " AND num = " + humanID + ";"
+
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
 
 app.post('/api/prototype-vaccine', (req, res) => {
     const id = req.body.id;
