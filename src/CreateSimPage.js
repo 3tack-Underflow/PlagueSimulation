@@ -141,7 +141,7 @@ function CreatePage() {
             death_r = 20;
             death_c = 60 * 4 + Math.floor(Math.random() * (60 * 5))
             numRules = 2;
-            numInfest = 5;
+            numInfest = 4;
         }
         
         await Axios.post('http://localhost:3001/api/insert-plague', {
@@ -158,19 +158,28 @@ function CreatePage() {
             death_cooldown: death_c
         })
 
-        simHumans.sort(() => 0.5 - Math.random());
-        simHumans.sort(() => 0.5 - Math.random());
-
         var status = simHumans[0];
         var patientZero = status.val;
 
         var neighbours = [];
-        for (var i = 1; i < simHumans.length; ++i) {
-            var simHuman = simHumans[i].val;
-            if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
-                neighbours.push(simHuman);
+
+        while (true) {
+            simHumans.sort(() => 0.5 - Math.random());
+            simHumans.sort(() => 0.5 - Math.random());
+            var status = simHumans[0];
+            var patientZero = status.val;
+            neighbours = [];
+            for (var i = 1; i < simHumans.length; ++i) {
+                var simHuman = simHumans[i].val;
+                if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
+                    neighbours.push(simHuman);
+                }
+            }
+            if (neighbours.length >= 10) {
+                break;
             }
         }
+        
         var rules = FindRules(patientZero, neighbours, numInfest);
         var ruleValues = [];
         var variant = 1;
@@ -262,7 +271,6 @@ function CreatePage() {
     const InsertSimulationHumans = async () => {
         var stageW = stageWidth - gridGap * 2; 
         var stageH = stageHeight - gridGap * 2;
-        var donationRate = randomNumberInRange(20, 50);
         var values = [];
         
         var positions = [];
@@ -326,6 +334,16 @@ function CreatePage() {
 
             var dist = Distance(gridGap - stageW/2 + positions[i][0] * gridGap, gridGap - stageH/2 + positions[i][1] * gridGap, factoryX, factoryY);
             var radiation = 50 + stageWidth * 2 - dist;
+            
+            var fundRate = 5 + randomNumberInRange(0, 10);
+            var wealthFactor = randomNumberInRange(0, 30);
+            if (wealthFactor === 0) {
+                fundRate = 0;
+            } else if (wealthFactor === 1) {
+                fundRate = randomNumberInRange(0, 5);
+            } else if (wealthFactor === 2) {
+                fundRate += randomNumberInRange(0, 25);
+            }
 
             var simHuman = {
                 val: [i + 1, // id 0
@@ -341,7 +359,7 @@ function CreatePage() {
                 radiation, // radiation 10
                 gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16), // x 11
                 gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16), // y 12
-                randomNumberInRange(0, donationRate * 2), // tax 13
+                fundRate, // tax 13
                 null, // mark 14
                 curName, // name 15
                 curGender], // gender 16

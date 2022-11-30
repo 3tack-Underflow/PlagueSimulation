@@ -23,7 +23,6 @@ function Simulation() {
         height: window.innerHeight 
     });
     
-
     const [view, setView] = useState("none");
     const [simulation, setSimulation] = useState({});
     const [simHumans, setSimHumans] = useState([]);
@@ -340,16 +339,6 @@ function Simulation() {
 
         GetVaccineRules();
     }, [vaccines]);
-
-    // useEffect(() => {
-    //     vaccines[vaccineRulesRaw.index].rules = [];
-    //     for (var i = 0; i < vaccineRulesRaw.values.length; ++i) {
-    //         vaccines[vaccineRulesRaw.index].rules.push(vaccineRulesRaw.values[i]);
-    //     }
-    //     //vaccineRules[vaccineRulesRaw.index] = vals;
-    //     setVaccines(vaccines);
-    //     //setVaccineRules({vals: vaccineRules}); 
-    // }, [vaccineRulesRaw]);  
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -429,6 +418,18 @@ function Simulation() {
     const getNumberOfElapsedCyclesToNow = (startTime, cycle_length_in_seconds) => {
         return Math.floor((new Date() - new Date(startTime)) / 1000 / cycle_length_in_seconds);
     };
+
+    const Catalog = () => {
+        var cyclesElapsed = getNumberOfElapsedCyclesToNow(simulation.last_background_update_time, cycle_length_in_seconds);
+        for (var i = 0; i < cyclesElapsed; ++i) {
+            // collect tax each cycle
+            // update status
+
+            // attempt to spread by chance
+
+            // if none infected, attempt to mutate
+        }
+    }
 
     let healthyMale = new window.Image();
     healthyMale.src = "res/healthy_male.png"; 
@@ -541,7 +542,7 @@ function Simulation() {
                             <label>
                                 Radiation Source
                             </label>
-                            <img src = {require('./radiation.png')} width = "200px" height = "200px">
+                            <img src = {require('./radiation.png')} width = "150px" height = "150px">
                             </img>
                             <label></label>
                             <label>
