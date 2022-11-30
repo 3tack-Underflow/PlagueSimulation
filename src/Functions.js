@@ -62,31 +62,59 @@ const HumidityRange = (x) => {
     }
 }
 
+const AgeRange = (age) => {
+    if (age <= 30) {
+        return 1;
+    } else if (age <= 45) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+const WeightRange = (weight) => {
+    if (weight <= 135) {
+        return 1;
+    } else if (weight <= 180) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+const HeightRange = (height) => {
+    if (height <= 165) {
+        return 1;
+    } else if (height <= 185) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+const BloodPressureRange = (bloodPressure) => {
+    if (bloodPressure <= 95) {
+        return 1;
+    } else if (bloodPressure <= 120) {
+        return 2
+    } else {
+        return 3
+    }
+}
+
+const CholesterolRange = (cholesterol) => {
+    if (cholesterol <= 130) {
+        return 1;
+    } else if (cholesterol <= 210) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
 var Distance = (x1, y1, x2, y2) => {
     return (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))).toFixed(0);
 }
-
-/*
-var simHuman = {
-                val: [i + 1, // id 0
-                simID, // simID 1
-                "alive", // status 2
-                0, // isolated 3
-                age, // age 4
-                weight, // weight 5
-                randomNumberInRange(80, 220), //height 6
-                bloodTypes[randomNumberInRange(0, 2)], // blood type 7
-                bloodPressure, // blood pressure 8
-                cholesterol, // cholesterol 9
-                radiation, // radiation 10
-                gridGap - stageW/2 + positions[i][0] * gridGap - 8 + randomNumberInRange(0, 16), // x 11
-                gridGap - stageH/2 + positions[i][1] * gridGap - 8 + randomNumberInRange(0, 16), // y 12
-                randomNumberInRange(0, donationRate * 2), // tax 13
-                null, // mark 14
-                curName, // name 15
-                curGender], // gender 16
-                x: positions[i][0], y: positions[i][1]}; 
-                */
 
 const MatchRule = (human, rule) => {
     var val;
@@ -114,6 +142,88 @@ const MatchRule = (human, rule) => {
     return val >= rule[3] && val <= rule[4];
 }
 
+const GetRuleCandidates = (patient0, humans, minCount, radius) => {
+    var ruleCandidates = {
+        tempMinus: 0, 
+        tempPlus: 0, 
+        humidMinus: 0, 
+        humidPlus: 0,
+        elevation: 0, 
+        age: 0,
+        weight: 0,
+        height: 0,
+        blood_type: 0,
+        blood_pressure: 0,
+        cholesterol: 0,
+        radiation: 0
+    };
+
+    // index 0 is ignored because it is patient 0
+    for (var i = 1; i < humans.length; ++i) {
+        var human = humans[i].val;
+        if (Distance(human[11], human[12], patient0[11], patient0[12]) > radius) {
+            continue;
+        }
+        if (TemperatureRange(human[12]) >= TemperatureRange(patient0[12]) && 
+            TemperatureRange(human[12]) <= TemperatureRange(patient0[12]) + 1) {
+                ruleCandidates.tempPlus++;
+        } 
+        if (TemperatureRange(human[12]) >= TemperatureRange(patient0[12]) - 1 && 
+            TemperatureRange(human[12]) <= TemperatureRange(patient0[12])) {
+                ruleCandidates.tempMinus++;
+        } 
+        if (HumidityRange(human[11]) >= HumidityRange(patient0[11]) && 
+            HumidityRange(human[11]) <= HumidityRange(patient0[11]) + 1) {
+                ruleCandidates.humidPlus++;
+        } 
+        if (HumidityRange(human[11]) >= HumidityRange(patient0[11]) - 1 && 
+            HumidityRange(human[11]) <= HumidityRange(patient0[11])) {
+                ruleCandidates.humidMinus++;
+        } 
+        if (ElevationRange(human[11], human[12]) == ElevationRange(patient0[11], patient0[12])) {
+            ruleCandidates.elevation++;
+        } 
+        if (AgeRange(human[4]) == AgeRange(patient0[4])) {
+            ruleCandidates.age++;
+        } 
+        if (WeightRange(human[5]) == WeightRange(patient0[5])) {
+            ruleCandidates.weight++;
+        } 
+        if (HeightRange(human[6]) == HeightRange(patient0[6])) {
+            ruleCandidates.height++;
+        } 
+        if (human[7] == patient0[7]) {
+            ruleCandidates.blood_type++;
+        } 
+        if (BloodPressureRange(human[8]) == BloodPressureRange(patient0[8])) {
+            ruleCandidates.blood_pressure++;
+        } 
+        if (CholesterolRange(human[9]) == CholesterolRange(patient0[9])) {
+            ruleCandidates.cholesterol++;
+        }
+        if (human[10] >= 7400 && patient0.radiation >= 7400 && human[10] >= patient0.radiation - 250) {
+            ruleCandidates.radiation++;
+        }
+    }
+
+    console.log(ruleCandidates);
+    var validRules = [];
+    if (ruleCandidates.tempMinus > minCount) validRules.push("temperature_M");
+    if (ruleCandidates.tempPlus > minCount) validRules.push("temperature_P");
+    if (ruleCandidates.humidMinus > minCount) validRules.push("humidity_M");
+    if (ruleCandidates.humidPlus > minCount) validRules.push("humidity_P");
+    if (ruleCandidates.elevation > minCount) validRules.push("elevation");
+    if (ruleCandidates.age > minCount) validRules.push("age");
+    if (ruleCandidates.weight > minCount) validRules.push("weight");
+    if (ruleCandidates.height > minCount) validRules.push("height");
+    if (ruleCandidates.blood_type > minCount) validRules.push("blood_type");
+    if (ruleCandidates.blood_pressure > minCount) validRules.push("blood_pressure");
+    if (ruleCandidates.cholesterol > minCount) validRules.push("cholesterol");
+    if (ruleCandidates.radiation > minCount) validRules.push("radiation");
+
+    return validRules;
+}
+
 const MatchAllRules = (human, rules) => {
     for (var i = 0; i < rules.length; ++i) {
         if (!MatchRule(human, rules[i])) {
@@ -123,4 +233,4 @@ const MatchAllRules = (human, rules) => {
     return true;
 }
 
-export { ElevationRange, TemperatureRange, HumidityRange, Distance, MatchRule, MatchAllRules };
+export { ElevationRange, TemperatureRange, HumidityRange, Distance, MatchRule, MatchAllRules, GetRuleCandidates };

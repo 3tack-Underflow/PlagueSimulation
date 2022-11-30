@@ -3,7 +3,7 @@ import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
-import { ElevationRange, TemperatureRange, HumidityRange } from "./Functions.js"
+import { ElevationRange, TemperatureRange, HumidityRange, Distance } from "./Functions.js"
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
     humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds, gridGap} from "./Constants.js"
@@ -538,6 +538,9 @@ function Simulation() {
                             </label>
                             <label>
                                 Fund Rate: ${selected.tax}
+                            </label>
+                            <label>
+                                Distance:{Distance(selected.x, selected.y, simulation.factoryX, simulation.factoryY)}
                             </label>
                             
                             <button disabled = {simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {

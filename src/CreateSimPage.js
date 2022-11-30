@@ -5,7 +5,7 @@ import Axios from "axios";
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
 import { names, stageWidth, stageHeight, gridGap, cycle_length_in_seconds } from "./Constants.js"
-import { ElevationRange, HumidityRange, TemperatureRange, Distance, MatchAllRules } from "./Functions.js"
+import { ElevationRange, HumidityRange, TemperatureRange, Distance, MatchAllRules, GetRuleCandidates } from "./Functions.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -103,7 +103,7 @@ function CreatePage() {
         else if (severity === 'Strong') severity_rating = 2;
         else severity_rating = 3;
         if (severity_rating === 1) {
-            spread_r = 10 + Math.floor(Math.random() * 5) * gridGap; // km
+            spread_r = 7 + Math.floor(Math.random() * 5) * gridGap; // km
             spread_c = Math.floor(1 + Math.random() * 1); // percentage chance for an individual to be infected after an update
             mutation_c = 60 * 6 + Math.floor(Math.random() * (60 * 7)) // time (minutes) * delta_time
             curing_t = 50;
@@ -111,9 +111,9 @@ function CreatePage() {
             death_r = 5;
             death_c = 60 * 6 + Math.floor(Math.random() * (60 * 7))
             numRules = 2;
-            numInfest = 1;
+            numInfest = 2;
         } else if (severity_rating === 2) {
-            spread_r = 10 + Math.floor(Math.random() * 5) * gridGap; // km
+            spread_r = 7 + Math.floor(Math.random() * 5) * gridGap; // km
             spread_c = 3 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 * 3 + Math.floor(Math.random() * (60 * 4)) // time (minutes) * delta_time
             curing_t = 65;
@@ -121,9 +121,9 @@ function CreatePage() {
             death_r = 10;
             death_c = 60 * 5 + Math.floor(Math.random() * (60 * 6))
             numRules = 2;
-            numInfest = 2;
+            numInfest = 3;
         } else {
-            spread_r = (10 + Math.floor(Math.random() * 5)) * gridGap; // km
+            spread_r = (7 + Math.floor(Math.random() * 5)) * gridGap; // km
             spread_c = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
             curing_t = 80;
@@ -131,7 +131,7 @@ function CreatePage() {
             death_r = 20;
             death_c = 60 * 4 + Math.floor(Math.random() * (60 * 5))
             numRules = 2;
-            numInfest = 2;
+            numInfest = 4;
         }
         
         await Axios.post('http://localhost:3001/api/insert-plague', {
@@ -154,65 +154,73 @@ function CreatePage() {
         var status = simHumans[0];
         var patientZero = status.val;
 
+        // actual set of rules
         var ruleValues = [];
-        for (var i = 1; i <= numRules; ++i) {
-            var randRule = Math.floor(Math.random() * 8);
-            var category, range_lower, range_upper;
-            var radiationChance = 0;
-            var distToFactory = DistanceToFactory(patientZero[11], patientZero[12]);
-            var ruleFound = false;
-            if (distToFactory < 500) radiationChance = 2;
-            else if (distToFactory < 1000) radiationChance = 3;
-            else if (distToFactory < 1500) radiationChance = 5;
-            if (radiationChance > 0 && randomNumberInRange(1, radiationChance) == 1) {
-                ruleFound = true;
-                category = "radiation";
-                range_lower = patientZero[10] - randomNumberInRange(100, 500);
-                range_upper = stageWidth * 2;
+
+        // possible set of rules
+        var ruleCandidates = GetRuleCandidates(patientZero, simHumans, numInfest - 1, spread_r);
+        ruleCandidates.sort(() => 0.5 - Math.random());
+        ruleCandidates.sort(() => 0.5 - Math.random());
+
+        var curNumRules = 0;
+        for (var i = 0; i < ruleCandidates.length; ++i) {
+            if (curNumRules === numRules) {
+                break;
             }
-            if (!ruleFound) {
-            if (randRule === 0) {
+            var category, range_lower, range_upper;
+            if (ruleCandidates[i] === "temperature_P") {
+                var opposite = false;
+                for (var j = 0; j < ruleValues.length; ++j) {
+                    if (ruleValues[i].category === "temperature_M") {
+                        opposite = true;
+                        break;
+                    }
+                }
+                if (opposite) continue;
                 category = "temperature";
                 var level = TemperatureRange(patientZero[12]);
-                if (level === 1) {
-                    range_lower = 1;
-                    range_upper = 2;
-                } else if (level === 6) {
-                    range_lower = 5;
-                    range_upper = 6;
-                } else {
-                    if (Math.floor(Math.random() * 2)=== 0) {
-                        range_lower = level;
-                        range_upper = level + 1;
-                    } else {
-                        range_lower = level - 1;
-                        range_upper = level;
-                    }
-                }
-            } else if (randRule == 1) {
-                category = "humidity"
-                var level = HumidityRange(patientZero[11]);
-                if (level === 1) {
-                    range_lower = 1;
-                    range_upper = 2;
-                } else if (level === 8) {
-                    range_lower = 7;
-                    range_upper = 8;
-                } else {
-                    if (Math.floor(Math.random() * 2) == 0) {
-                        range_lower = level;
-                        range_upper = level + 1;
-                    } else {
-                        range_lower = level - 1;
-                        range_upper = level;
-                    }
-                }
-            } else if (randRule == 8) {
-                category = "elevation";
-                var level = ElevationRange(patientZero[11], patientZero[12]);
                 range_lower = level;
+                range_upper = level + 1;
+            } else if (ruleCandidates[i] === "temperature_M") {
+                var opposite = false;
+                for (var j = 0; j < ruleValues.length; ++j) {
+                    if (ruleValues[i].category === "temperature_M") {
+                        opposite = true;
+                        break;
+                    }
+                }
+                if (opposite) continue;
+                category = "temperature";
+                var level = TemperatureRange(patientZero[12]);
+                range_lower = level - 1;
                 range_upper = level;
-            } else if (randRule == 2) {
+            } else if (ruleCandidates[i] === "humidity_P") {
+                var opposite = false;
+                for (var j = 0; j < ruleValues.length; ++j) {
+                    if (ruleValues[i].category === "humidity_M") {
+                        opposite = true;
+                        break;
+                    }
+                }
+                if (opposite) continue;
+                category = "humidity";
+                var level = HumidityRange(patientZero[11]);
+                range_lower = level;
+                range_upper = level + 1;
+            } else if (ruleCandidates[i] === "humidity_M") {
+                var opposite = false;
+                for (var j = 0; j < ruleValues.length; ++j) {
+                    if (ruleValues[i].category === "humidity_P") {
+                        opposite = true;
+                        break;
+                    }
+                }
+                if (opposite) continue;
+                category = "humidity";
+                var level = HumidityRange(patientZero[11]);
+                range_lower = level - 1;
+                range_upper = level;
+            } else if (ruleCandidates[i] === "age") {
                 category = "age";
                 if (patientZero[4] <= 30) {
                     range_lower = 15;
@@ -224,7 +232,7 @@ function CreatePage() {
                     range_lower = 45;
                     range_upper = 85;
                 }
-            } else if (randRule == 3) {
+            } else if (ruleCandidates[i] === "weight") {
                 category = "weight"
                 if (patientZero[5] <= 135) {
                     range_lower = 80;
@@ -236,7 +244,7 @@ function CreatePage() {
                     range_lower = 180;
                     range_upper = 280;
                 }
-            } else if (randRule == 4) {
+            } else if (ruleCandidates[i] === "height") {
                 category = "height"
                 if (patientZero[6] <= 165) {
                     range_lower = 120;
@@ -248,12 +256,12 @@ function CreatePage() {
                     range_lower = 180;
                     range_upper = 220;
                 }
-            } else if (randRule == 5) {
+            } else if (ruleCandidates[i] === "blood_type") {
                 category = "blood_type"
                 var type = bloodTypes.indexOf(patientZero[7]) + 1;
                 range_lower = type;
                 range_upper = type;
-            } else if (randRule == 6) {
+            } else if (ruleCandidates[i] === "blood_pressure") {
                 category = "blood_pressure"
                 if (patientZero[8] <= 95) {
                     range_lower = 60;
@@ -265,7 +273,7 @@ function CreatePage() {
                     range_lower = 120;
                     range_upper = 160;
                 }
-            } else if (randRule == 7) {
+            } else if (ruleCandidates[i] === "cholesterol") {
                 category = "cholesterol"
                 if (patientZero[9] <= 130) {
                     range_lower = 80;
@@ -277,13 +285,17 @@ function CreatePage() {
                     range_lower = 200;
                     range_upper = 260;
                 }
-            } 
+            } else if (ruleCandidates[i] === "radiation") {
+                category = "radiation"
+                range_lower = Math.max(patientZero[10] - 250, 7400);
+                range_upper = 10000; // infinite, all the way up
             }
             var variant = 1;
             var id = simID;
             var match_value = 10 + Math.floor(Math.random() * (40));
             var miss_value = 10 + Math.floor(Math.random() * (40));
             ruleValues.push([variant, id, category, range_lower, range_upper, match_value, miss_value]);
+            curNumRules++;
         }
 
         await Axios.post('http://localhost:3001/api/insert-plague-rule', {
@@ -298,18 +310,18 @@ function CreatePage() {
 
         var curInfest = 1;
         for (var i = 1; i < simHumans.length; ++i) {
-            if (curInfest === numInfest) {
-                break;
-            }
             var simHuman = simHumans[i].val;
             if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
                 if (MatchAllRules(simHuman, ruleValues)) {
                     var infectedTime = new Date();
-                    infectedTime.setDate(infectedTime.getDate() - (Math.floor(Math.random() * 6) + 1) * cycle_length_in_seconds);
+                    infectedTime.setDate(infectedTime.getDate() - (Math.floor(Math.random() * 3) + 1) * cycle_length_in_seconds);
                     infestValues.push([simHuman[0], simID, 1, simID, 0, 
                         infectedTime.toISOString().slice(0, 19).replace('T', ' '), 8]);
                     curInfest++;
                 }
+            }
+            if (curInfest === numInfest) {
+                break;
             }
         }
 
