@@ -4,8 +4,8 @@ import Axios from "axios";
 
 import AssistantEntry from "./AssistantEntry.js";
 import { useCookies } from 'react-cookie';
-import { names, stageWidth, stageHeight, gridGap, cycle_length_in_seconds } from "./Constants.js"
-import { ElevationRange, HumidityRange, TemperatureRange, Distance, MatchAllRules, GetRuleCandidates } from "./Functions.js"
+import { names, stageWidth, stageHeight, gridGap, cycle_length_in_seconds, bloodTypes } from "./Constants.js"
+import { ElevationRange, HumidityRange, TemperatureRange, Distance, MatchAllRules, FindRules, MatchRules } from "./Functions.js"
 
 function CreatePage() {
     var randomDisease = ['Insanity Death', 'Lunacy Plague', 
@@ -40,7 +40,7 @@ function CreatePage() {
 
     var simHumans = [];
 
-    const bloodTypes = ["A", "B", "O"];
+    
     const [factoryX, setFactoryX] = useState(50);
     const [factoryY, setFactoryY] = useState(50);
     var invalidLocations = [];
@@ -103,7 +103,7 @@ function CreatePage() {
         else if (severity === 'Strong') severity_rating = 2;
         else severity_rating = 3;
         if (severity_rating === 1) {
-            spread_r = 7 + Math.floor(Math.random() * 5) * gridGap; // km
+            spread_r = (6 + randomNumberInRange(0, 1)) * gridGap; // km
             spread_c = Math.floor(1 + Math.random() * 1); // percentage chance for an individual to be infected after an update
             mutation_c = 60 * 6 + Math.floor(Math.random() * (60 * 7)) // time (minutes) * delta_time
             curing_t = 50;
@@ -113,7 +113,7 @@ function CreatePage() {
             numRules = 2;
             numInfest = 2;
         } else if (severity_rating === 2) {
-            spread_r = 7 + Math.floor(Math.random() * 5) * gridGap; // km
+            spread_r = (6 + randomNumberInRange(0, 1)) * gridGap; // km
             spread_c = 3 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 * 3 + Math.floor(Math.random() * (60 * 4)) // time (minutes) * delta_time
             curing_t = 65;
@@ -123,7 +123,7 @@ function CreatePage() {
             numRules = 2;
             numInfest = 3;
         } else {
-            spread_r = (7 + Math.floor(Math.random() * 5)) * gridGap; // km
+            spread_r = (6 + randomNumberInRange(0, 1)) * gridGap; // km
             spread_c = 5 + Math.floor(Math.random() * 1); // time (minutes) * delta_time
             mutation_c = 60 + Math.floor(Math.random() * (60 * 2)) // time (minutes) * delta_time
             curing_t = 80;
@@ -131,7 +131,7 @@ function CreatePage() {
             death_r = 20;
             death_c = 60 * 4 + Math.floor(Math.random() * (60 * 5))
             numRules = 2;
-            numInfest = 4;
+            numInfest = 5;
         }
         
         await Axios.post('http://localhost:3001/api/insert-plague', {
@@ -154,148 +154,21 @@ function CreatePage() {
         var status = simHumans[0];
         var patientZero = status.val;
 
-        // actual set of rules
+        var neighbours = [];
+        for (var i = 1; i < simHumans.length; ++i) {
+            var simHuman = simHumans[i].val;
+            if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
+                neighbours.push(simHuman);
+            }
+        }
+        var rules = FindRules(patientZero, neighbours, numInfest);
         var ruleValues = [];
-
-        // possible set of rules
-        var ruleCandidates = GetRuleCandidates(patientZero, simHumans, numInfest - 1, spread_r);
-        ruleCandidates.sort(() => 0.5 - Math.random());
-        ruleCandidates.sort(() => 0.5 - Math.random());
-
-        var curNumRules = 0;
-        for (var i = 0; i < ruleCandidates.length; ++i) {
-            if (curNumRules === numRules) {
-                break;
-            }
-            var category, range_lower, range_upper;
-            if (ruleCandidates[i] === "temperature_P") {
-                var opposite = false;
-                for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i][2] === "temperature_M") {
-                        opposite = true;
-                        break;
-                    }
-                }
-                if (opposite) continue;
-                category = "temperature";
-                var level = TemperatureRange(patientZero[12]);
-                range_lower = level;
-                range_upper = level + 1;
-            } else if (ruleCandidates[i] === "temperature_M") {
-                var opposite = false;
-                for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i][2] === "temperature_M") {
-                        opposite = true;
-                        break;
-                    }
-                }
-                if (opposite) continue;
-                category = "temperature";
-                var level = TemperatureRange(patientZero[12]);
-                range_lower = level - 1;
-                range_upper = level;
-            } else if (ruleCandidates[i] === "humidity_P") {
-                var opposite = false;
-                for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i][2] === "humidity_M") {
-                        opposite = true;
-                        break;
-                    }
-                }
-                if (opposite) continue;
-                category = "humidity";
-                var level = HumidityRange(patientZero[11]);
-                range_lower = level;
-                range_upper = level + 1;
-            } else if (ruleCandidates[i] === "humidity_M") {
-                var opposite = false;
-                for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i][2] === "humidity_P") {
-                        opposite = true;
-                        break;
-                    }
-                }
-                if (opposite) continue;
-                category = "humidity";
-                var level = HumidityRange(patientZero[11]);
-                range_lower = level - 1;
-                range_upper = level;
-            } else if (ruleCandidates[i] === "age") {
-                category = "age";
-                if (patientZero[4] <= 30) {
-                    range_lower = 15;
-                    range_upper = 30;
-                } else if (patientZero[4] <= 45) {
-                    range_lower = 30;
-                    range_upper = 45;
-                } else {
-                    range_lower = 45;
-                    range_upper = 85;
-                }
-            } else if (ruleCandidates[i] === "weight") {
-                category = "weight"
-                if (patientZero[5] <= 135) {
-                    range_lower = 80;
-                    range_upper = 140;
-                } else if (patientZero[5] <= 180) {
-                    range_lower = 140;
-                    range_upper = 180;
-                } else {
-                    range_lower = 180;
-                    range_upper = 280;
-                }
-            } else if (ruleCandidates[i] === "height") {
-                category = "height"
-                if (patientZero[6] <= 165) {
-                    range_lower = 120;
-                    range_upper = 160;
-                } else if (patientZero[8] <= 185) {
-                    range_lower = 160;
-                    range_upper = 185;
-                } else {
-                    range_lower = 180;
-                    range_upper = 220;
-                }
-            } else if (ruleCandidates[i] === "blood_type") {
-                category = "blood_type"
-                var type = bloodTypes.indexOf(patientZero[7]) + 1;
-                range_lower = type;
-                range_upper = type;
-            } else if (ruleCandidates[i] === "blood_pressure") {
-                category = "blood_pressure"
-                if (patientZero[8] <= 95) {
-                    range_lower = 60;
-                    range_upper = 95;
-                } else if (patientZero[8] <= 120) {
-                    range_lower = 95;
-                    range_upper = 120;
-                } else {
-                    range_lower = 120;
-                    range_upper = 160;
-                }
-            } else if (ruleCandidates[i] === "cholesterol") {
-                category = "cholesterol"
-                if (patientZero[9] <= 130) {
-                    range_lower = 80;
-                    range_upper = 140;
-                } else if (patientZero[9] <= 210) {
-                    range_lower = 130;
-                    range_upper = 210;
-                } else {
-                    range_lower = 200;
-                    range_upper = 260;
-                }
-            } else if (ruleCandidates[i] === "radiation") {
-                category = "radiation"
-                range_lower = Math.max(patientZero[10] - 250, 7400);
-                range_upper = 10000; // infinite, all the way up
-            }
-            var variant = 1;
-            var id = simID;
-            var match_value = 10 + Math.floor(Math.random() * (40));
-            var miss_value = 10 + Math.floor(Math.random() * (40));
-            ruleValues.push([variant, id, category, range_lower, range_upper, match_value, miss_value]);
-            curNumRules++;
+        var variant = 1;
+        var id = simID;
+        var match_value = 10 + Math.floor(Math.random() * (40));
+        var miss_value = 10 + Math.floor(Math.random() * (40));
+        for (var i = 0; i < rules.length; ++i) {
+            ruleValues.push([variant, id, rules[i].category, rules[i].range_lower, rules[i].range_upper, match_value, miss_value]);
         }
 
         await Axios.post('http://localhost:3001/api/insert-plague-rule', {
@@ -309,16 +182,14 @@ function CreatePage() {
             initialInfected.toISOString().slice(0, 19).replace('T', ' '), 8]);
 
         var curInfest = 1;
-        for (var i = 1; i < simHumans.length; ++i) {
-            var simHuman = simHumans[i].val;
-            if (Distance(simHuman[11], simHuman[12], patientZero[11], patientZero[12]) <= spread_r) {
-                if (MatchAllRules(simHuman, ruleValues)) {
-                    var infectedTime = new Date();
-                    infectedTime.setDate(infectedTime.getDate() - (Math.floor(Math.random() * 3) + 1) * cycle_length_in_seconds);
-                    infestValues.push([simHuman[0], simID, 1, simID, 0, 
-                        infectedTime.toISOString().slice(0, 19).replace('T', ' '), 8]);
-                    curInfest++;
-                }
+        for (var i = 1; i < neighbours.length; ++i) {
+            var simHuman = neighbours[i];
+            if (MatchRules(simHuman, rules)) {
+                var infectedTime = new Date();
+                infectedTime.setDate(infectedTime.getDate() - (1 * cycle_length_in_seconds * 1000));
+                infestValues.push([simHuman[0], simID, 1, simID, 0, 
+                    infectedTime.toISOString().slice(0, 19).replace('T', ' '), 100]);
+                curInfest++;
             }
             if (curInfest === numInfest) {
                 break;

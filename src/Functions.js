@@ -1,4 +1,4 @@
-import { stageWidth, stageHeight } from "./Constants.js"
+import { stageWidth, stageHeight, bloodTypes } from "./Constants.js"
 
 const sign = (p1, p2, p3) => {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
@@ -72,6 +72,16 @@ const AgeRange = (age) => {
     }
 }
 
+const FindAgeRange = (age) => {
+    if (age <= 30) {
+        return [15, 30];
+    } else if (age <= 45) {
+        return [30, 45];
+    } else {
+        return [45, 95];
+    }
+}
+
 const WeightRange = (weight) => {
     if (weight <= 135) {
         return 1;
@@ -79,6 +89,16 @@ const WeightRange = (weight) => {
         return 2;
     } else {
         return 3;
+    }
+}
+
+const FindWeightRange = (weight) => {
+    if (weight <= 135) {
+        return [80, 135];
+    } else if (weight <= 45) {
+        return [135, 180];
+    } else {
+        return [180, 280];
     }
 }
 
@@ -92,6 +112,16 @@ const HeightRange = (height) => {
     }
 }
 
+const FindHeightRange = (height) => {
+    if (height <= 165) {
+        return [120, 165];
+    } else if (height <= 185) {
+        return [165, 185];
+    } else {
+        return [185, 220];
+    }
+}
+
 const BloodPressureRange = (bloodPressure) => {
     if (bloodPressure <= 95) {
         return 1;
@@ -99,6 +129,16 @@ const BloodPressureRange = (bloodPressure) => {
         return 2
     } else {
         return 3
+    }
+}
+
+const FindBloodPressureRange = (BP) => {
+    if (BP <= 95) {
+        return [60, 95];
+    } else if (BP <= 120) {
+        return [95, 120];
+    } else {
+        return [120, 160];
     }
 }
 
@@ -112,34 +152,53 @@ const CholesterolRange = (cholesterol) => {
     }
 }
 
+const FindCholesterolRange = (cholesterol) => {
+    if (cholesterol <= 130) {
+        return [80, 130];
+    } else if (cholesterol <= 210) {
+        return [130, 210];
+    } else {
+        return [210, 260];
+    }
+}
+
 var Distance = (x1, y1, x2, y2) => {
     return (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))).toFixed(0);
 }
 
 const MatchRule = (human, rule) => {
     var val;
-    if (rule[2] === "tempertaure") {
+    if (rule[2] == "temperature") {
         val = TemperatureRange(human[12]);
-    } else if (rule[2] === "humidity") {
+    } else if (rule[2] == "humidity") {
         val = HumidityRange(human[11]);
-    } else if (rule[2] === "elevation") {
+    } else if (rule[2] == "elevation") {
         val = ElevationRange(human[11], human[12]);
-    } else if (rule[2] === "age") {
+    } else if (rule[2] == "age") {
         val = human[4];
-    } else if (rule[2] === "weight") {
+    } else if (rule[2] == "weight") {
         val = human[5];
-    } else if (rule[2] === "height") {
+    } else if (rule[2] == "height") {
         val = human[6];
-    } else if (rule[2] === "blood_type") {
+    } else if (rule[2] == "blood_type") {
         val = human[7];
-    } else if (rule[2] === "blood_pressure") {
+    } else if (rule[2] == "blood_pressure") {
         val = human[8];
-    } else if (rule[2] === "cholesterol") {
+    } else if (rule[2] == "cholesterol") {
         val = human[9];
-    } else if (rule[2] === "radiation") {
+    } else if (rule[2] == "radiation") {
         val = human[10];
     }
     return val >= rule[3] && val <= rule[4];
+}
+
+const MatchAllRules = (human, rules) => {
+    for (var i = 0; i < rules.length; ++i) {
+        if (!MatchRule(human, rules[i])) {
+            return false;
+        }
+    }
+    return true;
 }
 
 const GetRuleCandidates = (patient0, humans, minCount, radius) => {
@@ -206,7 +265,6 @@ const GetRuleCandidates = (patient0, humans, minCount, radius) => {
         }
     }
 
-    console.log(ruleCandidates);
     var validRules = [];
     if (ruleCandidates.tempMinus > minCount) validRules.push("temperature_M");
     if (ruleCandidates.tempPlus > minCount) validRules.push("temperature_P");
@@ -224,13 +282,106 @@ const GetRuleCandidates = (patient0, humans, minCount, radius) => {
     return validRules;
 }
 
-const MatchAllRules = (human, rules) => {
+const Match = (human, rule) => {
+    var val;
+    if (rule.category == "temperature") {
+        val = TemperatureRange(human[12]);
+    } else if (rule.category == "humidity") {
+        val = HumidityRange(human[11]);
+    } else if (rule.category == "elevation") {
+        val = ElevationRange(human[11], human[12]);
+    } else if (rule.category == "age") {
+        val = human[4];
+    } else if (rule.category == "weight") {
+        val = human[5];
+    } else if (rule.category == "height") {
+        val = human[6];
+    } else if (rule.category == "blood_type") {
+        val = human[7];
+    } else if (rule.category == "blood_pressure") {
+        val = human[8];
+    } else if (rule.category == "cholesterol") {
+        val = human[9];
+    } else if (rule.category == "radiation") {
+        val = human[10];
+    }
+    return val >= rule.range_lower && val <= rule.range_upper;
+}
+
+const MatchRules = (human, rules) => {
     for (var i = 0; i < rules.length; ++i) {
-        if (!MatchRule(human, rules[i])) {
+        if (!Match(human, rules[i])) {
             return false;
         }
     }
     return true;
 }
 
-export { ElevationRange, TemperatureRange, HumidityRange, Distance, MatchRule, MatchAllRules, GetRuleCandidates };
+const FindRules = (patientZero, neighbours, minInfected) => {
+    var sampleRules = [];
+    sampleRules.push({category: "temperature", range_lower: TemperatureRange(patientZero[12]), range_upper: TemperatureRange(patientZero[12]) + 1});
+    sampleRules.push({category: "temperature", range_lower: TemperatureRange(patientZero[12]) - 1, range_upper: TemperatureRange(patientZero[12])});
+    sampleRules.push({category: "humidity", range_lower: HumidityRange(patientZero[11]), range_upper: HumidityRange(patientZero[11]) + 1});
+    sampleRules.push({category: "humidity", range_lower: HumidityRange(patientZero[11]) - 1, range_upper: HumidityRange(patientZero[11])});
+    var elevation = ElevationRange(patientZero[11], patientZero[12]);
+    sampleRules.push({category: "elevation", range_lower: elevation, range_upper: elevation});
+    var ageRange = FindAgeRange(patientZero[4]);
+    sampleRules.push({category: "age", range_lower: ageRange[0], range_upper: ageRange[1]});
+    var weightRange = FindWeightRange(patientZero[5]);
+    sampleRules.push({category: "weight", range_lower: weightRange[0], range_upper: weightRange[1]});
+    var heightRange = FindHeightRange(patientZero[6]);
+    sampleRules.push({category: "height", range_lower: heightRange[0], range_upper: heightRange[1]});
+    var bloodType = bloodTypes.indexOf(patientZero[7]);
+    sampleRules.push({category: "blood_type", range_lower: bloodType, range_upper: bloodType});
+    var bloodPressure = FindBloodPressureRange(patientZero[8]);
+    sampleRules.push({category: "blood_pressure", range_lower: bloodPressure[0], range_upper: bloodPressure[1]});
+    var cholesterol = FindCholesterolRange(patientZero[9]);
+    sampleRules.push({category: "cholesterol", range_lower: cholesterol[0], range_upper: cholesterol[1]});
+    if (patientZero.radiation >= 7400) {
+        sampleRules.push({category: "radiation", range_lower: Math.max(patientZero.radiation - 250, 7400), range_upper: 10000});
+    }
+    
+    var permutations = [];
+    for (var i = 0; i < sampleRules.length; ++i) {
+        for (var j = i + 1; j < sampleRules.length; ++j) {
+            if (sampleRules[i].category != sampleRules[j].category) {
+                permutations.push({val: [sampleRules[i], sampleRules[j]], count: 0});
+            }
+        }
+    }
+
+    for (var i = 0; i < neighbours.length; ++i) {
+        for (var j = 0; j < permutations.length; ++j) {
+            if (MatchRules(neighbours[i], permutations[j].val)) {
+                permutations[j].count++;
+            }
+        }
+    }
+
+    var validRules = [];
+    var curMinInfected = minInfected;
+    while (true) {
+        if (curMinInfected == 0) break;
+        for (var i = 0; i < permutations.length; ++i) {
+            if (permutations[i].count >= curMinInfected) {
+                validRules.push(permutations[i].val);
+            }
+        }
+        if (validRules.length >= minInfected) {
+            break;
+        } else {
+            curMinInfected--;
+        }
+    }
+    
+    validRules.sort(() => 0.5 - Math.random());
+    validRules.sort(() => 0.5 - Math.random());
+
+    if (validRules.length == 0) {
+        return [];
+    }
+
+    return validRules[0];
+}
+
+export { ElevationRange, TemperatureRange, HumidityRange, Distance, MatchRule, MatchAllRules, GetRuleCandidates, FindRules, MatchRules };

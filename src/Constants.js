@@ -5,6 +5,7 @@ const gridGap = 60;
 const temperatureColors = ["#ff0000", "#ff3033", "#ff4d4d", "#ff6666", "#ff8080", "#ff9d99"];
 const humidityColors = ["#0000FF", "#1a1aff", "#3333ff", "#4d4dff", "#6666ff", "#8080ff", "#9999ff", "#b3b3ff"];
 const elevationColors = ["#00BB00", "#55DD55", "#AAFFAA"];
+const bloodTypes = ["A", "B", "O"];
 
 const temperatureRangeMin = [25, 20, 15, 10, 5, 0];
 const temperatureRangeMax = [30, 25, 20, 15, 10, 4];
@@ -28,7 +29,7 @@ const units = [{type: "Temperature", unit: "°C"},
             {type: "Cholesterol", unit: "mg/dL"},
             {type: "Radiation", unit: "☢"}];
 
-export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, units, gridGap, 
+export {stageWidth, stageHeight, temperatureColors, humidityColors, elevationColors, units, gridGap, bloodTypes, 
     temperatureRangeMin, temperatureRangeMax, humidityRangeMin, humidityRangeMax, elevationRange, cycle_length_in_seconds};
 
 const names = {
