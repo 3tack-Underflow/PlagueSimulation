@@ -42,7 +42,7 @@ function CreatePage() {
 
     const [factoryX, setFactoryX] = useState(50);
     const [factoryY, setFactoryY] = useState(50);
-    var invalidLocations = [];
+    const [invalidLocations, setInvalidLocations] = useState([]);
 
     var generateSim = async () => {
         setOrigin("Random");
@@ -83,6 +83,7 @@ function CreatePage() {
         invalidLocations.push({x: facX - 1, y: facY - 1});
         invalidLocations.push({x: facX - 1, y: facY + 1});
         invalidLocations.push({x: facX + 1, y: facY - 1});
+        setInvalidLocations(invalidLocations);
         setFactoryX(facXCoord);
         setFactoryY(facYCoord);
 
@@ -257,10 +258,6 @@ function CreatePage() {
             })
         }
     }
-
-    const DistanceToFactory = (x1, y1) => {
-        return Math.sqrt((factoryX - x1) * (factoryX - x1) + (factoryY - y1) * (factoryY - y1));
-    }
     
     const InsertSimulationHumans = async () => {
         var stageW = stageWidth - gridGap * 2; 
@@ -273,7 +270,7 @@ function CreatePage() {
             for (var j = 0; j < Math.floor(stageH / gridGap) - 1; ++j) {
                 var canAdd = true;
                 for (var k = 0; k < invalidLocations.length; ++k) {
-                    if (invalidLocations[k].x === i && invalidLocations[k].y === j) {
+                    if (invalidLocations[k].x == i && invalidLocations[k].y == j) {
                         canAdd = false;
                         break;
                     }
