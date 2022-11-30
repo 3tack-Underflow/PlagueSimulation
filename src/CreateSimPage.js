@@ -171,7 +171,7 @@ function CreatePage() {
             if (ruleCandidates[i] === "temperature_P") {
                 var opposite = false;
                 for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i].category === "temperature_M") {
+                    if (ruleValues[i][2] === "temperature_M") {
                         opposite = true;
                         break;
                     }
@@ -184,7 +184,7 @@ function CreatePage() {
             } else if (ruleCandidates[i] === "temperature_M") {
                 var opposite = false;
                 for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i].category === "temperature_M") {
+                    if (ruleValues[i][2] === "temperature_M") {
                         opposite = true;
                         break;
                     }
@@ -197,7 +197,7 @@ function CreatePage() {
             } else if (ruleCandidates[i] === "humidity_P") {
                 var opposite = false;
                 for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i].category === "humidity_M") {
+                    if (ruleValues[i][2] === "humidity_M") {
                         opposite = true;
                         break;
                     }
@@ -210,7 +210,7 @@ function CreatePage() {
             } else if (ruleCandidates[i] === "humidity_M") {
                 var opposite = false;
                 for (var j = 0; j < ruleValues.length; ++j) {
-                    if (ruleValues[i].category === "humidity_P") {
+                    if (ruleValues[i][2] === "humidity_P") {
                         opposite = true;
                         break;
                     }
