@@ -361,7 +361,7 @@ app.post('/api/collect-tax', (req, res) => {
     const sql = 
     "UPDATE simulation " +
     "SET funds = funds + (SELECT SUM(tax) FROM simulation_humans WHERE id = " + id + " AND status = 'alive' AND isolated = 0) " +
-    "WHERE id = (simulation id);"
+    "WHERE id = " + id + ";"
 
     db.query(sql, (err, result) => {
         res.send(err);
