@@ -319,6 +319,7 @@ function Simulation() {
                     let new_infected = {...infected};
                     delete new_infected[human_num.toString()];
                     setInfected(new_infected);
+                    GetAlive();
                 });
             }
         })
