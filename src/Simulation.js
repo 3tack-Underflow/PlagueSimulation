@@ -56,23 +56,23 @@ function Simulation() {
     const ProductionCost = (rules) => {
         var cost = 0;
         for (var i = 0; i < rules.length; ++i) {
-            if (rules[i].category === "Temperature") {
+            if (rules[i].category === "temperature") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
-            } else if (rules[i].category === "Humidity") {
+            } else if (rules[i].category === "humidity") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
-            } else if (rules[i].category === "Elevation") {
+            } else if (rules[i].category === "elevation") {
                 cost += 100;
-            } else if (rules[i].category === "Age") {
+            } else if (rules[i].category === "age") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
-            } else if (rules[i].category === "Weight") {
+            } else if (rules[i].category === "weight") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
-            } else if (rules[i].category === "Blood Type") {
+            } else if (rules[i].category === "blood_type") {
                 cost += 100;
-            } else if (rules[i].category === "Blood Pressure") {
+            } else if (rules[i].category === "blood_pressure") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
-            } else if (rules[i].category === "Cholesterol") {
+            } else if (rules[i].category === "cholesterol") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
-            } else if (rules[i].category === "Radiation") {
+            } else if (rules[i].category === "radiation") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
             }
         }
@@ -84,11 +84,11 @@ function Simulation() {
     }
 
     const CategoryString = (category, value) => {
-        if (category === "Elevation") {
+        if (category === "elevation") {
             if (value === "1") return "Low";
             else if (value === "2") return "Mid";
             else if (value === "3") return "High";
-        } else if (category === "Blood Type") {
+        } else if (category === "blood_type") {
             if (value === "1") return "A";
             else if (value === "2") return "B";
             else if (value === "3") return "O";
@@ -112,16 +112,16 @@ function Simulation() {
 
     const CheckRule = () => {
         if (ruleType === "None" || ruleMin > ruleMax ||
-            (ruleType != "Elevation" && ruleType != "Blood Type" &&
+            (ruleType != "elevation" && ruleType != "blood_type" &&
                 (ruleMin.length === 0 || ruleMax.length === 0))) {
             alert("Invalid vaccine rule format!");
             return false;
         }
-        if (ruleType === "Elevation" && Elevation === 0) {
+        if (ruleType === "elevation" && Elevation === 0) {
             alert("Invalid vaccine rule format!");
             return false;
         }
-        if (ruleType === "Blood Type" && bloodType === 0) {
+        if (ruleType === "blood_type" && bloodType === 0) {
             alert("Invalid vaccine rule format!");
             return false;
         }
@@ -130,10 +130,10 @@ function Simulation() {
 
     const AddRule = () => {
         var min = null, max = null;
-        if (ruleType == "Elevation") {
+        if (ruleType == "elevation") {
             min = Elevation;
             max = Elevation;
-        } else if (ruleType == "Blood Type") {
+        } else if (ruleType == "blood_type") {
             min = bloodType;
             max = bloodType;
         } else {
@@ -986,17 +986,17 @@ function Simulation() {
                         <select value={ruleType} onChange = {(e) => {
                             setRuleType(e.target.value);
                         }}>
-                            <option value="None">Select Rule</option>
-                            <option value="Temperature">Temperature</option>
-                            <option value="Humidity">Humidity</option>
-                            <option value="Elevation">Elevation</option>
-                            <option value="Age">Age</option>
-                            <option value="Age">Height</option>
-                            <option value="Weight">Weight</option>
-                            <option value="Blood Type">Blood Type</option>
-                            <option value="Blood Pressure">Blood Pressure</option>
-                            <option value="Cholesterol">Cholesterol</option>
-                            <option value="Radiation">Radiation</option>
+                            <option value="none">Select Rule</option>
+                            <option value="temperature">Temperature</option>
+                            <option value="humidity">Humidity</option>
+                            <option value="elevation">Elevation</option>
+                            <option value="age">Age</option>
+                            <option value="height">Height</option>
+                            <option value="weight">Weight</option>
+                            <option value="blood_type">Blood Type</option>
+                            <option value="blood_pressure">Blood Pressure</option>
+                            <option value="cholesterol">Cholesterol</option>
+                            <option value="radiation">Radiation</option>
                         </select>
                         <label>
                             {ruleType === "None" ? "UNIT" : FindUnit(ruleType)}
@@ -1004,12 +1004,12 @@ function Simulation() {
                     </div>
 
                     <div className = "ruleCategory" hidden = {ruleType == "None" ? 1 : 0}>
-                        <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "Blood Type" ? 
-                            "Type" : ruleType == "Elevation" ? "Ground Level" : "Range"}</label></div>
+                        <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "blood_type" ? 
+                            "Type" : ruleType == "elevation" ? "Ground Level" : "Range"}</label></div>
 
                     <div className = "vaccineRules" hidden = {ruleType == "None" ? 1 : 0}>
                         {(() => {
-                            if (ruleType == "Blood Type") {
+                            if (ruleType == "blood_type") {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
@@ -1021,7 +1021,7 @@ function Simulation() {
                                         </select>
                                     </div>
                                 )
-                            } else if (ruleType == "Elevation") {
+                            } else if (ruleType == "elevation") {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
