@@ -462,6 +462,22 @@ function Simulation() {
         GetPlagueRules();
     }, [plaguesRaw]);
     
+    const PurchaseIsolation = () => {
+        var isolationCost = 200;
+        if (simulation.funds > isolationCost) {
+            Axios.post('http://localhost:3001/api/purchase-isolation', {
+                simID: testSimId,
+                cost: isolationCost
+            }).then((res) => {
+                simulation.environment_isolation_capacity++;
+                simulation.funds -= isolationCost;
+                setSimulation(simulation);
+            });
+        } else {
+            alert("Not enough funds!");
+        }
+    }
+    
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
             simID: testSimId
@@ -702,6 +718,9 @@ function Simulation() {
                     <label> 
                         Isolation Capacity: {simulation.environment_isolation_capacity}
                     </label>
+                    <button onClick = {() => {PurchaseIsolation()}}>
+                        + Isolation $200
+                    </button>
                     <label style={{fontWeight: "bold"}}> 
                         Display Range View
                     </label>
@@ -732,9 +751,11 @@ function Simulation() {
                         </div>
                     </div>
                     
-                    <button>
-                        Fetch Latest Data
-                    </button>
+                    <div hidden = {1}>
+                        <button>
+                            Fetch Latest Data
+                        </button>
+                    </div>
                     <button onClick={() => {navigate("/Mainpage")}}>
                         Exit Simulation
                     </button>

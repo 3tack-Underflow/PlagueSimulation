@@ -295,6 +295,7 @@ app.post('/api/isolate', (req, res) => {
     "isolated = 0 AND status = 'alive'; " + 
     
     "CALL `user_schema`.`checkRollback`(@human);"
+
     db.query(sql, (err, result) => {
         res.send(err);
     });
@@ -324,7 +325,18 @@ app.post('/api/unisolate', (req, res) => {
         "isolated = 1 AND status = 'alive'; " +
         
         "CALL `user_schema`.`checkRollback`(@human);"
+
     db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
+app.post('/api/purchase-isolation', (req, res) => {
+    const simID = req.body.simID; 
+    const cost = req.body.cost; 
+
+    const sql = "UPDATE simulation SET funds = funds - ?, environment_isolation_capacity = environment_isolation_capacity + 1 WHERE id = ?"
+    db.query(sql, [cost, simID], (err, result) => {
         res.send(err);
     });
 });
@@ -354,6 +366,7 @@ app.post('/api/kill-human', (req, res) => {
         "WHERE num = ? AND id = ?;" +
 
         "CALL `user_schema`.`checkRollback`(@human);"
+
     db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });
