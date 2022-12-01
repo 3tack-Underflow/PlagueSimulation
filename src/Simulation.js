@@ -168,133 +168,181 @@ function Simulation() {
     }
 
     const test = () => {
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            setUIEnabled(false);
+            const human_num = selected.num;
+            Axios.post('http://localhost:3001/api/test', {
+                cost: 50,
+                simID: testSimId,
+                humanID: human_num
+            }).then((res) => {
+                let new_simulation = {...simulation};
+                new_simulation.funds -= 50;
+                setSimulation(new_simulation);
 
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/test', {
-            cost: 50,
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            let new_simulation = {...simulation};
-            new_simulation.funds -= 50;
-            setSimulation(new_simulation);
-
-            if (Object.entries(res.data[4][0])[0][1] === 'negative') {
-                // TELL THE USER THAT THIS PERSON IS NOT INFECTED
-                alert('This person is not infected');
-            } else {
-                let new_infected = {...infected};
-                new_infected[human_num.toString()].known = 1;
-                setInfected(new_infected);
-            }
-            setUIEnabled(true);
-        })
+                if (Object.entries(res.data[4][0])[0][1] === 'negative') {
+                    // TELL THE USER THAT THIS PERSON IS NOT INFECTED
+                    alert('This person is not infected');
+                } else {
+                    let new_infected = {...infected};
+                    new_infected[human_num.toString()].known = 1;
+                    setInfected(new_infected);
+                }
+                setUIEnabled(true);
+            })
+        }
     };
 
     const Mark = (option) => {
-        setUIEnabled(false);
-        const human_num = selected.num;
-        const human = simHumans[human_num - 1];
-        if (option === human.mark) return;
-        Axios.post('http://localhost:3001/api/mark', {
-            simID: testSimId,
-            humanID: human_num,
-            mark: option
-        }).then(() => {
-            let new_sim_humans = [...simHumans];
-            new_sim_humans[human_num - 1].mark = option;
-            setSimHumans(new_sim_humans);
-            setSelected(new_sim_humans[human_num - 1]);
-            setUIEnabled(true);
-        })
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            setUIEnabled(false);
+            const human_num = selected.num;
+            const human = simHumans[human_num - 1];
+            if (option === human.mark) return;
+            Axios.post('http://localhost:3001/api/mark', {
+                simID: testSimId,
+                humanID: human_num,
+                mark: option
+            }).then(() => {
+                let new_sim_humans = [...simHumans];
+                new_sim_humans[human_num - 1].mark = option;
+                setSimHumans(new_sim_humans);
+                setSelected(new_sim_humans[human_num - 1]);
+                setUIEnabled(true);
+            })
+        }
     }
 
     const Isolate = () => {
-        if (simulation.environment_isolation_capacity === 0) {
-            alert("Your environment isolation capacity is full!");
-            return;
+        if (needUpdate())
+        {
+            console.log("NEED UPDATE")
         }
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/isolate', {
-            cost: 10, 
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) {
-                setUIEnabled(true);
+        else
+        {
+            if (simulation.environment_isolation_capacity === 0) {
+                alert("Your environment isolation capacity is full!");
                 return;
             }
-            let new_sim_humans = [...simHumans];
-            new_sim_humans[human_num - 1].isolated = 1;
-            setSimHumans(new_sim_humans);
-            let updated_isolation_capacity_simulation = simulation;
-            --updated_isolation_capacity_simulation.environment_isolation_capacity;
-            setSimulation(updated_isolation_capacity_simulation);
-            setSelected(new_sim_humans[human_num - 1]);
-            setUIEnabled(true);
-        });
+            setUIEnabled(false);
+            const human_num = selected.num;
+            Axios.post('http://localhost:3001/api/isolate', {
+                cost: 10, 
+                simID: testSimId,
+                humanID: human_num
+            }).then((res) => {
+                if (res.data) {
+                    setUIEnabled(true);
+                    return;
+                }
+                let new_sim_humans = [...simHumans];
+                new_sim_humans[human_num - 1].isolated = 1;
+                setSimHumans(new_sim_humans);
+                let updated_isolation_capacity_simulation = simulation;
+                --updated_isolation_capacity_simulation.environment_isolation_capacity;
+                setSimulation(updated_isolation_capacity_simulation);
+                setSelected(new_sim_humans[human_num - 1]);
+                setUIEnabled(true);
+            });
+        }
     }
 
     const Unisolate = () => {
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/unisolate', {
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) {
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            setUIEnabled(false);
+            const human_num = selected.num;
+            Axios.post('http://localhost:3001/api/unisolate', {
+                simID: testSimId,
+                humanID: human_num
+            }).then((res) => {
+                if (res.data) {
+                    setUIEnabled(true);
+                    return;
+                }
+                let new_sim_humans = [...simHumans];
+                new_sim_humans[human_num - 1].isolated = 0;
+                setSimHumans(new_sim_humans);
+                let updated_isolation_capacity_simulation = simulation;
+                ++updated_isolation_capacity_simulation.environment_isolation_capacity;
+                setSimulation(updated_isolation_capacity_simulation);
+                setSelected(new_sim_humans[human_num - 1]);
                 setUIEnabled(true);
-                return;
-            }
-            let new_sim_humans = [...simHumans];
-            new_sim_humans[human_num - 1].isolated = 0;
-            setSimHumans(new_sim_humans);
-            let updated_isolation_capacity_simulation = simulation;
-            ++updated_isolation_capacity_simulation.environment_isolation_capacity;
-            setSimulation(updated_isolation_capacity_simulation);
-            setSelected(new_sim_humans[human_num - 1]);
-            setUIEnabled(true);
-        });
+            });
+        }
     }
 
     const killHuman = async (human_num) => {
-        Axios.post('http://localhost:3001/api/kill_human', {
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) return;
-            let new_simulation = {...simulation};
-            new_simulation.num_deceased++;
-            setSimulation(new_simulation);
-            let new_sim_humans = [...simHumans];
-            new_sim_humans[human_num - 1].status = 'dead';
-            setSimHumans(new_sim_humans);
-            let new_infected = {...infected};
-            delete new_infected[human_num.toString()];
-            setInfected(new_infected);
-        });
+        if (needUpdate())
+        {
+            console.log("NEED UPDATE")
+        }
+        else
+        {
+            Axios.post('http://localhost:3001/api/kill_human', {
+                simID: testSimId,
+                humanID: human_num
+            }).then((res) => {
+                if (res.data) return;
+                let new_simulation = {...simulation};
+                new_simulation.num_deceased++;
+                setSimulation(new_simulation);
+                let new_sim_humans = [...simHumans];
+                new_sim_humans[human_num - 1].status = 'dead';
+                setSimHumans(new_sim_humans);
+                let new_infected = {...infected};
+                delete new_infected[human_num.toString()];
+                setInfected(new_infected);
+            });
+        }
     };
 
     const InsertVaccine = async () => {
-        await Axios.post('http://localhost:3001/api/prototype-vaccine', {
-            id: testSimId,
-            vaccineName: vaccineName
-        }).then((res) => {
-            setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
-        });
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            await Axios.post('http://localhost:3001/api/prototype-vaccine', {
+                id: testSimId,
+                vaccineName: vaccineName
+            }).then((res) => {
+                setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
+            });
+        }
     }
 
     const InsertRules = async () => {
-        for (var i = 0; i < rules.length; ++i) {
-            await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
-                vaccine: vaccineID,
-                id: testSimId,
-                category: rules[i].category,
-                range_lower: parseInt(rules[i].range_lower),
-                range_upper: parseInt(rules[i].range_upper)
-            })
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            for (var i = 0; i < rules.length; ++i) {
+                await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
+                    vaccine: vaccineID,
+                    id: testSimId,
+                    category: rules[i].category,
+                    range_lower: parseInt(rules[i].range_lower),
+                    range_upper: parseInt(rules[i].range_upper)
+                })
+            }
         }
     }
 
@@ -340,11 +388,18 @@ function Simulation() {
     }
 
     const DeleteVaccine = async (vaccine) => {
-        Axios.post('http://localhost:3001/api/delete-vaccine', {
-            vaccine: vaccine
-        }).then(() => {
-            GetVaccine();
-        });
+        if (needUpdate())
+        {
+            alert("NEED UPDATE")
+        }
+        else
+        {
+            Axios.post('http://localhost:3001/api/delete-vaccine', {
+                vaccine: vaccine
+            }).then(() => {
+                GetVaccine();
+            });
+        }
     }
 
     useEffect(() => {
