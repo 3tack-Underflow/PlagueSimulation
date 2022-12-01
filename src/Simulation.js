@@ -160,10 +160,9 @@ function Simulation() {
     const [UIEnabled, setUIEnabled] = useState(true);
 
     const needUpdate = async () => {
-        return await Axios.post('http://localhost:3001/api/get-last-modified', {
+        await Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
-            console.log(response)
             const last_updated = new Date(response.data[0].last_modified_time);
             console.log(last_updated)
             console.log(currUpdate)
