@@ -49,8 +49,6 @@ function Simulation() {
     const [vaccineID, setVaccineID] = useState(1);
     const [vaccinesRaw, setVaccinesRaw] = useState([]);
     const [vaccines, setVaccines] = useState([]);
-    const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
-    const [vaccineRules, setVaccineRules] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
 
     const ProductionCost = (rules) => {
@@ -369,32 +367,24 @@ function Simulation() {
         Axios.post('http://localhost:3001/api/get-vaccine', {
             id: testSimId
         }).then((response) => {
-            setVaccines(response.data);
+            setVaccinesRaw(response.data);
         });
     }
 
-    const FindVaccineRule = (vac) => {
-        for (var i = 0; i < vaccineRules.length; ++i) {
-            if (vaccineRules[i].length > 0 && vaccineRules[i][0].vaccine === vac) {
-                return vaccineRules[i];
-            }
-        }
-        return null;
-    }
-
     const GetVaccineRules = async () => {
-        let new_vaccine_rules = [];
+        let newVaccines = [];
         let promises = [];
-        for (let i = 0; i < vaccines.length; ++i) {
+        for (let i = 0; i < vaccinesRaw.length; ++i) {
             promises.push(Axios.post('http://localhost:3001/api/get-vaccine-rules', {
                 id: testSimId,
-                vaccine: vaccines[i].num
+                vaccine: vaccinesRaw[i].num
             }).then((response) => {
-                new_vaccine_rules.push(response.data)
+                vaccinesRaw[i].rules = response.data;
+                newVaccines.push(vaccinesRaw[i])
             }));
         }
         await Promise.all(promises);
-        setVaccineRules(new_vaccine_rules);
+        setVaccines(newVaccines);
     }
 
     const DeleteVaccine = async (vaccine) => {
@@ -418,9 +408,8 @@ function Simulation() {
         if (cookies.name == null) {
             navigate("/Login");
         }
-
         GetVaccineRules();
-    }, [vaccines]);
+    }, [vaccinesRaw]);
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -1079,7 +1068,7 @@ function Simulation() {
                                 <button onClick = {() => {if (datapoint.num == selectedVaccine) {setSelectedVaccine(0)} DeleteVaccine(datapoint.num)}}>X</button> 
                             </div>
                             {(() => {
-                                var rule = FindVaccineRule(datapoint.num);
+                                var rule = datapoint.rules;
                                 if (rule != null) {
                                     return (
                                         <div className = "vaccineDisplay">
