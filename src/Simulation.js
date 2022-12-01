@@ -14,7 +14,7 @@ function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
     const currUpdate = new Date();
-    // currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
+    currUpdate.setFullYear( currUpdate.getFullYear() + 1 )
 
     const id = params.get('id')
 
@@ -163,6 +163,7 @@ function Simulation() {
         return await Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
+            console.log(response)
             const last_updated = new Date(response.data[0].last_modified_time);
             console.log(last_updated)
             console.log(currUpdate)
