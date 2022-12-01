@@ -201,6 +201,38 @@ const MatchAllRules = (human, rules) => {
     return true;
 }
 
+const VaccineTemperatureRange = (min, max) => {
+    var realMin = 0;
+    var realMax = 0; 
+    for (var i = 1; i <= 6; ++i) {
+        if (min <= i * 5) {
+            realMin = i + 1;
+        } 
+        if (max == i * 5) {
+            realMax = i;
+        } else if (max <= i * 5) {
+            realMax = i - 1;
+        }
+    }
+    return [realMin, realMax];
+}
+
+const VaccineHumidityRange = (min, max) => {
+    var realMin = 0;
+    var realMax = 0; 
+    for (var i = 0; i <= 8; ++i) {
+        if (realMin == 0 && min <= 40 + i * 5) {
+            realMin = i + 1;
+        } 
+        if (realMax == 0 && max == 40 + i * 5) {
+            realMax = i;
+        } else if (realMax == 0 && max <= 40 + i * 5) {
+            realMax = i - 1;
+        }
+    }
+    return [realMin, realMax];
+}
+
 const GetRuleCandidates = (patient0, humans, minCount, radius) => {
     var ruleCandidates = {
         tempMinus: 0, 
@@ -384,4 +416,5 @@ const FindRules = (patientZero, neighbours, minInfected) => {
     return validRules[0];
 }
 
+export { VaccineTemperatureRange, VaccineHumidityRange }
 export { ElevationRange, TemperatureRange, HumidityRange, Distance, MatchRule, MatchAllRules, GetRuleCandidates, FindRules, MatchRules };

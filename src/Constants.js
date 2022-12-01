@@ -7,11 +7,11 @@ const humidityColors = ["#0000FF", "#1a1aff", "#3333ff", "#4d4dff", "#6666ff", "
 const elevationColors = ["#00BB00", "#55DD55", "#AAFFAA"];
 const bloodTypes = ["A", "B", "O"];
 
-const temperatureRangeMin = [25, 20, 15, 10, 5, 0];
-const temperatureRangeMax = [30, 25, 20, 15, 10, 4];
+const temperatureRangeMin = [0, 5, 10, 15, 20, 25];
+const temperatureRangeMax = [5, 10, 15, 20, 25, 30];
 
-const humidityRangeMin = [75, 70, 65, 60, 55, 50, 45, 40];
-const humidityRangeMax = [80, 75, 70, 65, 60, 55, 50, 45];
+const humidityRangeMin = [40, 45, 50, 55, 60, 65, 70, 75];
+const humidityRangeMax = [45, 50, 55, 60, 65, 70, 75, 80];
 
 const elevationRange = ["Low", "Mid", "High"];
 
