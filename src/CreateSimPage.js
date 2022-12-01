@@ -47,8 +47,9 @@ function CreatePage() {
     var generateSim = async () => {
         setOrigin("Random");
         setSeverity("Random");
-        for (var i = 0; i < 100; i++) {
-            setBacteriumName(randomDisease[randomNumberInRange(0, randomDisease.length - 1)]);
+        for (var i = 0; i < 10; i++) {
+            var randomnum = randomNumberInRange(0, randomDisease.length - 1);
+            setBacteriumName(randomDisease[randomnum]);
             await InsertSim();
         }
     }
@@ -478,7 +479,6 @@ function CreatePage() {
             <div className = "horizontal" style={{margin: '15px 0px 0px 0px'}}>
                 <button onClick={handleButton}>Create</button>
                 <button onClick={() => {navigate("/Mainpage")}} >Delete</button>
-                <button onClick={() => {generateSim()}}>generate 100 random simulation</button>
             </div>
         </div>
     )
