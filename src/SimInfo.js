@@ -11,6 +11,10 @@ function SimInfo(){
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
     const [cookies, setCookie] = useCookies(['name']);
+    const [creationTime, setCreationTime] = useState("");
+    const [completeTime, setCompleteTime] = useState("N/A");
+    const [lastModifiedTime, setLastModifiedTime] = useState("");
+
 
     const id = params.get('id')
 
@@ -35,14 +39,31 @@ function SimInfo(){
           setDataList(response.data[0]);
         });
     }, []);
+    
+    useEffect(() => {
+      if (dataList.completion_time != null && dataList.completion_time != "") {
+        setCompleteTime(dataList.completion_time);
+      }
+    },[dataList]);
 
+    useEffect(() => {
+      if(dataList.creation_time != null && dataList.creation_time != "") {
+        var c_time = dataList.creation_time.substring(0,10);
+        setCreationTime(c_time.concat(" ", dataList.creation_time.substring(11,19)));
+      }
+      if (dataList.last_modified_time != null && dataList.last_modified_time != ""){
+        var l_time = dataList.last_modified_time.substring(0,10);
+        setLastModifiedTime(l_time.concat(" ", dataList.last_modified_time.substring(11,19)));
+      }
+    },[dataList])
+    
     return (
         <div className = "SimInfo">
             <label>{dataList.sim_name}</label>
             <div className = "Info">
-                <label>Creation Time: {dataList.creation_time}</label>
-                <label>Completed Time: {dataList.completion_time}</label>
-                <label>Last Modified: {dataList.last_modified_time}</label>
+                <label>Creation Time: {creationTime}</label>
+                <label>Completed Time: {completeTime}</label>
+                <label>Last Modified: {lastModifiedTime}</label>
                 <label>Starting Population: {dataList.environment_starting_population}</label>
                 <label>Isolation Capacity: {dataList.environment_isolation_capacity}</label>
                 <label>Deceased Population: {dataList.num_deceased}</label>
