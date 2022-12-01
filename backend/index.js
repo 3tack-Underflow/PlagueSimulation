@@ -351,12 +351,13 @@ app.post('/api/kill-human', (req, res) => {
         "WHERE human = ? AND human_id = ?;" +
 
         "UPDATE simulation_humans " +
-        "SET status = dead " +
+        "SET status = 'dead' " +
         "WHERE num = ? AND id = ?;" +
 
         "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
-        res.send(err);
+        res.send(result);
+        console.log(err);
     });
 });
 

@@ -743,7 +743,7 @@ function Simulation() {
                                 Fund Rate: ${selected.tax}
                             </label>
                             <label>
-                                Distance:{Distance(selected.x, selected.y, simulation.factoryX, simulation.factoryY)}
+                                Status: ${selected.status}
                             </label>
                             
                             <button disabled = {!UIEnabled || simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
