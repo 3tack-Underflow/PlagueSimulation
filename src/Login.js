@@ -66,6 +66,8 @@ function  Login() {
             setCookie('remember', false, { path: '/' })
           }
           navigate("/Mainpage");
+        } else {
+          alert("Incorrect username or password!")
         }
       })
 
