@@ -30,6 +30,7 @@ function Simulation() {
     const [simHumans, setSimHumans] = useState([]);
     const [simHumansAlive, setSimHumansAlive] = useState(0);
     const [infected, setInfected] = useState({});
+    const [infectedData, setInfectedData] = useState([]);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
@@ -484,6 +485,7 @@ function Simulation() {
                     cycles_to_die: infection.cycles_to_die};
             });
             setInfected(infected);
+            setInfectedData(response.data);
         });
     }
 
@@ -532,36 +534,57 @@ function Simulation() {
     };
 
     const Vaccinate = (target) => {  
-        if (selectedVaccine == null) alert("No vaccine selected!");
-        var vaccineRules = selectedVaccine.rules;
+        if (selectedVaccine == 0) alert("No vaccine selected!");
+        
         var infectionInfo = null;
-        infected.forEach((infection) => {
-            if (infection.human == target.num) {
-                infectionInfo = infection;
+        for (var i = 0; i < infectedData.length; ++i) {
+            if (infectedData[i].human == target.num) {
+                infectionInfo = infectedData[i];
             }
-        });
+        }
         if (infectionInfo == null) {
-            console.log("random");
+            console.log("random 1");
         } else {
+            var vaccineRules = [];
+            for (var i = 0; i < vaccines.length; ++i) {
+                if (vaccines[i].num == selectedVaccine) {
+                    vaccineRules = vaccines[i].rules
+                }
+            }
             var plagueRules = [];
             for (var i = 0; i < plagues.length; ++i) {
-                if (plagues[i].variant == infectionInfo.variant) {
+                if (plagues[i].variant == infectionInfo.plague) {
                     plagueRules = plagues[i].rules;
                 }
             }
             var hit = 0;
             for (var i = 0; i < plagueRules.length; ++i) {
                 for (var j = 0; j < vaccineRules.length; ++j) {
+                    // console.log(plagueRules[i].category + " " + vaccineRules[i].category);
                     if (plagueRules[i].category == vaccineRules[i].category) {
                         var val = 0;
                         if (plagueRules[i].category == "temperature") val = TemperatureRange(target.y);
                         else if (plagueRules[i].category == "humidity") val = HumidityRange(target.x);
                         else if (plagueRules[i].category == "elevation") val = ElevationRange(target.x, target.y);
+                        else if (plagueRules[i].category == "age") val = target.age;
+                        else if (plagueRules[i].category == "weight") val = target.weight;
+                        else if (plagueRules[i].category == "height") val = target.height;
+                        else if (plagueRules[i].category == "blood_type") val = target.blood_type;
+                        else if (plagueRules[i].category == "blood_pressure") val = target.blood_pressure;
+                        else if (plagueRules[i].category == "cholesterol") val = target.cholesterol;
+                        else if (plagueRules[i].category == "radiation") val = target.radiation;
                         if (vaccineRules[i].range_lower <= val && vaccineRules[i].range_upper >= val) {
                             hit += 2;
+                            break;
                         }
                     } 
                 }
+            }
+            console.log(hit);
+            if (hit == plagueRules.length + vaccineRules.length) {
+                console.log("cure");
+            } else {
+                console.log("random 2");
             }
         }
     }
@@ -737,7 +760,7 @@ function Simulation() {
                             }}>
                                 Test: $50
                             </button>
-                            <button 
+                            <button onClick={() => {Vaccinate(selected)}}
                                 style = {{border: FindVaccine(selectedVaccine) === null ? "lightgray 2px solid" : "black 2px solid"}}
                                 disabled = {FindVaccine(selectedVaccine) === null ? 1 : 0}>
                                 Vaccinate{FindVaccine(selectedVaccine) != null ? " " + FindVaccine(selectedVaccine).name : ""}
