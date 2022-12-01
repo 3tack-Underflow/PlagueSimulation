@@ -158,21 +158,17 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
-    const getLastUpdated = async() => {
+    const needUpdate = () => {
         Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
-            console.log(response.data[0].last_modified_time)
-            return response.data[0].last_modified_time;
+            const last_updated = response.data[0].last_modified_time;
+            return last_updated > currUpdate
         });
     }
 
-    const needUpdate = async() => {
-        const last_updated = await getLastUpdated()
-        return last_updated > currUpdate
-    }
-
     const test = () => {
+
         setUIEnabled(false);
         const human_num = selected.num;
         Axios.post('http://localhost:3001/api/test', {
