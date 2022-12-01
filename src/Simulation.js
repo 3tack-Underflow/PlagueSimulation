@@ -13,7 +13,8 @@ import { stageWidth, stageHeight, temperatureColors,
 function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
-    const currUpdate = Date();
+    const currUpdate = new Date();
+    //currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
 
     const id = params.get('id')
 
@@ -162,7 +163,10 @@ function Simulation() {
         Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
-            const last_updated = response.data[0].last_modified_time;
+            const last_updated = new Date(response.data[0].last_modified_time);
+            console.log(last_updated)
+            console.log(currUpdate)
+            console.log(last_updated > currUpdate)
             return last_updated > currUpdate
         });
     }
