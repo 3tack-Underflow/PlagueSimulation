@@ -50,7 +50,6 @@ function Simulation() {
     const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
     const [vaccineRules, setVaccineRules] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
-    const [markOption, setMarkOption] = useState(null);
 
     const ProductionCost = (rules) => {
         var cost = 0;
@@ -183,15 +182,20 @@ function Simulation() {
     };
 
     const Mark = (option) => {
-        if (option === markOption) return;
+        setUIEnabled(false);
+        const human_num = selected.num;
+        const human = simHumans[human_num - 1];
+        if (option === human.mark) return;
         Axios.post('http://localhost:3001/api/mark', {
             simID: testSimId,
-            humanID: selected.num,
+            humanID: human_num,
             mark: option
         }).then(() => {
-            setMarkOption(option);
-            selected.mark = option;
-            setSelected(selected);
+            let new_sim_humans = [...simHumans];
+            new_sim_humans[human_num - 1].mark = option;
+            setSimHumans(new_sim_humans);
+            setSelected(new_sim_humans[human_num - 1]);
+            setUIEnabled(true);
         })
     }
 
@@ -211,13 +215,13 @@ function Simulation() {
                 setUIEnabled(true);
                 return;
             }
-            let isolatedHuman = simHumans[human_num - 1];
-            isolatedHuman.isolated = 1;
-            var arr = simHumans.map(human => {return human.num === human_num ? isolatedHuman : human});
-            setSimHumans(arr);
+            let new_sim_humans = [...simHumans];
+            new_sim_humans[human_num - 1].isolated = 1;
+            setSimHumans(new_sim_humans);
             let updated_isolation_capacity_simulation = simulation;
             --updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
+            setSelected(new_sim_humans[human_num - 1]);
             setUIEnabled(true);
         });
     }
@@ -233,13 +237,13 @@ function Simulation() {
                 setUIEnabled(true);
                 return;
             }
-            let unisolatedHuman = simHumans[human_num - 1];
-            unisolatedHuman.isolated = 0;
-            var arr = simHumans.map(human => {return human.num === human_num ? unisolatedHuman : human});
-            setSimHumans(arr);
+            let new_sim_humans = [...simHumans];
+            new_sim_humans[human_num - 1].isolated = 0;
+            setSimHumans(new_sim_humans);
             let updated_isolation_capacity_simulation = simulation;
             ++updated_isolation_capacity_simulation.environment_isolation_capacity;
             setSimulation(updated_isolation_capacity_simulation);
+            setSelected(new_sim_humans[human_num - 1]);
             setUIEnabled(true);
         });
     }
@@ -606,29 +610,29 @@ function Simulation() {
                                     Mark:
                                 </label>
                                 <button style={{backgroundColor: "white", 
-                                    width: selected.marked == null ? "30px" : "20px",
-                                    height: selected.marked == null ? "30px" : "20px",
-                                    borderRadius: selected.marked == null ? "15px" : "10px"}}
+                                    width: selected.mark == null ? "30px" : "20px",
+                                    height: selected.mark == null ? "30px" : "20px",
+                                    borderRadius: selected.mark == null ? "15px" : "10px"}}
                                     onClick = {() => { Mark(null); }}></button>
                                 <button style={{backgroundColor: "yellow", 
-                                    width: selected.marked == 1 ? "30px" : "20px",
-                                    height: selected.marked == 1 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 1 ? "15px" : "10px"}}
+                                    width: selected.mark === 1 ? "30px" : "20px",
+                                    height: selected.mark === 1 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 1 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(1); }}></button>
                                 <button style={{backgroundColor: "orange", 
-                                    width: selected.marked == 2 ? "30px" : "20px",
-                                    height: selected.marked == 2 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 2 ? "15px" : "10px"}}
+                                    width: selected.mark === 2 ? "30px" : "20px",
+                                    height: selected.mark === 2 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 2 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(2); }}></button>
                                 <button style={{backgroundColor: "red", 
-                                    width: selected.marked == 3 ? "30px" : "20px",
-                                    height: selected.marked == 3 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 3 ? "15px" : "10px"}}
+                                    width: selected.mark === 3 ? "30px" : "20px",
+                                    height: selected.mark === 3 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 3 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(3); }}></button>
                                 <button style={{backgroundColor: "crimson", 
-                                    width: selected.marked == 4 ? "30px" : "20px",
-                                    height: selected.marked == 4 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 4 ? "15px" : "10px"}}
+                                    width: selected.mark === 4 ? "30px" : "20px",
+                                    height: selected.mark === 4 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 4 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(4); }}></button>
                             </div>
                         </div>
@@ -827,8 +831,8 @@ function Simulation() {
                                 x = {datapoint.x}
                                 y = {datapoint.y}
                                 radius = {26}
-                                strokeWidth = {datapoint.marked == null ? 0 : 5}
-                                stroke = {datapoint.marked == null ? "black" : "yellow"}>
+                                strokeWidth = {datapoint.mark == null ? 0 : 5}
+                                stroke = {datapoint.mark == null ? "black" : datapoint.mark === 1 ? "yellow" : datapoint.mark == 2 ? "orange" : datapoint.mark === 3 ? "red" : "crimson"}>
                             </Circle>
                         )}
                         {simHumans.map(datapoint => 
