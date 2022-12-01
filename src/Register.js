@@ -57,7 +57,7 @@ function Register() {
         alert("Password does not match!");
         return;
       } else {
-        alert("Password invalid!");
+        alert("Password invalid! The password needs to be 8-30 characters long with minimum 1 lower case, 1 number, 1 symbol and 1 upper case letter!");
         return;
       }
     }
