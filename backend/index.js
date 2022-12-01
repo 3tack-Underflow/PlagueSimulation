@@ -329,7 +329,7 @@ app.post('/api/unisolate', (req, res) => {
     });
 });
 
-app.post('/api/kill_human', (req, res) => {
+app.post('/api/kill-human', (req, res) => {
     const simID = req.body.simID;
     const humanID = req.body.humanID;
 

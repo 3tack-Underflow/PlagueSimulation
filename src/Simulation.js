@@ -165,9 +165,9 @@ function Simulation() {
             simID: testSimId
         }).then((response) => {
             const last_updated = new Date(response.data[0].last_modified_time);
-            console.log(last_updated)
-            console.log(currUpdate)
-            console.log(last_updated > currUpdate)
+            // console.log(last_updated)
+            // console.log(currUpdate)
+            // console.log(last_updated > currUpdate)
             return (last_updated > currUpdate)
         });
         return data
@@ -302,13 +302,10 @@ function Simulation() {
 
     const killHuman = async (human_num) => {
         needUpdate().then(function(result){
-            if (result)
-            {
+            if (result) {
                 alert("NEED UPDATE")
-            }
-            else
-            {
-                Axios.post('http://localhost:3001/api/kill_human', {
+            } else {
+                Axios.post('http://localhost:3001/api/kill-human', {
                     simID: testSimId,
                     humanID: human_num
                 }).then((res) => {
@@ -445,10 +442,6 @@ function Simulation() {
         }
         GetPlagueRules();
     }, [plaguesRaw]);
-
-    useEffect(() => {
-        console.log(plagues);
-    }, [plagues]);
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -543,7 +536,7 @@ function Simulation() {
             }
         }
         if (infectionInfo == null) {
-            console.log("random 1");
+            killHuman(target.num);
         } else {
             var vaccineRules = [];
             for (var i = 0; i < vaccines.length; ++i) {
@@ -560,7 +553,6 @@ function Simulation() {
             var hit = 0;
             for (var i = 0; i < plagueRules.length; ++i) {
                 for (var j = 0; j < vaccineRules.length; ++j) {
-                    // console.log(plagueRules[i].category + " " + vaccineRules[i].category);
                     if (plagueRules[i].category == vaccineRules[i].category) {
                         var val = 0;
                         if (plagueRules[i].category == "temperature") val = TemperatureRange(target.y);
@@ -580,11 +572,10 @@ function Simulation() {
                     } 
                 }
             }
-            console.log(hit);
             if (hit == plagueRules.length + vaccineRules.length) {
                 console.log("cure");
             } else {
-                console.log("random 2");
+                killHuman(target.num);
             }
         }
     }
