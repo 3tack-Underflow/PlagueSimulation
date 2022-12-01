@@ -324,6 +324,24 @@ function Simulation() {
         })
     };
 
+    const cureHuman = async (human_num) => {
+        needUpdate().then(function(result){
+            if (result) {
+                alert("NEED UPDATE")
+            } else {
+                Axios.post('http://localhost:3001/api/cure-human', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) return;
+                    let new_infected = {...infected};
+                    delete new_infected[human_num.toString()];
+                    setInfected(new_infected);
+                });
+            }
+        })
+    };
+
     const InsertVaccine = () => {
         needUpdate().then(function(result){
             if (result)
