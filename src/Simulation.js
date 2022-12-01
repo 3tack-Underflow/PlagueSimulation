@@ -609,7 +609,7 @@ function Simulation() {
             }
             if (hit == plagueRules.length + vaccineRules.length) {
                 console.log("cure");
-                
+                cureHuman(target.num);
             } else {
                 // killHuman(target.num);
                 console.log("random 2");
