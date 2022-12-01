@@ -356,8 +356,7 @@ app.post('/api/kill-human', (req, res) => {
 
         "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
-        res.send(result);
-        console.log(err);
+        res.send(err);
     });
 });
 
