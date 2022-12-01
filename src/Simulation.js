@@ -469,9 +469,10 @@ function Simulation() {
                 simID: testSimId,
                 cost: isolationCost
             }).then((res) => {
-                simulation.environment_isolation_capacity++;
-                simulation.funds -= isolationCost;
-                setSimulation(simulation);
+                let new_simulation = {...simulation};
+                new_simulation.environment_isolation_capacity++;
+                new_simulation.funds -= isolationCost;
+                setSimulation(new_simulation);
             });
         } else {
             alert("Not enough funds!");
