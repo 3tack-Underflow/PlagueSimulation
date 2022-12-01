@@ -30,6 +30,7 @@ function Simulation() {
     const [simHumans, setSimHumans] = useState([]);
     const [simHumansAlive, setSimHumansAlive] = useState(0);
     const [infected, setInfected] = useState({});
+    const [infectedData, setInfectedData] = useState([]);
     const [selected, setSelected] = useState(null);
     const [cookies, setCookie] = useCookies(['name']);
     var testSimId = id;
@@ -164,9 +165,9 @@ function Simulation() {
             simID: testSimId
         }).then((response) => {
             const last_updated = new Date(response.data[0].last_modified_time);
-            console.log(last_updated)
-            console.log(currUpdate)
-            console.log(last_updated > currUpdate)
+            // console.log(last_updated)
+            // console.log(currUpdate)
+            // console.log(last_updated > currUpdate)
             return (last_updated > currUpdate)
         });
         return data
@@ -301,13 +302,10 @@ function Simulation() {
 
     const killHuman = async (human_num) => {
         needUpdate().then(function(result){
-            if (result)
-            {
+            if (result) {
                 alert("NEED UPDATE")
-            }
-            else
-            {
-                Axios.post('http://localhost:3001/api/kill_human', {
+            } else {
+                Axios.post('http://localhost:3001/api/kill-human', {
                     simID: testSimId,
                     humanID: human_num
                 }).then((res) => {
@@ -318,6 +316,24 @@ function Simulation() {
                     let new_sim_humans = [...simHumans];
                     new_sim_humans[human_num - 1].status = 'dead';
                     setSimHumans(new_sim_humans);
+                    let new_infected = {...infected};
+                    delete new_infected[human_num.toString()];
+                    setInfected(new_infected);
+                });
+            }
+        })
+    };
+
+    const cureHuman = async (human_num) => {
+        needUpdate().then(function(result){
+            if (result) {
+                alert("NEED UPDATE")
+            } else {
+                Axios.post('http://localhost:3001/api/cure-human', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) return;
                     let new_infected = {...infected};
                     delete new_infected[human_num.toString()];
                     setInfected(new_infected);
@@ -444,10 +460,6 @@ function Simulation() {
         }
         GetPlagueRules();
     }, [plaguesRaw]);
-
-    useEffect(() => {
-        console.log(plagues);
-    }, [plagues]);
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -484,6 +496,7 @@ function Simulation() {
                     cycles_to_die: infection.cycles_to_die};
             });
             setInfected(infected);
+            setInfectedData(response.data);
         });
     }
 
@@ -532,36 +545,57 @@ function Simulation() {
     };
 
     const Vaccinate = (target) => {  
-        if (selectedVaccine == null) alert("No vaccine selected!");
-        var vaccineRules = selectedVaccine.rules;
+        if (selectedVaccine == 0) alert("No vaccine selected!");
+        
         var infectionInfo = null;
-        infected.forEach((infection) => {
-            if (infection.human == target.num) {
-                infectionInfo = infection;
+        for (var i = 0; i < infectedData.length; ++i) {
+            if (infectedData[i].human == target.num) {
+                infectionInfo = infectedData[i];
             }
-        });
+        }
         if (infectionInfo == null) {
-            console.log("random");
+            killHuman(target.num);
+            console.log("random 1");
         } else {
+            var vaccineRules = [];
+            for (var i = 0; i < vaccines.length; ++i) {
+                if (vaccines[i].num == selectedVaccine) {
+                    vaccineRules = vaccines[i].rules
+                }
+            }
             var plagueRules = [];
             for (var i = 0; i < plagues.length; ++i) {
-                if (plagues[i].variant == infectionInfo.variant) {
+                if (plagues[i].variant == infectionInfo.plague) {
                     plagueRules = plagues[i].rules;
                 }
             }
             var hit = 0;
             for (var i = 0; i < plagueRules.length; ++i) {
                 for (var j = 0; j < vaccineRules.length; ++j) {
-                    if (plagueRules[i].category == vaccineRules[i].category) {
+                    if (plagueRules[i].category == vaccineRules[j].category) {
                         var val = 0;
                         if (plagueRules[i].category == "temperature") val = TemperatureRange(target.y);
                         else if (plagueRules[i].category == "humidity") val = HumidityRange(target.x);
                         else if (plagueRules[i].category == "elevation") val = ElevationRange(target.x, target.y);
-                        if (vaccineRules[i].range_lower <= val && vaccineRules[i].range_upper >= val) {
+                        else if (plagueRules[i].category == "age") val = target.age;
+                        else if (plagueRules[i].category == "weight") val = target.weight;
+                        else if (plagueRules[i].category == "height") val = target.height;
+                        else if (plagueRules[i].category == "blood_type") val = target.blood_type;
+                        else if (plagueRules[i].category == "blood_pressure") val = target.blood_pressure;
+                        else if (plagueRules[i].category == "cholesterol") val = target.cholesterol;
+                        else if (plagueRules[i].category == "radiation") val = target.radiation;
+                        if (vaccineRules[j].range_lower <= val && vaccineRules[j].range_upper >= val) {
                             hit += 2;
+                            break;
                         }
                     } 
                 }
+            }
+            if (hit == plagueRules.length + vaccineRules.length) {
+                console.log("cure");
+            } else {
+                killHuman(target.num);
+                console.log("random 2");
             }
         }
     }
@@ -729,7 +763,7 @@ function Simulation() {
                                 Fund Rate: ${selected.tax}
                             </label>
                             <label>
-                                Distance:{Distance(selected.x, selected.y, simulation.factoryX, simulation.factoryY)}
+                                Status: ${selected.status}
                             </label>
                             
                             <button disabled = {!UIEnabled || simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
@@ -737,7 +771,7 @@ function Simulation() {
                             }}>
                                 Test: $50
                             </button>
-                            <button 
+                            <button onClick={() => {Vaccinate(selected)}}
                                 style = {{border: FindVaccine(selectedVaccine) === null ? "lightgray 2px solid" : "black 2px solid"}}
                                 disabled = {FindVaccine(selectedVaccine) === null ? 1 : 0}>
                                 Vaccinate{FindVaccine(selectedVaccine) != null ? " " + FindVaccine(selectedVaccine).name : ""}

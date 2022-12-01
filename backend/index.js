@@ -329,7 +329,7 @@ app.post('/api/unisolate', (req, res) => {
     });
 });
 
-app.post('/api/kill_human', (req, res) => {
+app.post('/api/kill-human', (req, res) => {
     const simID = req.body.simID;
     const humanID = req.body.humanID;
 
@@ -343,19 +343,41 @@ app.post('/api/kill_human', (req, res) => {
         "SELECT @human:=NULL;" +
 
         "SELECT @human:=num " +
-        "FROM simulation_humans, infection " +
-        "WHERE num = ? AND id = ? AND status = 'alive' " +
-        "AND human = ? AND human_id = ?; " +
+        "FROM simulation_humans " +
+        "WHERE num = ? AND id = ? AND status = 'alive'; " +
 
         "DELETE FROM infection " +
         "WHERE human = ? AND human_id = ?;" +
 
         "UPDATE simulation_humans " +
-        "SET status = dead " +
+        "SET status = 'dead' " +
         "WHERE num = ? AND id = ?;" +
 
         "CALL `user_schema`.`checkRollback`(@human);"
     db.query(sql, [simID, humanID, simID, humanID, simID, humanID, simID, humanID, simID], (err, result) => {
+        res.send(err);
+    });
+});
+
+app.post('/api/cure-human', (req, res) => {
+    const simID = req.body.simID;
+    const humanID = req.body.humanID;
+
+    const sql =
+        "START TRANSACTION; " +
+
+        "SELECT @human:=NULL;" +
+
+        "SELECT @human:=human " +
+        "FROM infection " +
+        "WHERE human = ? AND human_id = ?; " +
+
+        "DELETE FROM infection " +
+        "WHERE human = ? AND human_id = ?;" +
+
+        "CALL `user_schema`.`checkRollback`(@human);"
+
+    db.query(sql, [humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });
 });
