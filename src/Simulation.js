@@ -537,6 +537,7 @@ function Simulation() {
         }
         if (infectionInfo == null) {
             killHuman(target.num);
+            console.log("random 1");
         } else {
             var vaccineRules = [];
             for (var i = 0; i < vaccines.length; ++i) {
@@ -553,7 +554,7 @@ function Simulation() {
             var hit = 0;
             for (var i = 0; i < plagueRules.length; ++i) {
                 for (var j = 0; j < vaccineRules.length; ++j) {
-                    if (plagueRules[i].category == vaccineRules[i].category) {
+                    if (plagueRules[i].category == vaccineRules[j].category) {
                         var val = 0;
                         if (plagueRules[i].category == "temperature") val = TemperatureRange(target.y);
                         else if (plagueRules[i].category == "humidity") val = HumidityRange(target.x);
@@ -565,7 +566,7 @@ function Simulation() {
                         else if (plagueRules[i].category == "blood_pressure") val = target.blood_pressure;
                         else if (plagueRules[i].category == "cholesterol") val = target.cholesterol;
                         else if (plagueRules[i].category == "radiation") val = target.radiation;
-                        if (vaccineRules[i].range_lower <= val && vaccineRules[i].range_upper >= val) {
+                        if (vaccineRules[j].range_lower <= val && vaccineRules[j].range_upper >= val) {
                             hit += 2;
                             break;
                         }
@@ -576,6 +577,7 @@ function Simulation() {
                 console.log("cure");
             } else {
                 killHuman(target.num);
+                console.log("random 2");
             }
         }
     }
