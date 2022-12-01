@@ -13,6 +13,7 @@ import { stageWidth, stageHeight, temperatureColors,
 function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
+    const currUpdate = Date();
 
     const id = params.get('id')
 
@@ -380,11 +381,31 @@ function Simulation() {
         });
     }
 
+    const getLastUpdated = async() => {
+        Axios.post('http://localhost:3001/api/get-last-modified', {
+            simID: testSimId
+        }).then((response) => {
+            setSimulation(response.data[0]);
+
+            // last updated
+
+        });
+    }
+
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {
             simID: testSimId
         }).then((response) => {
             setSimulation(response.data[0]);
+
+            // last updated
+
+        });
+
+        Axios.post('http://localhost:3001/api/get-last-modified', {
+            simID: testSimId
+        }).then((response) => {
+            console.log(response.data[0])
         });
     }, []);
 

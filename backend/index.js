@@ -227,6 +227,14 @@ app.post('/api/get-current_simulation', (req, res) => {
     });
 });
 
+app.post('/api/get-last-modified', (req, res) => {
+    const simID = req.body.simID;
+    const sql = "SELECT last_modified_time FROM simulation WHERE id = ?;";
+    db.query(sql, [simID], (err, result) => {
+        res.send(result);
+    });
+});
+
 app.post('/api/mark-human', (req, res) => {
     const num = req.body.num;
     const simID = req.body.simID;
