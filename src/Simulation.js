@@ -49,6 +49,8 @@ function Simulation() {
     const [vaccineID, setVaccineID] = useState(1);
     const [vaccinesRaw, setVaccinesRaw] = useState([]);
     const [vaccines, setVaccines] = useState([]);
+    const [plaguesRaw, setPlaguesRaw] = useState([]);
+    const [plagues, setPlagues] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
 
     const ProductionCost = (rules) => {
@@ -181,7 +183,7 @@ function Simulation() {
                 setUIEnabled(false);
                 const human_num = selected.num;
                 Axios.post('http://localhost:3001/api/test', {
-                    cost: 50,
+                    cost: 0,
                     simID: testSimId,
                     humanID: human_num
                 }).then((res) => {
@@ -387,6 +389,13 @@ function Simulation() {
         setVaccines(newVaccines);
     }
 
+    useEffect(() => {
+        if (cookies.name == null) {
+            navigate("/Login");
+        }
+        GetVaccineRules();
+    }, [vaccinesRaw]);
+
     const DeleteVaccine = async (vaccine) => {
         needUpdate().then(function(result){
             if (result)
@@ -404,12 +413,41 @@ function Simulation() {
         })
     }
 
+    const GetPlague = async () => {
+        Axios.post('http://localhost:3001/api/get-plague', {
+            id: testSimId
+        }).then((response) => {
+            setPlaguesRaw(response.data);
+        });
+    }
+
+    const GetPlagueRules = async () => {
+        let newPlagues = [];
+        let promises = [];
+        for (let i = 0; i < plaguesRaw.length; ++i) {  
+            promises.push(Axios.post('http://localhost:3001/api/get-plague-rules', {
+                id: testSimId,
+                variant: plaguesRaw[i].variant
+            }).then((response) => {
+                plaguesRaw[i].rules = response.data;
+                newPlagues.push(plaguesRaw[i])
+            }));
+        }
+        
+        await Promise.all(promises);
+        setPlagues(newPlagues);
+    }
+
     useEffect(() => {
         if (cookies.name == null) {
             navigate("/Login");
         }
-        GetVaccineRules();
-    }, [vaccinesRaw]);
+        GetPlagueRules();
+    }, [plaguesRaw]);
+
+    useEffect(() => {
+        console.log(plagues);
+    }, [plagues]);
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -439,6 +477,8 @@ function Simulation() {
             let infected = {};
             response.data.forEach((infection) => {
                 infected[infection.human.toString()] = {
+                    human: infection.human,
+                    variant: infection.plague_id,
                     known: infection.known,
                     infection_time: infection.infection_time,
                     cycles_to_die: infection.cycles_to_die};
@@ -458,6 +498,7 @@ function Simulation() {
     useEffect(() => {
         LoadSimHimans();
         GetAlive();
+        GetPlague();
         GetVaccine();
         LoadInfected();
     }, []);
@@ -489,6 +530,41 @@ function Simulation() {
     const getNumberOfElapsedCyclesToNow = (startTime, cycle_length_in_seconds) => {
         return Math.floor((new Date() - new Date(startTime)) / 1000 / cycle_length_in_seconds);
     };
+
+    const Vaccinate = (target) => {  
+        if (selectedVaccine == null) alert("No vaccine selected!");
+        var vaccineRules = selectedVaccine.rules;
+        var infectionInfo = null;
+        infected.forEach((infection) => {
+            if (infection.human == target.num) {
+                infectionInfo = infection;
+            }
+        });
+        if (infectionInfo == null) {
+            console.log("random");
+        } else {
+            var plagueRules = [];
+            for (var i = 0; i < plagues.length; ++i) {
+                if (plagues[i].variant == infectionInfo.variant) {
+                    plagueRules = plagues[i].rules;
+                }
+            }
+            var hit = 0;
+            for (var i = 0; i < plagueRules.length; ++i) {
+                for (var j = 0; j < vaccineRules.length; ++j) {
+                    if (plagueRules[i].category == vaccineRules[i].category) {
+                        var val = 0;
+                        if (plagueRules[i].category == "temperature") val = TemperatureRange(target.y);
+                        else if (plagueRules[i].category == "humidity") val = HumidityRange(target.x);
+                        else if (plagueRules[i].category == "elevation") val = ElevationRange(target.x, target.y);
+                        if (vaccineRules[i].range_lower <= val && vaccineRules[i].range_upper >= val) {
+                            hit += 2;
+                        }
+                    } 
+                }
+            }
+        }
+    }
 
     const Catalog = () => {
         var cyclesElapsed = getNumberOfElapsedCyclesToNow(simulation.last_background_update_time, cycle_length_in_seconds);

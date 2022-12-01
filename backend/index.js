@@ -463,6 +463,23 @@ app.post('/api/get-vaccine-rules', (req, res) => {
     });
 });
 
+app.post('/api/get-plague', (req, res) => {
+    const id = req.body.id;
+    const sql = "SELECT * FROM plague WHERE id = ?;";
+    db.query(sql, [id], (err, result) => {
+        res.send(result);
+    });
+});
+
+app.post('/api/get-plague-rules', (req, res) => {
+    const id = req.body.id;
+    const variant = req.body.variant;
+    const sql = "SELECT * FROM plague_rules WHERE id = ? AND variant = ?";
+    db.query(sql, [id, variant], (err, result) => {
+        res.send(result);
+    });
+});
+
 app.post('/api/delete-vaccine', (req, res) => {
     const id = req.body.vaccine;
     const sql = "DELETE FROM vaccine WHERE num = ?; " + 
