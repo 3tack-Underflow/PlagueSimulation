@@ -158,6 +158,20 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
+    const getLastUpdated = async() => {
+        Axios.post('http://localhost:3001/api/get-last-modified', {
+            simID: testSimId
+        }).then((response) => {
+            console.log(response.data[0].last_modified_time)
+            return response.data[0].last_modified_time;
+        });
+    }
+
+    const needUpdate = async() => {
+        const last_updated = await getLastUpdated()
+        return last_updated > currUpdate
+    }
+
     const test = () => {
         setUIEnabled(false);
         const human_num = selected.num;
@@ -381,31 +395,11 @@ function Simulation() {
         });
     }
 
-    const getLastUpdated = async() => {
-        Axios.post('http://localhost:3001/api/get-last-modified', {
-            simID: testSimId
-        }).then((response) => {
-            setSimulation(response.data[0]);
-
-            // last updated
-
-        });
-    }
-
     useEffect(() => {
         Axios.post('http://localhost:3001/api/get-current_simulation', {
             simID: testSimId
         }).then((response) => {
             setSimulation(response.data[0]);
-
-            // last updated
-
-        });
-
-        Axios.post('http://localhost:3001/api/get-last-modified', {
-            simID: testSimId
-        }).then((response) => {
-            console.log(response.data[0])
         });
     }, []);
 
