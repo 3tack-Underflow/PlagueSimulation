@@ -3,7 +3,7 @@ import {Stage, Layer, Circle, Rect, Shape, Image} from "react-konva"
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { useCookies } from 'react-cookie';
-import { ElevationRange, TemperatureRange, HumidityRange, Distance } from "./Functions.js"
+import { ElevationRange, TemperatureRange, HumidityRange, VaccineTemperatureRange, VaccineHumidityRange } from "./Functions.js"
 import { stageWidth, stageHeight, temperatureColors, 
     humidityColors, elevationColors, temperatureRangeMin, temperatureRangeMax, 
     humidityRangeMin, humidityRangeMax, elevationRange, units, cycle_length_in_seconds, gridGap} from "./Constants.js"
@@ -112,9 +112,9 @@ function Simulation() {
     }
 
     const CheckRule = () => {
-        if (ruleType === "None" || ruleMin > ruleMax ||
+        if (ruleType === "none" || parseInt(ruleMin) > parseInt(ruleMax) ||
             (ruleType != "elevation" && ruleType != "blood_type" &&
-                (ruleMin.length === 0 || ruleMax.length === 0))) {
+                (ruleMin.length == 0 || ruleMax.length == 0))) {
             alert("Invalid vaccine rule format!");
             return false;
         }
@@ -584,17 +584,34 @@ function Simulation() {
                         else if (plagueRules[i].category == "blood_pressure") val = target.blood_pressure;
                         else if (plagueRules[i].category == "cholesterol") val = target.cholesterol;
                         else if (plagueRules[i].category == "radiation") val = target.radiation;
-                        if (vaccineRules[j].range_lower <= val && vaccineRules[j].range_upper >= val) {
-                            hit += 2;
-                            break;
+                        if (vaccineRules[j].category == "temperature") {
+                            var tempRange = VaccineTemperatureRange(vaccineRules[j].range_lower, vaccineRules[j].range_upper);
+                            console.log(tempRange);
+                            if (tempRange[0] <= val && tempRange[1] >= val) {
+                                hit += 2;
+                                break;
+                            }
+                        } else if (vaccineRules[j].category == "humidity") {
+                            var humidRange = VaccineHumidityRange(vaccineRules[j].range_lower, vaccineRules[j].range_upper);
+                            console.log(humidRange);
+                            if (humidRange[0] <= val && humidRange[1] >= val) {
+                                hit += 2;
+                                break;
+                            }
+                        } else {
+                            if (vaccineRules[j].range_lower <= val && vaccineRules[j].range_upper >= val) {
+                                hit += 2;
+                                break;
+                            }
                         }
                     } 
                 }
             }
             if (hit == plagueRules.length + vaccineRules.length) {
                 console.log("cure");
+                cureHuman(target.num);
             } else {
-                killHuman(target.num);
+                // killHuman(target.num);
                 console.log("random 2");
             }
         }
@@ -602,14 +619,20 @@ function Simulation() {
 
     const Catalog = () => {
         var cyclesElapsed = getNumberOfElapsedCyclesToNow(simulation.last_background_update_time, cycle_length_in_seconds);
-        for (var i = 0; i < cyclesElapsed; ++i) {
-            // collect tax each cycle
-            // update status
+        // var collectedFunds = 0;
+        // for (var i = 0; i < cyclesElapsed; ++i) {
+        //     for (var j = j < simHumans.length; ++j) {
+        //         if (simHumans[j].isolated == 0 && simHumans[j].status === "alive") {
+        //             collectedFunds += simHumans[j].funds;
+        //         }
+        //     }
+        //     // collect tax each cycle
+        //     // update status
 
-            // attempt to spread by chance
+        //     // attempt to spread by chance
 
-            // if none infected, attempt to mutate
-        }
+        //     // if none infected, attempt to mutate
+        // }
     }
 
     let healthyMale = new window.Image();
@@ -762,55 +785,55 @@ function Simulation() {
                             <label>
                                 Fund Rate: ${selected.tax}
                             </label>
-                            <label>
-                                Status: ${selected.status}
-                            </label>
                             
                             <button disabled = {!UIEnabled || simulation.funds < 50 || (infected[selected.num.toString()] !== undefined && infected[selected.num.toString()].known)} onClick={() => {
                                 test();
-                            }}>
+                            }} style = {{border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid"}}>
                                 Test: $50
                             </button>
                             <button onClick={() => {Vaccinate(selected)}}
-                                style = {{border: FindVaccine(selectedVaccine) === null ? "lightgray 2px solid" : "black 2px solid"}}
-                                disabled = {FindVaccine(selectedVaccine) === null ? 1 : 0}>
+                                style = {{border: FindVaccine(selectedVaccine) === null || !UIEnabled ? "lightgray 2px solid" : "black 2px solid"}}
+                                disabled = {FindVaccine(selectedVaccine) === null || !UIEnabled ? 1 : 0}>
                                 Vaccinate{FindVaccine(selectedVaccine) != null ? " " + FindVaccine(selectedVaccine).name : ""}
                             </button>
-                            <button disabled={!UIEnabled ? 1 : 0} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}>
+                            <button disabled={!UIEnabled ? 1 : 0} onClick = {() => {if (selected.isolated) Unisolate(); else Isolate()}}
+                                    style = {{border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid"}}>
                                 {selected.isolated ? "Unisolate" : "Isolate"}
                             </button>
-                            <button>
-                                Sanitize
-                            </button>
                             <div className = "mark">
-                                <label>
+                                <label style={{ color: !UIEnabled ? "lightgray" : "black" }}>
                                     Mark:
                                 </label>
-                                <button style={{backgroundColor: "white", 
+                                <button style={{backgroundColor: "white", border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid",
                                     width: selected.mark == null ? "30px" : "20px",
                                     height: selected.mark == null ? "30px" : "20px",
                                     borderRadius: selected.mark == null ? "15px" : "10px"}}
-                                    onClick = {() => { Mark(null); }}></button>
-                                <button style={{backgroundColor: "yellow", 
+                                    onClick = {() => { Mark(null); }}
+                                    disabled = {!UIEnabled}></button>
+                                <button style={{backgroundColor: "yellow", border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid", 
                                     width: selected.mark === 1 ? "30px" : "20px",
                                     height: selected.mark === 1 ? "30px" : "20px",
                                     borderRadius: selected.mark === 1 ? "15px" : "10px"}}
-                                    onClick = {() => { Mark(1); }}></button>
-                                <button style={{backgroundColor: "orange", 
+                                    onClick = {() => { Mark(1); }}
+                                    disabled = {!UIEnabled}></button>
+                                <button style={{backgroundColor: "orange", border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid", 
                                     width: selected.mark === 2 ? "30px" : "20px",
                                     height: selected.mark === 2 ? "30px" : "20px",
                                     borderRadius: selected.mark === 2 ? "15px" : "10px"}}
-                                    onClick = {() => { Mark(2); }}></button>
-                                <button style={{backgroundColor: "red", 
+                                    onClick = {() => { Mark(2); }}
+                                    disabled = {!UIEnabled}></button>
+                                <button style={{backgroundColor: "red", border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid", 
                                     width: selected.mark === 3 ? "30px" : "20px",
                                     height: selected.mark === 3 ? "30px" : "20px",
                                     borderRadius: selected.mark === 3 ? "15px" : "10px"}}
-                                    onClick = {() => { Mark(3); }}></button>
-                                <button style={{backgroundColor: "crimson", 
+                                    onClick = {() => { Mark(3); }}
+                                    disabled = {!UIEnabled}></button>
+                                <button style={{backgroundColor: "crimson", border: !UIEnabled ? "lightgray 2px solid" : "black 2px solid", 
                                     width: selected.mark === 4 ? "30px" : "20px",
                                     height: selected.mark === 4 ? "30px" : "20px",
                                     borderRadius: selected.mark === 4 ? "15px" : "10px"}}
-                                    onClick = {() => { Mark(4); }}></button>
+                                    onClick = {() => { Mark(4); }}
+                                    disabled = {!UIEnabled}></button>
                             </div>
                         </div>
                     }
