@@ -14,7 +14,7 @@ function SimInfo(){
     const [creationTime, setCreationTime] = useState("");
     const [completeTime, setCompleteTime] = useState("N/A");
     const [lastModifiedTime, setLastModifiedTime] = useState("");
-
+    const [numAlive, setNumAlive] = useState(0);
 
     const id = params.get('id')
 
@@ -29,16 +29,23 @@ function SimInfo(){
     }
 
     useEffect(() => {
-      if (cookies.name == null) {
-        navigate("/Login");
-      }
-
+        if (cookies.name == null) {
+          navigate("/Login");
+        }
         Axios.post('http://localhost:3001/api/get-sim', {
             id: id
-        }).then((response) => {
-          setDataList(response.data[0]);
+        }).then((res) => {
+          setDataList(res.data[0]);
         });
     }, []);
+
+    useEffect(() => {
+        Axios.post('http://localhost:3001/api/get-alive', {
+            simID: id
+        }).then((res) => {
+            setNumAlive(res.data[0]["totalAlive"]);
+        });
+    });
     
     useEffect(() => {
       if (dataList.completion_time != null && dataList.completion_time != "") {
@@ -62,13 +69,13 @@ function SimInfo(){
             <label>{dataList.sim_name}</label>
             <div className = "Info">
                 <label>Creation Time: {creationTime}</label>
-                <label>Completed Time: {completeTime}</label>
                 <label>Last Modified: {lastModifiedTime}</label>
-                <label>Starting Population: {dataList.environment_starting_population}</label>
+                <label>Completed: {completeTime}</label>
+                <label>Population: {numAlive} / {dataList.environment_starting_population}</label>
                 <label>Isolation Capacity: {dataList.environment_isolation_capacity}</label>
                 <label>Deceased Population: {dataList.num_deceased}</label>
                 <label>Current status: {dataList.status}</label>
-                <label>Funds: {dataList.funds}</label>
+                <label>Avaliable Funds: ${dataList.funds}</label>
                 <div className = "horizontal">
                     <button onClick = {() => {navigate("/Simulation?id=" + id)}}> Enter</button>
                     <button onClick = {() => {DeleteSim()}}> Delete</button>

@@ -376,7 +376,6 @@ app.post('/api/cure-human', (req, res) => {
         "WHERE human = ? AND human_id = ?;" +
 
         "CALL `user_schema`.`checkRollback`(@human);"
-
     db.query(sql, [humanID, simID, humanID, simID], (err, result) => {
         res.send(err);
     });

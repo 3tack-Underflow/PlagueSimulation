@@ -7,6 +7,7 @@ import { useCookies } from 'react-cookie';
 
 function Mainpage() {
     const [simList, setSimList] = useState([]);
+    const [username, setUsername] = useState("");
     const [cookies, setCookie, removeCookie] = useCookies(['name']);
 
     let navigate = useNavigate();
@@ -15,6 +16,7 @@ function Mainpage() {
         var username = null
         if (cookies.name != null) {
             username = cookies.name
+            setUsername(username);
         } else {
             navigate("/Login");
         }
@@ -35,6 +37,7 @@ function Mainpage() {
     <div className = "Mainpage">
         <div style = {{display: "flex", flexDirection: "row", width: "100%"}}>
             <label>Simulation Archive</label>
+            <label style={{fontWeight: "normal", marginLeft: "auto", marginTop: "0px", marginBottom: "0px", marginRight: "0px"}}>{username}</label>
             <button onClick = {() => {logout()}} style={{width: "20%", marginLeft: "auto", marginTop: "0px", marginBottom: "0px", marginRight: "0px"}}> Logout </button>
         </div>
         <button onClick = {() => {navigate("/Create")}}> Host Simulation </button>

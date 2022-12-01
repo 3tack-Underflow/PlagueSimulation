@@ -554,7 +554,9 @@ function Simulation() {
             }
         }
         if (infectionInfo == null) {
-            killHuman(target.num);
+            if (Math.floor(Math.random() * 2) == 0) {
+                killHuman(target.num);
+            }
             console.log("random 1");
         } else {
             var vaccineRules = [];
@@ -611,8 +613,9 @@ function Simulation() {
                 console.log("cure");
                 cureHuman(target.num);
             } else {
-                // killHuman(target.num);
-                console.log("random 2");
+                if (Math.floor(Math.random() * 2) == 0) {
+                    killHuman(target.num);
+                }
             }
         }
     }

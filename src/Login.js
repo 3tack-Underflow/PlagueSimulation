@@ -112,7 +112,6 @@ function  Login() {
       <div className = "horizontal">
         <button style = {{margin: '20px 10px 10px 0px'}} onClick = {() => {checkInfo()}}> Login </button>
         <button style = {{margin: '20px 0px 10px 10px'}} onClick = {() => {navigate("/Register")}}> Register </button>
-        <button onClick = {() => {generateUser()}}> Generate 100 New Users</button>
       </div>
     </div>
   );
