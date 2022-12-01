@@ -13,6 +13,8 @@ import { stageWidth, stageHeight, temperatureColors,
 function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
+    const currUpdate = new Date();
+    currUpdate.setTime(currUpdate.getTime() + (5*60*60*1000))
 
     const id = params.get('id')
 
@@ -50,7 +52,6 @@ function Simulation() {
     const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
     const [vaccineRules, setVaccineRules] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
-    const [markOption, setMarkOption] = useState(null);
 
     const ProductionCost = (rules) => {
         var cost = 0;
@@ -158,117 +159,189 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
-    const test = () => {
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/test', {
-            cost: 50,
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            let new_simulation = {...simulation};
-            new_simulation.funds -= 50;
-            setSimulation(new_simulation);
+    const needUpdate = async () => {
+        const data = await Axios.post('http://localhost:3001/api/get-last-modified', {
+            simID: testSimId
+        }).then((response) => {
+            const last_updated = new Date(response.data[0].last_modified_time);
+            console.log(last_updated)
+            console.log(currUpdate)
+            console.log(last_updated > currUpdate)
+            return (last_updated > currUpdate)
+        });
+        return data
+    }
 
-            if (Object.entries(res.data[4][0])[0][1] === 'negative') {
-                // TELL THE USER THAT THIS PERSON IS NOT INFECTED
-                alert('This person is not infected');
-            } else {
-                let new_infected = {...infected};
-                new_infected[human_num.toString()].known = 1;
-                setInfected(new_infected);
+    const test = () => {
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
             }
-            setUIEnabled(true);
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/test', {
+                    cost: 50,
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    let new_simulation = {...simulation};
+                    new_simulation.funds -= 50;
+                    setSimulation(new_simulation);
+
+                    if (Object.entries(res.data[4][0])[0][1] === 'negative') {
+                        // TELL THE USER THAT THIS PERSON IS NOT INFECTED
+                        alert('This person is not infected');
+                    } else {
+                        let new_infected = {...infected};
+                        new_infected[human_num.toString()].known = 1;
+                        setInfected(new_infected);
+                    }
+                    setUIEnabled(true);
+                })
+            }
         })
     };
 
     const Mark = (option) => {
-        if (option === markOption) return;
-        Axios.post('http://localhost:3001/api/mark', {
-            simID: testSimId,
-            humanID: selected.num,
-            mark: option
-        }).then(() => {
-            setMarkOption(option);
-            selected.mark = option;
-            setSelected(selected);
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                const human = simHumans[human_num - 1];
+                if (option === human.mark) return;
+                Axios.post('http://localhost:3001/api/mark', {
+                    simID: testSimId,
+                    humanID: human_num,
+                    mark: option
+                }).then(() => {
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].mark = option;
+                    setSimHumans(new_sim_humans);
+                    setSelected(new_sim_humans[human_num - 1]);
+                    setUIEnabled(true);
+                })
+            }
         })
     }
 
     const Isolate = () => {
-        if (simulation.environment_isolation_capacity === 0) {
-            alert("Your environment isolation capacity is full!");
-            return;
-        }
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/isolate', {
-            cost: 10, 
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) {
-                setUIEnabled(true);
-                return;
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
             }
-            let isolatedHuman = simHumans[human_num - 1];
-            isolatedHuman.isolated = 1;
-            var arr = simHumans.map(human => {return human.num === human_num ? isolatedHuman : human});
-            setSimHumans(arr);
-            let updated_isolation_capacity_simulation = simulation;
-            --updated_isolation_capacity_simulation.environment_isolation_capacity;
-            setSimulation(updated_isolation_capacity_simulation);
-            setUIEnabled(true);
-        });
+            else
+            {
+                if (simulation.environment_isolation_capacity === 0) {
+                    alert("Your environment isolation capacity is full!");
+                    return;
+                }
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/isolate', {
+                    cost: 10, 
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) {
+                        setUIEnabled(true);
+                        return;
+                    }
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].isolated = 1;
+                    setSimHumans(new_sim_humans);
+                    let updated_isolation_capacity_simulation = simulation;
+                    --updated_isolation_capacity_simulation.environment_isolation_capacity;
+                    setSimulation(updated_isolation_capacity_simulation);
+                    setSelected(new_sim_humans[human_num - 1]);
+                    setUIEnabled(true);
+                });
+            }
+        })
     }
 
     const Unisolate = () => {
-        setUIEnabled(false);
-        const human_num = selected.num;
-        Axios.post('http://localhost:3001/api/unisolate', {
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) {
-                setUIEnabled(true);
-                return;
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
             }
-            let unisolatedHuman = simHumans[human_num - 1];
-            unisolatedHuman.isolated = 0;
-            var arr = simHumans.map(human => {return human.num === human_num ? unisolatedHuman : human});
-            setSimHumans(arr);
-            let updated_isolation_capacity_simulation = simulation;
-            ++updated_isolation_capacity_simulation.environment_isolation_capacity;
-            setSimulation(updated_isolation_capacity_simulation);
-            setUIEnabled(true);
-        });
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/unisolate', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) {
+                        setUIEnabled(true);
+                        return;
+                    }
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].isolated = 0;
+                    setSimHumans(new_sim_humans);
+                    let updated_isolation_capacity_simulation = simulation;
+                    ++updated_isolation_capacity_simulation.environment_isolation_capacity;
+                    setSimulation(updated_isolation_capacity_simulation);
+                    setSelected(new_sim_humans[human_num - 1]);
+                    setUIEnabled(true);
+                });
+            }
+        })
     }
 
     const killHuman = async (human_num) => {
-        Axios.post('http://localhost:3001/api/kill_human', {
-            simID: testSimId,
-            humanID: human_num
-        }).then((res) => {
-            if (res.data) return;
-            let new_simulation = {...simulation};
-            new_simulation.num_deceased++;
-            setSimulation(new_simulation);
-            let new_sim_humans = [...simHumans];
-            new_sim_humans[human_num - 1].status = 'dead';
-            setSimHumans(new_sim_humans);
-            let new_infected = {...infected};
-            delete new_infected[human_num.toString()];
-            setInfected(new_infected);
-        });
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/kill_human', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) return;
+                    let new_simulation = {...simulation};
+                    new_simulation.num_deceased++;
+                    setSimulation(new_simulation);
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].status = 'dead';
+                    setSimHumans(new_sim_humans);
+                    let new_infected = {...infected};
+                    delete new_infected[human_num.toString()];
+                    setInfected(new_infected);
+                });
+            }
+        })
     };
 
-    const InsertVaccine = async () => {
-        await Axios.post('http://localhost:3001/api/prototype-vaccine', {
-            id: testSimId,
-            vaccineName: vaccineName
-        }).then((res) => {
-            setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
-        });
+    const InsertVaccine = () => {
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/prototype-vaccine', {
+                    id: testSimId,
+                    vaccineName: vaccineName
+                }).then((res) => {
+                    setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
+                });
+            }
+        })
     }
 
     const InsertRules = async () => {
@@ -325,11 +398,20 @@ function Simulation() {
     }
 
     const DeleteVaccine = async (vaccine) => {
-        Axios.post('http://localhost:3001/api/delete-vaccine', {
-            vaccine: vaccine
-        }).then(() => {
-            GetVaccine();
-        });
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/delete-vaccine', {
+                    vaccine: vaccine
+                }).then(() => {
+                    GetVaccine();
+                });
+            }
+        })
     }
 
     useEffect(() => {
@@ -606,29 +688,29 @@ function Simulation() {
                                     Mark:
                                 </label>
                                 <button style={{backgroundColor: "white", 
-                                    width: selected.marked == null ? "30px" : "20px",
-                                    height: selected.marked == null ? "30px" : "20px",
-                                    borderRadius: selected.marked == null ? "15px" : "10px"}}
+                                    width: selected.mark == null ? "30px" : "20px",
+                                    height: selected.mark == null ? "30px" : "20px",
+                                    borderRadius: selected.mark == null ? "15px" : "10px"}}
                                     onClick = {() => { Mark(null); }}></button>
                                 <button style={{backgroundColor: "yellow", 
-                                    width: selected.marked == 1 ? "30px" : "20px",
-                                    height: selected.marked == 1 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 1 ? "15px" : "10px"}}
+                                    width: selected.mark === 1 ? "30px" : "20px",
+                                    height: selected.mark === 1 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 1 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(1); }}></button>
                                 <button style={{backgroundColor: "orange", 
-                                    width: selected.marked == 2 ? "30px" : "20px",
-                                    height: selected.marked == 2 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 2 ? "15px" : "10px"}}
+                                    width: selected.mark === 2 ? "30px" : "20px",
+                                    height: selected.mark === 2 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 2 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(2); }}></button>
                                 <button style={{backgroundColor: "red", 
-                                    width: selected.marked == 3 ? "30px" : "20px",
-                                    height: selected.marked == 3 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 3 ? "15px" : "10px"}}
+                                    width: selected.mark === 3 ? "30px" : "20px",
+                                    height: selected.mark === 3 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 3 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(3); }}></button>
                                 <button style={{backgroundColor: "crimson", 
-                                    width: selected.marked == 4 ? "30px" : "20px",
-                                    height: selected.marked == 4 ? "30px" : "20px",
-                                    borderRadius: selected.marked == 4 ? "15px" : "10px"}}
+                                    width: selected.mark === 4 ? "30px" : "20px",
+                                    height: selected.mark === 4 ? "30px" : "20px",
+                                    borderRadius: selected.mark === 4 ? "15px" : "10px"}}
                                     onClick = {() => { Mark(4); }}></button>
                             </div>
                         </div>
@@ -827,8 +909,8 @@ function Simulation() {
                                 x = {datapoint.x}
                                 y = {datapoint.y}
                                 radius = {26}
-                                strokeWidth = {datapoint.marked == null ? 0 : 5}
-                                stroke = {datapoint.marked == null ? "black" : "yellow"}>
+                                strokeWidth = {datapoint.mark == null ? 0 : 5}
+                                stroke = {datapoint.mark == null ? "black" : datapoint.mark === 1 ? "yellow" : datapoint.mark == 2 ? "orange" : datapoint.mark === 3 ? "red" : "crimson"}>
                             </Circle>
                         )}
                         {simHumans.map(datapoint => 
