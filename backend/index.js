@@ -244,37 +244,6 @@ app.post('/api/mark-human', (req, res) => {
     });
 });
 
-app.post('/api/isolate', (req, res) => {
-    const isolationCost = req.body.cost; 
-    const simID = req.body.simID; 
-    const humanID = req.body.humanID; 
-
-    const sql = 
-    "START TRANSACTION; " + 
-
-    "UPDATE simulation " + 
-    "SET funds = funds - ?"
-    ", environment_isolation_capacity = environment_isolation_capacity - 1 " +
-    "WHERE id = ?; " + 
-
-    "SELECT @human:=NULL;" +
-    
-    "SELECT @human:=num " +
-    "FROM simulation_humans " + 
-    "WHERE num = ? AND id = ? AND " + 
-    "isolated = 0 AND status = 'alive'; " + 
-    
-    "UPDATE simulation_humans " +
-    "SET isolated = 1 " + 
-    "WHERE num = ? AND id = ? AND " + 
-    "isolated = 0 AND status = 'alive'; " + 
-    
-    "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, [0, simID, humanID, simID, humanID, simID], (err, result) => {
-        res.send(err);
-    });
-});
-
 app.post('/api/test', (req, res) => {
     const simID = req.body.simID;
     const humanID = req.body.humanID;
@@ -300,6 +269,37 @@ app.post('/api/test', (req, res) => {
     });
 });
 
+app.post('/api/isolate', (req, res) => {
+    const isolationCost = req.body.cost; 
+    const simID = req.body.simID; 
+    const humanID = req.body.humanID; 
+
+    const sql = 
+    "START TRANSACTION; " + 
+
+    "UPDATE simulation " + 
+    "SET funds = funds - " + isolationCost + 
+    ", environment_isolation_capacity = environment_isolation_capacity - 1 " +
+    "WHERE id = " + simID + "; " + 
+
+    "SELECT @human:=NULL;" +
+    
+    "SELECT @human:=num " +
+    "FROM simulation_humans " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 0 AND status = 'alive'; " + 
+    
+    "UPDATE simulation_humans " +
+    "SET isolated = 1 " + 
+    "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
+    "isolated = 0 AND status = 'alive'; " + 
+    
+    "CALL `user_schema`.`checkRollback`(@human);"
+    db.query(sql, (err, result) => {
+        res.send(err);
+    });
+});
+
 app.post('/api/unisolate', (req, res) => {
     const simID = req.body.simID; 
     const humanID = req.body.humanID; 
@@ -309,22 +309,22 @@ app.post('/api/unisolate', (req, res) => {
 
         "UPDATE simulation " + 
         "SET environment_isolation_capacity = environment_isolation_capacity + 1 " + 
-        "WHERE id = ?; " + 
+        "WHERE id = " + simID + "; " + 
 
         "SELECT @human:=NULL;" +
         
         "SELECT @human:=num " +
         "FROM simulation_humans " + 
-        "WHERE num = ? AND id = ? AND " + 
+        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
         "isolated = 1 AND status = 'alive'; " + 
         
         "UPDATE simulation_humans " +
         "SET isolated = 0 " + 
-        "WHERE num = ? AND id = ? AND " + 
+        "WHERE num = " + humanID + " AND id = " + simID + " AND " + 
         "isolated = 1 AND status = 'alive'; " +
         
         "CALL `user_schema`.`checkRollback`(@human);"
-    db.query(sql, [simID, humanID, simID, humanID, simID], (err, result) => {
+    db.query(sql, (err, result) => {
         res.send(err);
     });
 });

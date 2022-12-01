@@ -13,7 +13,8 @@ import { stageWidth, stageHeight, temperatureColors,
 function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
-    const currUpdate = Date();
+    const currUpdate = new Date();
+    currUpdate.setTime(currUpdate.getTime() + (5*60*60*1000))
 
     const id = params.get('id')
 
@@ -48,30 +49,28 @@ function Simulation() {
     const [vaccineID, setVaccineID] = useState(1);
     const [vaccinesRaw, setVaccinesRaw] = useState([]);
     const [vaccines, setVaccines] = useState([]);
-    const [vaccineRulesRaw, setVaccineRulesRaw] = useState([]);
-    const [vaccineRules, setVaccineRules] = useState([]);
     const [selectedVaccine, setSelectedVaccine] = useState(0);
 
     const ProductionCost = (rules) => {
         var cost = 0;
         for (var i = 0; i < rules.length; ++i) {
-            if (rules[i].category === "Temperature") {
+            if (rules[i].category === "temperature") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
-            } else if (rules[i].category === "Humidity") {
+            } else if (rules[i].category === "humidity") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
-            } else if (rules[i].category === "Elevation") {
+            } else if (rules[i].category === "elevation") {
                 cost += 100;
-            } else if (rules[i].category === "Age") {
+            } else if (rules[i].category === "age") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
-            } else if (rules[i].category === "Weight") {
+            } else if (rules[i].category === "weight") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 3;
-            } else if (rules[i].category === "Blood Type") {
+            } else if (rules[i].category === "blood_type") {
                 cost += 100;
-            } else if (rules[i].category === "Blood Pressure") {
+            } else if (rules[i].category === "blood_pressure") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
-            } else if (rules[i].category === "Cholesterol") {
+            } else if (rules[i].category === "cholesterol") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 4;
-            } else if (rules[i].category === "Radiation") {
+            } else if (rules[i].category === "radiation") {
                 cost += (rules[i].range_upper - rules[i].range_lower + 1) * 5;
             }
         }
@@ -83,11 +82,11 @@ function Simulation() {
     }
 
     const CategoryString = (category, value) => {
-        if (category === "Elevation") {
+        if (category === "elevation") {
             if (value === "1") return "Low";
             else if (value === "2") return "Mid";
             else if (value === "3") return "High";
-        } else if (category === "Blood Type") {
+        } else if (category === "blood_type") {
             if (value === "1") return "A";
             else if (value === "2") return "B";
             else if (value === "3") return "O";
@@ -111,16 +110,16 @@ function Simulation() {
 
     const CheckRule = () => {
         if (ruleType === "None" || ruleMin > ruleMax ||
-            (ruleType != "Elevation" && ruleType != "Blood Type" &&
+            (ruleType != "elevation" && ruleType != "blood_type" &&
                 (ruleMin.length === 0 || ruleMax.length === 0))) {
             alert("Invalid vaccine rule format!");
             return false;
         }
-        if (ruleType === "Elevation" && Elevation === 0) {
+        if (ruleType === "elevation" && Elevation === 0) {
             alert("Invalid vaccine rule format!");
             return false;
         }
-        if (ruleType === "Blood Type" && bloodType === 0) {
+        if (ruleType === "blood_type" && bloodType === 0) {
             alert("Invalid vaccine rule format!");
             return false;
         }
@@ -129,10 +128,10 @@ function Simulation() {
 
     const AddRule = () => {
         var min = null, max = null;
-        if (ruleType == "Elevation") {
+        if (ruleType == "elevation") {
             min = Elevation;
             max = Elevation;
-        } else if (ruleType == "Blood Type") {
+        } else if (ruleType == "blood_type") {
             min = bloodType;
             max = bloodType;
         } else {
@@ -158,191 +157,200 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
-    const needUpdate = () => {
-        Axios.post('http://localhost:3001/api/get-last-modified', {
+    const needUpdate = async () => {
+        const data = await Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
-            const last_updated = response.data[0].last_modified_time;
-            return last_updated > currUpdate
+            const last_updated = new Date(response.data[0].last_modified_time);
+            console.log(last_updated)
+            console.log(currUpdate)
+            console.log(last_updated > currUpdate)
+            return (last_updated > currUpdate)
         });
+        return data
     }
 
     const test = () => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            setUIEnabled(false);
-            const human_num = selected.num;
-            Axios.post('http://localhost:3001/api/test', {
-                cost: 50,
-                simID: testSimId,
-                humanID: human_num
-            }).then((res) => {
-                let new_simulation = {...simulation};
-                new_simulation.funds -= 50;
-                setSimulation(new_simulation);
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/test', {
+                    cost: 50,
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    let new_simulation = {...simulation};
+                    new_simulation.funds -= 50;
+                    setSimulation(new_simulation);
 
-                if (Object.entries(res.data[4][0])[0][1] === 'negative') {
-                    // TELL THE USER THAT THIS PERSON IS NOT INFECTED
-                    alert('This person is not infected');
-                } else {
-                    let new_infected = {...infected};
-                    new_infected[human_num.toString()].known = 1;
-                    setInfected(new_infected);
-                }
-                setUIEnabled(true);
-            })
-        }
+                    if (Object.entries(res.data[4][0])[0][1] === 'negative') {
+                        // TELL THE USER THAT THIS PERSON IS NOT INFECTED
+                        alert('This person is not infected');
+                    } else {
+                        let new_infected = {...infected};
+                        new_infected[human_num.toString()].known = 1;
+                        setInfected(new_infected);
+                    }
+                    setUIEnabled(true);
+                })
+            }
+        })
     };
 
     const Mark = (option) => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            setUIEnabled(false);
-            const human_num = selected.num;
-            const human = simHumans[human_num - 1];
-            if (option === human.mark) return;
-            Axios.post('http://localhost:3001/api/mark', {
-                simID: testSimId,
-                humanID: human_num,
-                mark: option
-            }).then(() => {
-                let new_sim_humans = [...simHumans];
-                new_sim_humans[human_num - 1].mark = option;
-                setSimHumans(new_sim_humans);
-                setSelected(new_sim_humans[human_num - 1]);
-                setUIEnabled(true);
-            })
-        }
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                const human = simHumans[human_num - 1];
+                if (option === human.mark) return;
+                Axios.post('http://localhost:3001/api/mark', {
+                    simID: testSimId,
+                    humanID: human_num,
+                    mark: option
+                }).then(() => {
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].mark = option;
+                    setSimHumans(new_sim_humans);
+                    setSelected(new_sim_humans[human_num - 1]);
+                    setUIEnabled(true);
+                })
+            }
+        })
     }
 
     const Isolate = () => {
-        if (needUpdate())
-        {
-            console.log("NEED UPDATE")
-        }
-        else
-        {
-            if (simulation.environment_isolation_capacity === 0) {
-                alert("Your environment isolation capacity is full!");
-                return;
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
             }
-            setUIEnabled(false);
-            const human_num = selected.num;
-            Axios.post('http://localhost:3001/api/isolate', {
-                cost: 10, 
-                simID: testSimId,
-                humanID: human_num
-            }).then((res) => {
-                if (res.data) {
-                    setUIEnabled(true);
+            else
+            {
+                if (simulation.environment_isolation_capacity === 0) {
+                    alert("Your environment isolation capacity is full!");
                     return;
                 }
-                let new_sim_humans = [...simHumans];
-                new_sim_humans[human_num - 1].isolated = 1;
-                setSimHumans(new_sim_humans);
-                let updated_isolation_capacity_simulation = simulation;
-                --updated_isolation_capacity_simulation.environment_isolation_capacity;
-                setSimulation(updated_isolation_capacity_simulation);
-                setSelected(new_sim_humans[human_num - 1]);
-                setUIEnabled(true);
-            });
-        }
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/isolate', {
+                    cost: 10, 
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) {
+                        setUIEnabled(true);
+                        return;
+                    }
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].isolated = 1;
+                    setSimHumans(new_sim_humans);
+                    let updated_isolation_capacity_simulation = simulation;
+                    --updated_isolation_capacity_simulation.environment_isolation_capacity;
+                    setSimulation(updated_isolation_capacity_simulation);
+                    setSelected(new_sim_humans[human_num - 1]);
+                    setUIEnabled(true);
+                });
+            }
+        })
     }
 
     const Unisolate = () => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            setUIEnabled(false);
-            const human_num = selected.num;
-            Axios.post('http://localhost:3001/api/unisolate', {
-                simID: testSimId,
-                humanID: human_num
-            }).then((res) => {
-                if (res.data) {
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                setUIEnabled(false);
+                const human_num = selected.num;
+                Axios.post('http://localhost:3001/api/unisolate', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) {
+                        setUIEnabled(true);
+                        return;
+                    }
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].isolated = 0;
+                    setSimHumans(new_sim_humans);
+                    let updated_isolation_capacity_simulation = simulation;
+                    ++updated_isolation_capacity_simulation.environment_isolation_capacity;
+                    setSimulation(updated_isolation_capacity_simulation);
+                    setSelected(new_sim_humans[human_num - 1]);
                     setUIEnabled(true);
-                    return;
-                }
-                let new_sim_humans = [...simHumans];
-                new_sim_humans[human_num - 1].isolated = 0;
-                setSimHumans(new_sim_humans);
-                let updated_isolation_capacity_simulation = simulation;
-                ++updated_isolation_capacity_simulation.environment_isolation_capacity;
-                setSimulation(updated_isolation_capacity_simulation);
-                setSelected(new_sim_humans[human_num - 1]);
-                setUIEnabled(true);
-            });
-        }
+                });
+            }
+        })
     }
 
     const killHuman = async (human_num) => {
-        if (needUpdate())
-        {
-            console.log("NEED UPDATE")
-        }
-        else
-        {
-            Axios.post('http://localhost:3001/api/kill_human', {
-                simID: testSimId,
-                humanID: human_num
-            }).then((res) => {
-                if (res.data) return;
-                let new_simulation = {...simulation};
-                new_simulation.num_deceased++;
-                setSimulation(new_simulation);
-                let new_sim_humans = [...simHumans];
-                new_sim_humans[human_num - 1].status = 'dead';
-                setSimHumans(new_sim_humans);
-                let new_infected = {...infected};
-                delete new_infected[human_num.toString()];
-                setInfected(new_infected);
-            });
-        }
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/kill_human', {
+                    simID: testSimId,
+                    humanID: human_num
+                }).then((res) => {
+                    if (res.data) return;
+                    let new_simulation = {...simulation};
+                    new_simulation.num_deceased++;
+                    setSimulation(new_simulation);
+                    let new_sim_humans = [...simHumans];
+                    new_sim_humans[human_num - 1].status = 'dead';
+                    setSimHumans(new_sim_humans);
+                    let new_infected = {...infected};
+                    delete new_infected[human_num.toString()];
+                    setInfected(new_infected);
+                });
+            }
+        })
     };
 
-    const InsertVaccine = async () => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            await Axios.post('http://localhost:3001/api/prototype-vaccine', {
-                id: testSimId,
-                vaccineName: vaccineName
-            }).then((res) => {
-                setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
-            });
-        }
+    const InsertVaccine = () => {
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/prototype-vaccine', {
+                    id: testSimId,
+                    vaccineName: vaccineName
+                }).then((res) => {
+                    setVaccineID(res.data[1][0]['LAST_INSERT_ID()']);
+                });
+            }
+        })
     }
 
     const InsertRules = async () => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            for (var i = 0; i < rules.length; ++i) {
-                await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
-                    vaccine: vaccineID,
-                    id: testSimId,
-                    category: rules[i].category,
-                    range_lower: parseInt(rules[i].range_lower),
-                    range_upper: parseInt(rules[i].range_upper)
-                })
-            }
+        for (var i = 0; i < rules.length; ++i) {
+            await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
+                vaccine: vaccineID,
+                id: testSimId,
+                category: rules[i].category,
+                range_lower: parseInt(rules[i].range_lower),
+                range_upper: parseInt(rules[i].range_upper)
+            })
         }
     }
 
@@ -359,56 +367,49 @@ function Simulation() {
         Axios.post('http://localhost:3001/api/get-vaccine', {
             id: testSimId
         }).then((response) => {
-            setVaccines(response.data);
+            setVaccinesRaw(response.data);
         });
     }
 
-    const FindVaccineRule = (vac) => {
-        for (var i = 0; i < vaccineRules.length; ++i) {
-            if (vaccineRules[i].length > 0 && vaccineRules[i][0].vaccine === vac) {
-                return vaccineRules[i];
-            }
-        }
-        return null;
-    }
-
     const GetVaccineRules = async () => {
-        let new_vaccine_rules = [];
+        let newVaccines = [];
         let promises = [];
-        for (let i = 0; i < vaccines.length; ++i) {
+        for (let i = 0; i < vaccinesRaw.length; ++i) {
             promises.push(Axios.post('http://localhost:3001/api/get-vaccine-rules', {
                 id: testSimId,
-                vaccine: vaccines[i].num
+                vaccine: vaccinesRaw[i].num
             }).then((response) => {
-                new_vaccine_rules.push(response.data)
+                vaccinesRaw[i].rules = response.data;
+                newVaccines.push(vaccinesRaw[i])
             }));
         }
         await Promise.all(promises);
-        setVaccineRules(new_vaccine_rules);
+        setVaccines(newVaccines);
     }
 
     const DeleteVaccine = async (vaccine) => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            Axios.post('http://localhost:3001/api/delete-vaccine', {
-                vaccine: vaccine
-            }).then(() => {
-                GetVaccine();
-            });
-        }
+        needUpdate().then(function(result){
+            if (result)
+            {
+                alert("NEED UPDATE")
+            }
+            else
+            {
+                Axios.post('http://localhost:3001/api/delete-vaccine', {
+                    vaccine: vaccine
+                }).then(() => {
+                    GetVaccine();
+                });
+            }
+        })
     }
 
     useEffect(() => {
         if (cookies.name == null) {
             navigate("/Login");
         }
-
         GetVaccineRules();
-    }, [vaccines]);
+    }, [vaccinesRaw]);
     
     const GetAlive = () => {
         Axios.post('http://localhost:3001/api/get-alive', {
@@ -974,17 +975,17 @@ function Simulation() {
                         <select value={ruleType} onChange = {(e) => {
                             setRuleType(e.target.value);
                         }}>
-                            <option value="None">Select Rule</option>
-                            <option value="Temperature">Temperature</option>
-                            <option value="Humidity">Humidity</option>
-                            <option value="Elevation">Elevation</option>
-                            <option value="Age">Age</option>
-                            <option value="Age">Height</option>
-                            <option value="Weight">Weight</option>
-                            <option value="Blood Type">Blood Type</option>
-                            <option value="Blood Pressure">Blood Pressure</option>
-                            <option value="Cholesterol">Cholesterol</option>
-                            <option value="Radiation">Radiation</option>
+                            <option value="none">Select Rule</option>
+                            <option value="temperature">Temperature</option>
+                            <option value="humidity">Humidity</option>
+                            <option value="elevation">Elevation</option>
+                            <option value="age">Age</option>
+                            <option value="height">Height</option>
+                            <option value="weight">Weight</option>
+                            <option value="blood_type">Blood Type</option>
+                            <option value="blood_pressure">Blood Pressure</option>
+                            <option value="cholesterol">Cholesterol</option>
+                            <option value="radiation">Radiation</option>
                         </select>
                         <label>
                             {ruleType === "None" ? "UNIT" : FindUnit(ruleType)}
@@ -992,12 +993,12 @@ function Simulation() {
                     </div>
 
                     <div className = "ruleCategory" hidden = {ruleType == "None" ? 1 : 0}>
-                        <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "Blood Type" ? 
-                            "Type" : ruleType == "Elevation" ? "Ground Level" : "Range"}</label></div>
+                        <label style={{margin: "0px 0px 0px 0px", fontWeight: "bold"}}>{ruleType == "blood_type" ? 
+                            "Type" : ruleType == "elevation" ? "Ground Level" : "Range"}</label></div>
 
                     <div className = "vaccineRules" hidden = {ruleType == "None" ? 1 : 0}>
                         {(() => {
-                            if (ruleType == "Blood Type") {
+                            if (ruleType == "blood_type") {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
@@ -1009,7 +1010,7 @@ function Simulation() {
                                         </select>
                                     </div>
                                 )
-                            } else if (ruleType == "Elevation") {
+                            } else if (ruleType == "elevation") {
                                 return (
                                     <div>
                                         <select style={{margin: "0px 0px 0px 0px"}}
@@ -1067,7 +1068,7 @@ function Simulation() {
                                 <button onClick = {() => {if (datapoint.num == selectedVaccine) {setSelectedVaccine(0)} DeleteVaccine(datapoint.num)}}>X</button> 
                             </div>
                             {(() => {
-                                var rule = FindVaccineRule(datapoint.num);
+                                var rule = datapoint.rules;
                                 if (rule != null) {
                                     return (
                                         <div className = "vaccineDisplay">
