@@ -14,7 +14,7 @@ function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
     const currUpdate = new Date();
-    currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
+    // currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
 
     const id = params.get('id')
 
