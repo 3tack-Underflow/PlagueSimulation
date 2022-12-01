@@ -14,7 +14,7 @@ function Simulation() {
     const windowUrl = window.location.search;
     const params = new URLSearchParams(windowUrl);
     const currUpdate = new Date();
-    //currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
+    currUpdate.setFullYear( currUpdate.getFullYear() - 1 )
 
     const id = params.get('id')
 
@@ -159,15 +159,15 @@ function Simulation() {
 
     const [UIEnabled, setUIEnabled] = useState(true);
 
-    const needUpdate = () => {
-        Axios.post('http://localhost:3001/api/get-last-modified', {
+    const needUpdate = async () => {
+        return await Axios.post('http://localhost:3001/api/get-last-modified', {
             simID: testSimId
         }).then((response) => {
             const last_updated = new Date(response.data[0].last_modified_time);
             console.log(last_updated)
             console.log(currUpdate)
             console.log(last_updated > currUpdate)
-            return last_updated > currUpdate
+            return (last_updated > currUpdate)
         });
     }
 
@@ -205,7 +205,7 @@ function Simulation() {
     const Mark = (option) => {
         if (needUpdate())
         {
-            alert("NEED UPDATE")
+            alert("NEED UPDATE2")
         }
         else
         {
@@ -230,7 +230,7 @@ function Simulation() {
     const Isolate = () => {
         if (needUpdate())
         {
-            console.log("NEED UPDATE")
+            console.log("NEED UPDATE3")
         }
         else
         {
@@ -264,7 +264,7 @@ function Simulation() {
     const Unisolate = () => {
         if (needUpdate())
         {
-            alert("NEED UPDATE")
+            alert("NEED UPDATE4")
         }
         else
         {
@@ -293,7 +293,7 @@ function Simulation() {
     const killHuman = async (human_num) => {
         if (needUpdate())
         {
-            console.log("NEED UPDATE")
+            console.log("NEED UPDATE5")
         }
         else
         {
@@ -318,7 +318,7 @@ function Simulation() {
     const InsertVaccine = async () => {
         if (needUpdate())
         {
-            alert("NEED UPDATE")
+            alert("NEED UPDATE6")
         }
         else
         {
@@ -332,21 +332,14 @@ function Simulation() {
     }
 
     const InsertRules = async () => {
-        if (needUpdate())
-        {
-            alert("NEED UPDATE")
-        }
-        else
-        {
-            for (var i = 0; i < rules.length; ++i) {
-                await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
-                    vaccine: vaccineID,
-                    id: testSimId,
-                    category: rules[i].category,
-                    range_lower: parseInt(rules[i].range_lower),
-                    range_upper: parseInt(rules[i].range_upper)
-                })
-            }
+        for (var i = 0; i < rules.length; ++i) {
+            await Axios.post('http://localhost:3001/api/add-vaccine-rule', {
+                vaccine: vaccineID,
+                id: testSimId,
+                category: rules[i].category,
+                range_lower: parseInt(rules[i].range_lower),
+                range_upper: parseInt(rules[i].range_upper)
+            })
         }
     }
 
@@ -394,7 +387,7 @@ function Simulation() {
     const DeleteVaccine = async (vaccine) => {
         if (needUpdate())
         {
-            alert("NEED UPDATE")
+            alert("NEED UPDATE8")
         }
         else
         {
