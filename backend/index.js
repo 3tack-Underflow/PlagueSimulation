@@ -343,9 +343,8 @@ app.post('/api/kill-human', (req, res) => {
         "SELECT @human:=NULL;" +
 
         "SELECT @human:=num " +
-        "FROM simulation_humans, infection " +
-        "WHERE num = ? AND id = ? AND status = 'alive' " +
-        "AND human = ? AND human_id = ?; " +
+        "FROM simulation_humans " +
+        "WHERE num = ? AND id = ? AND status = 'alive'; " +
 
         "DELETE FROM infection " +
         "WHERE human = ? AND human_id = ?;" +
