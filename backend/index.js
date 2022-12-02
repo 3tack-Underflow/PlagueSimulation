@@ -7,8 +7,8 @@ const mysql = require('mysql2');
 // information of the database
 const db = mysql.createPool({
     host: '23.91.84.211',
-    user: 'cs',
-    password: 'cs348',
+    user: 'frontend',
+    password: 'password',
     database: 'user_schema',
     multipleStatements: true
 });
