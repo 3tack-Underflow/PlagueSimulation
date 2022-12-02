@@ -1,7 +1,7 @@
 -- The queries and output often remain the same for production data. These indexes make the production queries more efficient.
 -- test efficiency by executing query with and without index --
 
-CREATE INDEX status_index on simulation_humans(status);
+CREATE INDEX id_status_idx on simulation_humans(id, status);
 
 CREATE INDEX username_owner_index ON simulation_participation(username, is_owner);
 
